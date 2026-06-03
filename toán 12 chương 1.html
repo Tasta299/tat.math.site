@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài Giảng Tương Tác Toán 12 - Chương 1 (Kết Nối Tri Thức)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Định dạng hiển thị biến số và ký hiệu toán học bằng Unicode thân thiện */
+        .math-style {
+            font-family: "Times New Roman", Times, serif;
+            font-style: italic;
+            font-size: 1.15em;
+        }
+        .math-block {
+            font-family: "Times New Roman", Times, serif;
+            font-style: italic;
+            font-size: 1.15em;
+            background-color: #f8fafc;
+            border-left: 4px solid #6366f1;
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+        /* CSS BBT Arrow */
+        .arrow-up {
+            display: inline-block;
+            transform: rotate(-25deg);
+            transition: all 0.3s ease;
+        }
+        .arrow-down {
+            display: inline-block;
+            transform: rotate(25deg);
+            transition: all 0.3s ease;
+        }
+        /* Hiệu ứng chuyển động mượt mà cho đồ thị */
+        svg path {
+            transition: d 0.2s ease, stroke-dasharray 0.3s ease;
+        }
+        svg circle {
+            transition: cx 0.2s ease, cy 0.2s ease;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="bg-indigo-900 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-amber-400 text-indigo-950 font-bold px-3 py-1.5 rounded-lg text-lg shadow-sm">
+                    TOÁN 12
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight">KẾT NỐI TRI THỨC VỚI CUỘC SỐNG</h1>
+                    <p class="text-xs text-indigo-200">Chương I: Ứng dụng đạo hàm để khảo sát và vẽ đồ thị hàm số</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2 mt-2 md:mt-0 text-xs md:text-sm">
+                <span class="bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+                    <i class="fa-solid fa-square-poll-vertical mr-1"></i> Đồ thị & BBT Trực Quan Chuẩn Xác
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6 flex flex-col lg:flex-row gap-6">
+        
+        <!-- SIDEBAR - MENU CHƯƠNG -->
+        <aside class="w-full lg:w-1/4 flex flex-col gap-4 shrink-0">
+            <!-- Sơ đồ cây liên kết bài học rút gọn -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+                <h3 class="font-bold text-slate-900 text-base mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-sitemap text-indigo-600"></i>
+                    Sơ đồ Chương I
+                </h3>
+                
+                <div class="space-y-1 relative before:absolute before:left-4 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
+                    <!-- Nav Item 1 -->
+                    <button onclick="switchTab('map')" id="btn-map" class="nav-btn w-full text-left py-2 px-3 pl-8 rounded-lg text-sm font-semibold flex items-center justify-between relative transition-all bg-indigo-50 text-indigo-600">
+                        <span class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-indigo-600 ring-4 ring-indigo-100"></span>
+                        Tổng quan & Bản đồ liên kết
+                        <i class="fa-solid fa-chevron-right text-xs"></i>
+                    </button>
+                    
+                    <!-- Nav Item 2 -->
+                    <button onclick="switchTab('bai1')" id="btn-bai1" class="nav-btn w-full text-left py-2 px-3 pl-8 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 flex items-center justify-between relative transition-all">
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                        Bài 1. Đơn điệu & Cực trị
+                        <i class="fa-solid fa-chevron-right text-xs opacity-0"></i>
+                    </button>
+
+                    <!-- Nav Item 3 -->
+                    <button onclick="switchTab('bai2')" id="btn-bai2" class="nav-btn w-full text-left py-2 px-3 pl-8 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 flex items-center justify-between relative transition-all">
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                        Bài 2. GTLN & GTNN
+                        <i class="fa-solid fa-chevron-right text-xs opacity-0"></i>
+                    </button>
+
+                    <!-- Nav Item 4 -->
+                    <button onclick="switchTab('bai3')" id="btn-bai3" class="nav-btn w-full text-left py-2 px-3 pl-8 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 flex items-center justify-between relative transition-all">
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                        Bài 3. Đường Tiệm cận
+                        <i class="fa-solid fa-chevron-right text-xs opacity-0"></i>
+                    </button>
+
+                    <!-- Nav Item 5 -->
+                    <button onclick="switchTab('bai4')" id="btn-bai4" class="nav-btn w-full text-left py-2 px-3 pl-8 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 flex items-center justify-between relative transition-all">
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                        Bài 4. Khảo sát & Vẽ đồ thị
+                        <i class="fa-solid fa-chevron-right text-xs opacity-0"></i>
+                    </button>
+
+                    <!-- Nav Item 6 -->
+                    <button onclick="switchTab('bai5')" id="btn-bai5" class="nav-btn w-full text-left py-2 px-3 pl-8 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 flex items-center justify-between relative transition-all">
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                        Bài 5. Thực tế & Đọc dữ kiện
+                        <i class="fa-solid fa-chevron-right text-xs opacity-0"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Panel công cụ tương tác nhanh -->
+            <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-5">
+                <h4 class="font-bold text-indigo-950 text-sm mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i>
+                    Hướng dẫn Học Tập
+                </h4>
+                <p class="text-xs text-indigo-900 leading-relaxed space-y-1">
+                    Nhấp chọn các Tab bài học ở trên. Mỗi đồ thị đều có sẵn các <strong>nhãn tọa độ và đường dóng vuông góc</strong> giúp học sinh dễ dàng "đọc" và đối chiếu dữ kiện một cách chính xác nhất.
+                </p>
+            </div>
+        </aside>
+
+        <!-- MAIN PRESENTATION AREA -->
+        <section class="flex-grow w-full lg:w-3/4">
+            
+            <!-- ================= TAB: TỔNG QUAN CHƯƠNG I ================= -->
+            <div id="tab-map" class="tab-content block space-y-6">
+                <!-- Banner bài học -->
+                <div class="bg-gradient-to-r from-indigo-700 to-indigo-950 text-white p-6 md:p-8 rounded-3xl shadow-sm relative overflow-hidden">
+                    <div class="relative z-10">
+                        <span class="bg-indigo-500/30 text-indigo-100 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">Tổng quan lý thuyết</span>
+                        <h2 class="text-2xl md:text-3xl font-extrabold mt-3">CHƯƠNG I: ỨNG DỤNG ĐẠO HÀM ĐỂ KHẢO SÁT VÀ VẼ ĐỒ THỊ</h2>
+                        <p class="mt-2 text-indigo-100 text-sm md:text-base max-w-2xl">
+                            Khám phá mối quan hệ logic xuyên suốt từ định lý đạo hàm đơn giản nhất tới việc vẽ nên một đồ thị trực quan và giải quyết các bài toán vận dụng thực tế.
+                        </p>
+                    </div>
+                    <div class="absolute right-0 bottom-0 translate-x-10 translate-y-10 opacity-10">
+                        <i class="fa-solid fa-chart-line text-[200px]"></i>
+                    </div>
+                </div>
+
+                <!-- Sơ đồ mạng lưới tương tác (Interactive Concept Map) -->
+                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h3 class="font-bold text-lg text-slate-900">Bản Đồ Tư Duy Khái Niệm Toàn Chương</h3>
+                            <p class="text-xs text-slate-500">Mối quan hệ nhân - quả, tuần tự của chương học</p>
+                        </div>
+                        <span class="text-xs text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full font-semibold">Bấm vào các nút để chuyển nhanh</span>
+                    </div>
+
+                    <!-- Bản đồ trực quan bằng lưới CSS và SVG -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 relative">
+                        <!-- Block 1 -->
+                        <div onclick="switchTab('bai1')" class="cursor-pointer border-2 border-dashed border-indigo-200 hover:border-indigo-500 p-4 rounded-2xl bg-slate-50/50 hover:bg-white transition-all group">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="bg-indigo-100 text-indigo-700 w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs">1</span>
+                                <h4 class="font-bold text-sm text-slate-800 group-hover:text-indigo-600">Đơn điệu & Cực trị</h4>
+                            </div>
+                            <p class="text-xs text-slate-500">Sử dụng dấu của Đạo hàm cấp 1 <span class="math-style">f'(x)</span> để xác định khoảng đồng biến/nghịch biến và cực trị.</p>
+                            <div class="mt-3 text-xs text-indigo-600 font-semibold group-hover:underline flex items-center gap-1">
+                                Học ngay <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </div>
+                        </div>
+
+                        <!-- Block 2 -->
+                        <div onclick="switchTab('bai2')" class="cursor-pointer border-2 border-dashed border-amber-200 hover:border-amber-500 p-4 rounded-2xl bg-slate-50/50 hover:bg-white transition-all group">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="bg-amber-100 text-amber-700 w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs">2</span>
+                                <h4 class="font-bold text-sm text-slate-800 group-hover:text-amber-600">Giá trị Lớn nhất & Nhỏ nhất</h4>
+                            </div>
+                            <p class="text-xs text-slate-500">Tìm miền giá trị cao nhất và thấp nhất của hàm số trên các khoảng hoặc đoạn đóng <span class="math-style">[a; b]</span>.</p>
+                            <div class="mt-3 text-xs text-amber-600 font-semibold group-hover:underline flex items-center gap-1">
+                                Học ngay <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </div>
+                        </div>
+
+                        <!-- Block 3 -->
+                        <div onclick="switchTab('bai3')" class="cursor-pointer border-2 border-dashed border-emerald-200 hover:border-emerald-500 p-4 rounded-2xl bg-slate-50/50 hover:bg-white transition-all group">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="bg-emerald-100 text-emerald-700 w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs">3</span>
+                                <h4 class="font-bold text-sm text-slate-800 group-hover:text-emerald-600">Đường Tiệm Cận</h4>
+                            </div>
+                            <p class="text-xs text-slate-500">Tính giới hạn tại các điểm biên vô cực để xác định đường tiệm cận đứng (TCĐ) và tiệm cận ngang (TCN).</p>
+                            <div class="mt-3 text-xs text-emerald-600 font-semibold group-hover:underline flex items-center gap-1">
+                                Học ngay <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-3 flex justify-center py-2">
+                            <div class="flex flex-col items-center">
+                                <div class="h-8 w-0.5 bg-slate-300"></div>
+                                <div class="bg-slate-100 text-slate-600 text-xs px-3 py-1 rounded-full font-medium border border-slate-200">Tổng hợp tất cả thông số trên để</div>
+                                <div class="h-8 w-0.5 bg-slate-300"></div>
+                            </div>
+                        </div>
+
+                        <!-- Block 4 -->
+                        <div onclick="switchTab('bai4')" class="md:col-span-2 cursor-pointer border-2 border-indigo-600 p-5 rounded-2xl bg-indigo-50/20 hover:bg-indigo-50/40 transition-all group">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="bg-indigo-600 text-white w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs">4</span>
+                                <h4 class="font-bold text-base text-slate-900 group-hover:text-indigo-700">Khảo Sát & Vẽ Đồ Thị Hàm Số</h4>
+                            </div>
+                            <p class="text-sm text-slate-600">Quy trình 3 bước chuẩn của Bộ Giáo Dục để vẽ hoàn thiện đồ thị hàm bậc ba, hàm phân thức bậc nhất/bậc nhất.</p>
+                            <div class="mt-3 text-xs text-indigo-700 font-bold flex items-center gap-1">
+                                Xem quy trình 3 bước thực hành <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </div>
+                        </div>
+
+                        <!-- Block 5 -->
+                        <div onclick="switchTab('bai5')" class="cursor-pointer border-2 border-dashed border-rose-200 hover:border-rose-500 p-4 rounded-2xl bg-slate-50/50 hover:bg-white transition-all group">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="bg-rose-100 text-rose-700 w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs">5</span>
+                                <h4 class="font-bold text-sm text-slate-800 group-hover:text-rose-600">Đọc Dữ Kiện & Vận Dụng</h4>
+                            </div>
+                            <p class="text-xs text-slate-500">Khai thác ý nghĩa đồ thị để tối ưu hóa chi phí sản xuất, doanh số, tìm nghiệm phương trình.</p>
+                            <div class="mt-3 text-xs text-rose-600 font-semibold group-hover:underline flex items-center gap-1">
+                                Học ngay <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= TAB: BÀI 1 (ĐƠN ĐIỆU & CỰC TRỊ - MẪU MỰC) ================= -->
+            <div id="tab-bai1" class="tab-content hidden space-y-6">
+                <div class="bg-indigo-50 border border-indigo-100 rounded-3xl p-6">
+                    <span class="text-xs font-bold text-indigo-700 bg-indigo-100 px-3 py-1 rounded-full uppercase">Bài 1</span>
+                    <h2 class="text-xl md:text-2xl font-bold text-indigo-950 mt-2">Tính Đơn Điệu và Cực Trị của Hàm Số</h2>
+                    <p class="text-slate-600 text-sm mt-1">Khảo sát mẫu mực hàm bậc ba chuẩn mực: <span class="math-style">y = x³ - 3x² + 2</span>.</p>
+                </div>
+
+                <!-- Sandbox đồ thị hàm số và BBT -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                    <!-- Đồ thị động -->
+                    <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex flex-col">
+                        <span class="text-xs font-semibold text-slate-500 block mb-3">Đồ thị Oxy chuẩn SGK (Có nhãn tọa độ cực trị)</span>
+                        <div class="bg-slate-900 rounded-xl p-4 flex items-center justify-center relative shadow-inner overflow-hidden aspect-video">
+                            <svg id="svg-graph1" class="w-full h-full" viewBox="0 0 300 200"></svg>
+                        </div>
+                    </div>
+
+                    <!-- Bảng biến thiên động -->
+                    <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex flex-col">
+                        <span class="text-xs font-semibold text-slate-500 block mb-3">Bảng Biến Thiên & Xét Dấu Đạo Hàm</span>
+                        <div class="overflow-x-auto border border-slate-200 rounded-xl bg-white shadow-sm" id="bbt-lesson1-container">
+                            <!-- Được render tĩnh bởi JS có xét dấu -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hướng dẫn chi tiết -->
+                <div class="space-y-3">
+                    <button onclick="toggleElement('solution-1')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 text-sm font-semibold py-2.5 px-4 rounded-xl transition flex justify-between items-center">
+                        <span>Xem Hướng dẫn Giải chi tiết bằng Toán học</span>
+                        <i class="fa-solid fa-chevron-down text-xs"></i>
+                    </button>
+                    
+                    <div id="solution-1" class="hidden bg-slate-50 rounded-xl p-4 border border-slate-150 text-sm text-slate-700 space-y-3">
+                        <p><strong>Bước 1:</strong> Tập xác định <span class="math-style">D = ℝ</span>.</p>
+                        <p><strong>Bước 2:</strong> Tính đạo hàm bậc nhất:</p>
+                        <div class="math-block">
+                            y' = 3x² - 6x = 3x(x - 2)
+                        </div>
+                        <p><strong>Bước 3:</strong> Giải phương trình <span class="math-style">y' = 0  ⇔  x = 0</span> hoặc <span class="math-style">x = 2</span>.</p>
+                        <p><strong>Bước 4 (Xét dấu Đạo hàm):</strong> Đạo hàm mang dấu âm (-) trên khoảng hai nghiệm <span class="math-style">(0; 2)</span>, mang dấu dương (+) trên các khoảng <span class="math-style">(-∞; 0)</span> và <span class="math-style">(2; +∞)</span>.</p>
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li>Hàm số đồng biến trên các khoảng <span class="math-style">(-∞; 0)</span> và <span class="math-style">(2; +∞)</span>.</li>
+                            <li>Hàm số nghịch biến trên khoảng <span class="math-style">(0; 2)</span>.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= TAB: BÀI 2 (GTLN & GTNN - INTERACTIVE INTERVAL) ================= -->
+            <div id="tab-bai2" class="tab-content hidden space-y-6">
+                <div class="bg-amber-50 border border-amber-100 rounded-3xl p-6">
+                    <span class="text-xs font-bold text-amber-700 bg-amber-100 px-3 py-1 rounded-full uppercase">Bài 2</span>
+                    <h2 class="text-xl md:text-2xl font-bold text-amber-950 mt-2">Giá Trị Lớn Nhất và Nhỏ Nhất của Hàm Số</h2>
+                    <p class="text-slate-600 text-sm mt-1">Tìm GTLN & GTNN của hàm số <span class="math-style">y = x + 4/x</span> bằng cách kéo thả khoảng biên <span class="math-style">[a; b]</span>.</p>
+                </div>
+
+                <!-- Sandbox Controls -->
+                <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-5 shadow-sm">
+                    <h3 class="font-bold text-indigo-950 text-sm mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-arrows-left-right text-indigo-600"></i>
+                        Thay đổi đoạn khảo sát <span class="math-style">[a; b]</span> để quan sát sự thay đổi của GTLN & GTNN:
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-xs font-bold text-slate-700">Đầu mút trái <span class="math-style">a</span>:</span>
+                                <span class="bg-indigo-600 text-white text-xs px-2.5 py-0.5 rounded-full font-bold font-mono" id="val-a">a = 1.0</span>
+                            </div>
+                            <input type="range" id="slider-a" min="0.5" max="1.9" step="0.1" value="1.0" oninput="updateLesson2Sandbox()" class="w-full accent-indigo-600" />
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-xs font-bold text-slate-700">Đầu mút phải <span class="math-style">b</span>:</span>
+                                <span class="bg-indigo-600 text-white text-xs px-2.5 py-0.5 rounded-full font-bold font-mono" id="val-b">b = 4.0</span>
+                            </div>
+                            <input type="range" id="slider-b" min="2.1" max="5.0" step="0.1" value="4.0" oninput="updateLesson2Sandbox()" class="w-full accent-indigo-600" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sandbox đồ thị và BBT -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                    <!-- Đồ thị -->
+                    <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex flex-col">
+                        <span class="text-xs font-semibold text-slate-500 block mb-3">Đồ thị (Highlight màu xanh lục) đi kèm đường vuông góc chỉ tọa độ</span>
+                        <div class="bg-slate-900 rounded-xl p-4 flex items-center justify-center relative shadow-inner overflow-hidden aspect-video">
+                            <svg id="svg-graph2" class="w-full h-full" viewBox="0 0 300 200"></svg>
+                        </div>
+                    </div>
+
+                    <!-- BBT -->
+                    <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex flex-col">
+                        <span class="text-xs font-semibold text-slate-500 block mb-3">Bảng Biến Thiên Động tương thích đoạn [a; b]</span>
+                        <div class="overflow-x-auto border border-slate-200 rounded-xl bg-white shadow-sm" id="bbt-lesson2-container">
+                            <!-- JS render động -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= TAB: BÀI 3 (ĐƯỜNG TIỆM CẬN) ================= -->
+            <div id="tab-bai3" class="tab-content hidden space-y-6">
+                <div class="bg-emerald-50 border border-emerald-100 rounded-3xl p-6">
+                    <span class="text-xs font-bold text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full uppercase">Bài 3</span>
+                    <h2 class="text-xl md:text-2xl font-bold text-emerald-950 mt-2">Đường Tiệm Cận của Đồ Thị Hàm Số</h2>
+                    <p class="text-slate-600 text-sm mt-1">Cách xác định Tiệm cận Đứng và Tiệm cận Ngang của hàm phân thức kinh điển: <span class="math-style">y = (2x - 1) / (x - 1)</span>.</p>
+                </div>
+
+                <!-- Sandbox đồ thị và BBT -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                    <!-- Đồ thị -->
+                    <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex flex-col">
+                        <span class="text-xs font-semibold text-slate-500 block mb-3">Đồ thị Hyperbol mẫu mực với các đường tiệm cận nét đứt</span>
+                        <div class="bg-slate-900 rounded-xl p-4 flex items-center justify-center relative shadow-inner overflow-hidden aspect-video">
+                            <svg id="svg-graph3" class="w-full h-full" viewBox="0 0 300 200"></svg>
+                        </div>
+                    </div>
+
+                    <!-- BBT -->
+                    <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex flex-col">
+                        <span class="text-xs font-semibold text-slate-500 block mb-3">Bảng Biến Thiên đứt đoạn tại điểm x = 1</span>
+                        <div class="overflow-x-auto border border-slate-200 rounded-xl bg-white shadow-sm" id="bbt-lesson3-container">
+                            <!-- JS render tĩnh -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= TAB: BÀI 4 (KHẢO SÁT & V V ĐỒ THỊ - STEP BUILDER) ================= -->
+            <div id="tab-bai4" class="tab-content hidden space-y-6">
+                <div class="bg-indigo-600 text-white rounded-3xl p-6 shadow-sm">
+                    <span class="text-xs font-bold text-indigo-200 bg-indigo-700 px-3 py-1 rounded-full uppercase">Bài 4</span>
+                    <h2 class="text-xl md:text-2xl font-bold mt-2">Khảo Sát Sự Biến Thiên & Vẽ Đồ Thị Hàm Số</h2>
+                    <p class="text-indigo-100 text-sm mt-1">Dựng đồ thị chuẩn Bộ Giáo Dục theo cơ chế dựng từng lớp (Step-by-Step Builder).</p>
+                </div>
+
+                <!-- Trình chọn hàm khảo sát -->
+                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 space-y-4">
+                    <div class="flex flex-wrap items-center justify-between gap-4">
+                        <div>
+                            <h3 class="font-bold text-slate-800">Chọn dạng hàm số khảo sát:</h3>
+                            <p class="text-xs text-slate-500">Mỗi dạng hàm sẽ hiển thị BBT tương ứng</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="selectDemoGraph('bac3')" id="btn-graph-bac3" class="graph-selector bg-indigo-600 text-white text-xs font-semibold px-4 py-2 rounded-xl transition shadow">
+                                Hàm bậc ba: y = x³ - 3x
+                            </button>
+                            <button onclick="selectDemoGraph('phanthuc')" id="btn-graph-phanthuc" class="graph-selector bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-4 py-2 rounded-xl transition shadow">
+                                Hàm phân thức: y = (x + 1)/(x - 1)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Builder steps -->
+                    <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 flex flex-col md:flex-row justify-between items-center gap-3">
+                        <span class="text-xs font-bold text-indigo-900">Tiến trình dựng đồ thị:</span>
+                        <div class="flex gap-1.5 w-full md:w-auto">
+                            <button onclick="setGraphStep(1)" id="btn-step-1" class="step-btn flex-1 md:flex-none bg-indigo-600 text-white text-[11px] font-bold py-1 px-3 rounded-lg border transition">
+                                Bước 1: Khung Trục Oxy & Ticks số
+                            </button>
+                            <button onclick="setGraphStep(2)" id="btn-step-2" class="step-btn flex-1 md:flex-none bg-slate-100 text-slate-600 text-[11px] font-bold py-1 px-3 rounded-lg border transition">
+                                Bước 2: Điểm cực trị / Tiệm cận dóng hàng
+                            </button>
+                            <button onclick="setGraphStep(3)" id="btn-step-3" class="step-btn flex-1 md:flex-none bg-slate-100 text-slate-600 text-[11px] font-bold py-1 px-3 rounded-lg border transition">
+                                Bước 3: Hoàn thành đường cong đồ thị
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Layout chính: Đồ thị mẫu và BBT -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                        <!-- Đồ thị dựng từng bước -->
+                        <div class="bg-slate-900 rounded-2xl p-4 flex flex-col justify-center relative shadow-inner aspect-square">
+                            <span class="text-xs text-indigo-300 font-semibold mb-2" id="graph-title-display">Đồ thị hàm số: y = x³ - 3x</span>
+                            <div class="flex-grow flex items-center justify-center relative">
+                                <svg id="svg-interactive-graph" class="w-full h-64" viewBox="0 0 300 240"></svg>
+                            </div>
+                        </div>
+
+                        <!-- BBT & Chi tiết -->
+                        <div class="space-y-4">
+                            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+                                <h4 class="font-bold text-xs text-slate-700 mb-2 uppercase">Bảng Biến Thiên Tương Ứng</h4>
+                                <div class="overflow-x-auto" id="interactive-bbt-container">
+                                    <!-- Render động -->
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-150 text-xs">
+                                <span class="font-semibold text-slate-800 block mb-1">Chi tiết giải trình bước hiện tại:</span>
+                                <p class="text-slate-600 leading-relaxed font-sans" id="step-explanation">
+                                    Dựng hệ trục tọa độ vuông góc Oxy làm nền móng khảo sát đồ thị hàm số.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= TAB: BÀI 5 (ỨNG DỤNG THỰC TẾ) ================= -->
+            <div id="tab-bai5" class="tab-content hidden space-y-6">
+                <div class="bg-rose-50 border border-rose-100 rounded-3xl p-6">
+                    <span class="text-xs font-bold text-rose-700 bg-rose-100 px-3 py-1 rounded-full uppercase">Bài 5</span>
+                    <h2 class="text-xl md:text-2xl font-bold text-rose-950 mt-2">Ứng dụng Đạo hàm giải quyết vấn đề Thực Tiễn</h2>
+                    <p class="text-slate-600 text-sm mt-1">Đọc hiểu đồ thị và tìm giá trị tối ưu hóa lợi nhuận kinh tế, doanh số bán lẻ.</p>
+                </div>
+
+                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 space-y-6">
+                    <div class="border-l-4 border-rose-500 pl-4">
+                        <h3 class="font-bold text-slate-900">Bài toán tối ưu hóa doanh thu & lợi nhuận kinh tế</h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Mô phỏng bài toán mẫu mực, số liệu nguyên bản chuẩn hóa</p>
+                    </div>
+
+                    <p class="text-sm text-slate-700 leading-relaxed">
+                        Doanh nghiệp bán sản phẩm với đơn giá là <span class="math-style">P(x) = 12 - x</span> (triệu đồng/nghìn sản phẩm). Tổng chi phí sản xuất <span class="math-style">x</span> nghìn sản phẩm là <span class="math-style">C(x) = 2x + 10</span> (triệu đồng). 
+                        Tìm số sản phẩm tối ưu đạt **Lợi Nhuận Cực Đại**.
+                    </p>
+
+                    <!-- Sandbox Slider -->
+                    <div class="bg-slate-50 p-5 rounded-2xl border border-slate-150 grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-2 uppercase">Kéo thử số lượng sản phẩm (x):</label>
+                            <input type="range" id="slider-product" min="1" max="9" value="5" oninput="updateEconomicSimulation()" class="w-full accent-rose-600" />
+                            <div class="flex justify-between text-xs text-slate-500 mt-1 font-bold">
+                                <span>1 nghìn sp</span>
+                                <span class="text-rose-600" id="current-slider-val">5 nghìn sản phẩm</span>
+                                <span>9 nghìn sp</span>
+                            </div>
+
+                            <!-- Tính toán thời gian thực -->
+                            <div class="grid grid-cols-2 gap-2 mt-4 text-xs">
+                                <div class="bg-white p-2.5 rounded-lg border">
+                                    <span class="text-slate-400 block font-semibold">Doanh thu R(x) = x(12 - x)</span>
+                                    <span class="font-bold text-slate-800" id="val-revenue">35 Trđ</span>
+                                </div>
+                                <div class="bg-white p-2.5 rounded-lg border">
+                                    <span class="text-slate-400 block font-semibold">Chi phí C(x) = 2x + 10</span>
+                                    <span class="font-bold text-slate-800" id="val-cost">20 Trđ</span>
+                                </div>
+                                <div class="bg-emerald-50 col-span-2 p-2.5 rounded-lg border border-emerald-200">
+                                    <span class="text-emerald-700 block font-bold">Lợi nhuận thu về L(x) = -x² + 10x - 10:</span>
+                                    <span class="font-extrabold text-lg text-emerald-800" id="val-profit">15 Trđ</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Đồ thị Parabol Lợi nhuận -->
+                        <div class="flex flex-col items-center">
+                            <span class="text-[11px] font-bold text-slate-500 mb-2">Đồ thị lợi nhuận cực đại chuẩn xác hoành/tung độ dóng hàng</span>
+                            <div class="bg-slate-900 rounded-xl p-3 w-full flex items-center justify-center relative aspect-video">
+                                <svg id="svg-profit-graph" class="w-full h-full" viewBox="0 0 200 100"></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 text-slate-400 text-center py-6 border-t border-slate-800 text-xs md:text-sm">
+        <div class="max-w-7xl mx-auto px-4">
+            <p class="font-bold text-slate-300">HỆ THỐNG BÀI GIẢNG ĐIỆN TỬ TOÁN 12 - TOANMATH.com</p>
+            <p class="mt-1">Thiết kế bám sát chương trình sách giáo khoa Kết nối tri thức với cuộc sống - Bộ Giáo Dục & Đào Tạo</p>
+        </div>
+    </footer>
+
+    <!-- LOGIC ĐIỀU KHIỂN SỰ KIỆN VÀ TƯƠNG TÁC -->
+    <script>
+        // --- CHUYỂN TỔNG THỂ TÁC VÀ TABS ---
+        function switchTab(tabId) {
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.add('hidden'));
+
+            const targetTab = document.getElementById('tab-' + tabId);
+            if (targetTab) targetTab.classList.remove('hidden');
+
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons.forEach(btn => {
+                btn.className = "nav-btn w-full text-left py-2 px-3 pl-8 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 flex items-center justify-between relative transition-all";
+                const circle = btn.querySelector('span');
+                if (circle) circle.className = "absolute left-3.5 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-slate-300";
+                const chevron = btn.querySelector('.fa-chevron-right');
+                if (chevron) chevron.classList.add('opacity-0');
+            });
+
+            const activeBtn = document.getElementById('btn-' + tabId);
+            if (activeBtn) {
+                activeBtn.className = "nav-btn w-full text-left py-2 px-3 pl-8 rounded-lg text-sm font-semibold flex items-center justify-between relative transition-all bg-indigo-50 text-indigo-600";
+                const circle = activeBtn.querySelector('span');
+                if (circle) circle.className = "absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-indigo-600 ring-4 ring-indigo-100";
+                const chevron = activeBtn.querySelector('.fa-chevron-right');
+                if (chevron) chevron.classList.remove('opacity-0');
+            }
+
+            // Gọi các bộ vẽ đồ thị tương ứng khi tab hoạt động
+            if (tabId === 'bai1') initGraph1();
+            if (tabId === 'bai2') updateLesson2Sandbox();
+            if (tabId === 'bai3') initGraph3();
+            if (tabId === 'bai4') updateLesson4Sandbox();
+            if (tabId === 'bai5') {
+                initGraph5();
+                updateEconomicSimulation();
+            }
+        }
+
+        function toggleElement(elementId) {
+            const el = document.getElementById(elementId);
+            if (el) el.classList.toggle('hidden');
+        }
+
+        // --- BÀI 1: TÍNH ĐỒNG BIẾN/NGHỊCH BIẾN & CỰC TRỊ (VÍ DỤ MẪU MỰC) ---
+        function initGraph1() {
+            const svg = document.getElementById('svg-graph1');
+            if(!svg) return;
+            svg.innerHTML = ''; // Clear
+
+            const w = 300, h = 200;
+            const originX = 110, originY = 100; // Gốc toạ độ dời nhẹ để nhìn rõ nhánh phải
+            const scaleX = 45, scaleY = 25; // Tỷ lệ quy đổi đơn vị thực sang pixel
+
+            // Trục tọa độ Oxy + Vạch số chia chuẩn xác
+            let axes = `
+                <line x1="0" y1="${originY}" x2="300" y2="${originY}" stroke="#475569" stroke-width="1.5" />
+                <line x1="${originX}" y1="0" x2="${originX}" y2="200" stroke="#475569" stroke-width="1.5" />
+                <polygon points="300,${originY} 295,${originY-4} 295,${originY+4}" fill="#475569"/>
+                <polygon points="${originX},0 ${originX-4},5 ${originX+4},5" fill="#475569"/>
+                <text x="290" y="${originY+15}" fill="#94a3b8" font-size="10">x</text>
+                <text x="${originX+12}" y="15" fill="#94a3b8" font-size="10">y</text>
+                <text x="${originX-12}" y="${originY+15}" fill="#94a3b8" font-size="10">O</text>
+            `;
+
+            // Vẽ vạch chia số hoành độ x=2
+            const tickX2 = originX + 2 * scaleX;
+            axes += `
+                <line x1="${tickX2}" y1="${originY-3}" x2="${tickX2}" y2="${originY+3}" stroke="#475569" stroke-width="1.5" />
+                <text x="${tickX2-3}" y="${originY+15}" fill="#94a3b8" font-size="9">2</text>
+            `;
+
+            svg.innerHTML += axes;
+
+            // Đồ thị hàm y = x^3 - 3x^2 + 2
+            let pathD = "";
+            let first = true;
+            for(let sx = -1.2; sx <= 3.2; sx += 0.05) {
+                let sy = sx*sx*sx - 3*sx*sx + 2;
+                let px = originX + sx * scaleX;
+                let py = originY - sy * scaleY;
+                if(px >= 0 && px <= w && py >= 0 && py <= h) {
+                    if(first) {
+                        pathD += `M ${px} ${py}`;
+                        first = false;
+                    } else {
+                        pathD += ` L ${px} ${py}`;
+                    }
+                }
+            }
+            svg.innerHTML += `<path d="${pathD}" fill="none" stroke="#60a5fa" stroke-width="3" />`;
+
+            // Điểm cực đại chuẩn xác (0; 2)
+            const cd_x = originX;
+            const cd_y = originY - 2 * scaleY;
+            svg.innerHTML += `
+                <circle cx="${cd_x}" cy="${cd_y}" r="5" fill="#ef4444" stroke="#ffffff" stroke-width="1.5" />
+                <line x1="${originX-3}" y1="${cd_y}" x2="${originX+3}" y2="${cd_y}" stroke="#ef4444" stroke-width="1.5" />
+                <text x="${originX-18}" y="${cd_y+4}" fill="#ef4444" font-size="9" font-weight="bold">2</text>
+                <text x="${cd_x + 8}" y="${cd_y - 4}" fill="#ef4444" font-size="10" font-weight="bold">CĐ (0; 2)</text>
+            `;
+
+            // Điểm cực tiểu chuẩn xác (2; -2)
+            const ct_x = originX + 2 * scaleX;
+            const ct_y = originY - (-2) * scaleY;
+            svg.innerHTML += `
+                <!-- Đường vuông góc vuông vắn dóng tọa độ -->
+                <line x1="${ct_x}" y1="${originY}" x2="${ct_x}" y2="${ct_y}" stroke="#10b981" stroke-width="1" stroke-dasharray="3,3" />
+                <line x1="${originX}" y1="${ct_y}" x2="${ct_x}" y2="${ct_y}" stroke="#10b981" stroke-width="1" stroke-dasharray="3,3" />
+                <circle cx="${ct_x}" cy="${ct_y}" r="5" fill="#10b981" stroke="#ffffff" stroke-width="1.5" />
+                <text x="${originX-24}" y="${ct_y+3}" fill="#10b981" font-size="9" font-weight="bold">-2</text>
+                <text x="${ct_x - 12}" y="${ct_y + 16}" fill="#10b981" font-size="10" font-weight="bold">CT (2; -2)</text>
+            `;
+
+            // Render Bảng biến thiên đi kèm
+            const bbt = document.getElementById('bbt-lesson1-container');
+            if (bbt) {
+                bbt.innerHTML = `
+                    <table class="w-full text-center border-collapse text-xs math-style">
+                        <tr class="border-b border-slate-150 bg-slate-50 font-semibold">
+                            <td class="p-2 w-16 border-r border-slate-200 bg-slate-100 font-sans font-bold text-slate-700">x</td>
+                            <td class="p-2">-&infin;</td>
+                            <td class="p-2"></td>
+                            <td class="p-2 font-bold text-indigo-600">0</td>
+                            <td class="p-2"></td>
+                            <td class="p-2 font-bold text-indigo-600">2</td>
+                            <td class="p-2"></td>
+                            <td class="p-2">+&infin;</td>
+                        </tr>
+                        <tr class="border-b border-slate-150">
+                            <td class="p-2 border-r border-slate-200 bg-slate-100 font-sans font-bold text-slate-700">y'</td>
+                            <td class="p-2"></td>
+                            <td class="p-2 font-bold text-emerald-600 text-sm">+</td>
+                            <td class="p-2 font-bold text-slate-400">0</td>
+                            <td class="p-2 font-bold text-rose-600 text-sm">-</td>
+                            <td class="p-2 font-bold text-slate-400">0</td>
+                            <td class="p-2 font-bold text-emerald-600 text-sm">+</td>
+                            <td class="p-2"></td>
+                        </tr>
+                        <tr class="h-24">
+                            <td class="p-2 border-r border-slate-200 bg-slate-100 font-sans font-bold text-slate-700">y</td>
+                            <td class="p-2 align-bottom pb-3">-&infin;</td>
+                            <td class="p-1 align-middle text-center"><span class="arrow-up text-slate-400">↗</span></td>
+                            <td class="p-2 align-top pt-3">
+                                <span class="font-bold text-indigo-600 text-sm block">2</span>
+                                <span class="text-[10px] text-slate-400 font-sans">(CĐ)</span>
+                            </td>
+                            <td class="p-1 align-middle text-center"><span class="arrow-down text-slate-400">↘</span></td>
+                            <td class="p-2 align-bottom pb-3">
+                                <span class="text-[10px] text-slate-400 font-sans block">(CT)</span>
+                                <span class="font-bold text-indigo-600 text-sm">-2</span>
+                            </td>
+                            <td class="p-1 align-middle text-center"><span class="arrow-up text-slate-400">↗</span></td>
+                            <td class="p-2 align-top pt-3">+&infin;</td>
+                        </tr>
+                    </table>
+                `;
+            }
+        }
+
+        // --- BÀI 2: GIÁ TRỊ LỚN NHẤT & NHỎ NHẤT (INTERVAL HIGHLIGHT) ---
+        function updateLesson2Sandbox() {
+            const sliderA = document.getElementById('slider-a');
+            const sliderB = document.getElementById('slider-b');
+            const labelA = document.getElementById('val-a');
+            const labelB = document.getElementById('val-b');
+            if(!sliderA || !sliderB) return;
+
+            const a = parseFloat(sliderA.value);
+            const b = parseFloat(sliderB.value);
+            labelA.innerText = `a = ${a.toFixed(1)}`;
+            labelB.innerText = `b = ${b.toFixed(1)}`;
+
+            const svg = document.getElementById('svg-graph2');
+            const bbt = document.getElementById('bbt-lesson2-container');
+            if(!svg || !bbt) return;
+
+            // 1. Vẽ đồ thị
+            svg.innerHTML = '';
+            const originX = 50, originY = 170;
+            const scaleX = 50, scaleY = 22;
+
+            // Hệ Oxy
+            let axes = `
+                <line x1="0" y1="${originY}" x2="300" y2="${originY}" stroke="#475569" stroke-width="1.5" />
+                <line x1="${originX}" y1="0" x2="${originX}" y2="200" stroke="#475569" stroke-width="1.5" />
+                <polygon points="300,${originY} 295,${originY-4} 295,${originY+4}" fill="#475569"/>
+                <polygon points="${originX},0 ${originX-4},5 ${originX+4},5" fill="#475569"/>
+                <text x="290" y="${originY+15}" fill="#94a3b8" font-size="10">x</text>
+                <text x="${originX+10}" y="15" fill="#94a3b8" font-size="10">y</text>
+                <text x="${originX-12}" y="${originY+15}" fill="#94a3b8" font-size="10">O</text>
+            `;
+
+            // Ticks trục hoành hoành độ 1, 2, 3, 4
+            for(let tick = 1; tick <= 4; tick++) {
+                let tx = originX + tick * scaleX;
+                axes += `
+                    <line x1="${tx}" y1="${originY-3}" x2="${tx}" y2="${originY+3}" stroke="#475569" stroke-width="1.5" />
+                    <text x="${tx-3}" y="${originY+15}" fill="#94a3b8" font-size="9">${tick}</text>
+                `;
+            }
+            svg.innerHTML += axes;
+
+            // Đồ thị
+            let pathWhole = "";
+            let pathSegment = "";
+            let firstWhole = true;
+            let firstSeg = true;
+
+            for(let sx = 0.5; sx <= 4.5; sx += 0.05) {
+                let sy = sx + 4/sx;
+                let px = originX + sx * scaleX;
+                let py = originY - sy * scaleY;
+
+                if(px >= 0 && px <= 300 && py >= 0 && py <= 200) {
+                    if(firstWhole) {
+                        pathWhole += `M ${px} ${py}`;
+                        firstWhole = false;
+                    } else {
+                        pathWhole += ` L ${px} ${py}`;
+                    }
+
+                    if(sx >= a && sx <= b) {
+                        if(firstSeg) {
+                            pathSegment += `M ${px} ${py}`;
+                            firstSeg = false;
+                        } else {
+                            pathSegment += ` L ${px} ${py}`;
+                        }
+                    }
+                }
+            }
+
+            svg.innerHTML += `<path d="${pathWhole}" fill="none" stroke="#475569" stroke-width="1.5" stroke-dasharray="2,2" />`;
+            svg.innerHTML += `<path d="${pathSegment}" fill="none" stroke="#10b981" stroke-width="4.5" stroke-linecap="round" />`;
+
+            // Tính toán giá trị đầu mút biên
+            const fa = a + 4/a;
+            const fb = b + 4/b;
+
+            // Biên trái A (a, fa)
+            const pa_x = originX + a * scaleX;
+            const pa_y = originY - fa * scaleY;
+            svg.innerHTML += `
+                <line x1="${pa_x}" y1="${originY}" x2="${pa_x}" y2="${pa_y}" stroke="#ef4444" stroke-width="1" stroke-dasharray="2,2" />
+                <line x1="${originX}" y1="${pa_y}" x2="${pa_x}" y2="${pa_y}" stroke="#ef4444" stroke-width="1" stroke-dasharray="2,2" />
+                <circle cx="${pa_x}" cy="${pa_y}" r="4.5" fill="#ef4444" stroke="#ffffff" />
+                <text x="${pa_x - 10}" y="${pa_y - 8}" fill="#ef4444" font-size="8" font-weight="bold">(${a.toFixed(1)}; ${fa.toFixed(1)})</text>
+            `;
+
+            // Biên phải B (b, fb)
+            const pb_x = originX + b * scaleX;
+            const pb_y = originY - fb * scaleY;
+            svg.innerHTML += `
+                <line x1="${pb_x}" y1="${originY}" x2="${pb_x}" y2="${pb_y}" stroke="#ef4444" stroke-width="1" stroke-dasharray="2,2" />
+                <line x1="${originX}" y1="${pb_y}" x2="${pb_x}" y2="${pb_y}" stroke="#ef4444" stroke-width="1" stroke-dasharray="2,2" />
+                <circle cx="${pb_x}" cy="${pb_y}" r="4.5" fill="#ef4444" stroke="#ffffff" />
+                <text x="${pb_x - 10}" y="${pb_y - 8}" fill="#ef4444" font-size="8" font-weight="bold">(${b.toFixed(1)}; ${fb.toFixed(1)})</text>
+            `;
+
+            // Điểm cực tiểu x = 2 (y = 4) nếu nằm trong đoạn được highlight
+            if (a <= 2.0 && b >= 2.0) {
+                const p2_x = originX + 2.0 * scaleX;
+                const p2_y = originY - 4.0 * scaleY;
+                svg.innerHTML += `
+                    <line x1="${p2_x}" y1="${originY}" x2="${p2_x}" y2="${p2_y}" stroke="#3b82f6" stroke-width="1" stroke-dasharray="2,2" />
+                    <line x1="${originX}" y1="${p2_y}" x2="${p2_x}" y2="${p2_y}" stroke="#3b82f6" stroke-width="1" stroke-dasharray="2,2" />
+                    <circle cx="${p2_x}" cy="${p2_y}" r="5" fill="#3b82f6" stroke="#ffffff" stroke-width="1.5" />
+                    <text x="${p2_x - 15}" y="${p2_y + 15}" fill="#3b82f6" font-size="9" font-weight="bold">Min (2; 4)</text>
+                `;
+            }
+
+            // 2. Render BBT tương thích biên lựa chọn
+            const maxVal = Math.max(fa, fb).toFixed(2);
+            const minVal = (a <= 2.0 && b >= 2.0) ? "4.00" : Math.min(fa, fb).toFixed(2);
+
+            bbt.innerHTML = `
+                <table class="w-full text-center border-collapse text-xs math-style">
+                    <tr class="border-b border-slate-150 bg-slate-50 font-semibold">
+                        <td class="p-2 w-16 border-r border-slate-200 bg-slate-100 font-sans font-bold text-slate-700">x</td>
+                        <td class="p-2">${a.toFixed(1)}</td>
+                        <td class="p-2"></td>
+                        <td class="p-2">${(a <= 2.0 && b >= 2.0) ? "2.0" : "-"}</td>
+                        <td class="p-2"></td>
+                        <td class="p-2">${b.toFixed(1)}</td>
+                    </tr>
+                    <tr class="border-b border-slate-150">
+                        <td class="p-2 border-r border-slate-200 bg-slate-100 font-sans font-bold text-slate-700">f'(x)</td>
+                        <td class="p-2"></td>
+                        <td class="p-2 font-bold text-rose-600 text-sm">-</td>
+                        <td class="p-2 font-bold text-slate-400">${(a <= 2.0 && b >= 2.0) ? "0" : "-"}</td>
+                        <td class="p-2 font-bold text-emerald-600 text-sm">+</td>
+                        <td class="p-2"></td>
+                    </tr>
+                    <tr class="h-20">
+                        <td class="p-2 border-r border-slate-200 bg-slate-100 font-sans font-bold text-slate-700">f(x)</td>
+                        <td class="p-2 align-top pt-2">
+                            <span class="font-bold text-slate-800">${fa.toFixed(2)}</span>
+                            ${fa > fb ? '<span class="text-[9px] text-red-500 font-sans block">(Max)</span>' : ''}
+                        </td>
+                        <td class="p-1 align-middle text-center"><span class="arrow-down text-slate-400">↘</span></td>
+                        <td class="p-2 align-bottom pb-2">
+                            <span class="font-bold text-blue-600">${(a <= 2.0 && b >= 2.0) ? "4.00" : "-"}</span>
+                            ${(a <= 2.0 && b >= 2.0) ? '<span class="text-[9px] text-blue-500 font-sans block">(Min)</span>' : ''}
+                        </td>
+                        <td class="p-1 align-middle text-center"><span class="arrow-up text-slate-400">↗</span></td>
+                        <td class="p-2 align-top pt-2">
+                            <span class="font-bold text-slate-800">${fb.toFixed(2)}</span>
+                            ${fb > fa ? '<span class="text-[9px] text-red-500 font-sans block">(Max)</span>' : ''}
+                        </td>
+                    </tr>
+                </table>
+                <div class="p-3 bg-emerald-50 rounded-b-xl border-t text-xs font-semibold text-emerald-800 flex justify-around">
+                    <span>GTLN (Max) = <strong class="text-rose-600">${maxVal}</strong></span>
+                    <span>GTNN (Min) = <strong class="text-blue-600">${minVal}</strong></span>
+                </div>
+            `;
+        }
+
+        // --- BÀI 3: ĐƯỜNG TIỆM CẬN (MẪU CHUẨN) ---
+        function initGraph3() {
+            const svg = document.getElementById('svg-graph3');
+            if(!svg) return;
+            svg.innerHTML = '';
+
+            const w = 300, h = 200;
+            const originX = 120, originY = 120;
+            const scaleX = 40, scaleY = 30;
+
+            // Hệ trục Oxy
+            svg.innerHTML += `
+                <line x1="0" y1="${originY}" x2="300" y2="${originY}" stroke="#475569" stroke-width="1.5" />
+                <line x1="${originX}" y1="0" x2="${originX}" y2="200" stroke="#475569" stroke-width="1.5" />
+                <polygon points="300,${originY} 295,${originY-4} 295,${originY+4}" fill="#475569"/>
+                <polygon points="${originX},0 ${originX-4},5 ${originX+4},5" fill="#475569"/>
+                <text x="290" y="${originY+15}" fill="#94a3b8" font-size="10">x</text>
+                <text x="${originX+10}" y="15" fill="#94a3b8" font-size="10">y</text>
+                <text x="${originX-12}" y="${originY+15}" fill="#94a3b8" font-size="10">O</text>
+            `;
+
+            // TCĐ: x = 1
+            const tcdX = originX + 1 * scaleX;
+            svg.innerHTML += `
+                <line x1="${tcdX}" y1="0" x2="${tcdX}" y2="200" stroke="#f43f5e" stroke-width="1.5" stroke-dasharray="4,4" />
+                <text x="${tcdX + 5}" y="20" fill="#f43f5e" font-size="8" font-weight="bold">TCĐ: x = 1</text>
+            `;
+
+            // TCN: y = 2
+            const tcnY = originY - 2 * scaleY;
+            svg.innerHTML += `
+                <line x1="0" y1="${tcnY}" x2="300" y2="${tcnY}" stroke="#10b981" stroke-width="1.5" stroke-dasharray="4,4" />
+                <text x="10" y="${tcnY - 6}" fill="#10b981" font-size="8" font-weight="bold">TCN: y = 2</text>
+            `;
+
+            // Vẽ 2 nhánh hàm số y = (2x - 1)/(x - 1)
+            let pathLeft = "";
+            let firstL = true;
+            for(let sx = -2.5; sx <= 0.85; sx += 0.05) {
+                let sy = (2*sx - 1)/(sx - 1);
+                let px = originX + sx * scaleX;
+                let py = originY - sy * scaleY;
+                if(px >= 0 && px < tcdX && py >= 0 && py <= h) {
+                    if(firstL) {
+                        pathLeft += `M ${px} ${py}`;
+                        firstL = false;
+                    } else {
+                        pathLeft += ` L ${px} ${py}`;
+                    }
+                }
+            }
+
+            let pathRight = "";
+            let firstR = true;
+            for(let sx = 1.15; sx <= 5.0; sx += 0.05) {
+                let sy = (2*sx - 1)/(sx - 1);
+                let px = originX + sx * scaleX;
+                let py = originY - sy * scaleY;
+                if(px > tcdX && px <= w && py >= 0 && py <= h) {
+                    if(firstR) {
+                        pathRight += `M ${px} ${py}`;
+                        firstR = false;
+                    } else {
+                        pathRight += ` L ${px} ${py}`;
+                    }
+                }
+            }
+
+            svg.innerHTML += `<path d="${pathLeft}" fill="none" stroke="#3b82f6" stroke-width="2.5" />`;
+            svg.innerHTML += `<path d="${pathRight}" fill="none" stroke="#3b82f6" stroke-width="2.5" />`;
+
+            // Nạp BBT cho Bài 3
+            const bbt = document.getElementById('bbt-lesson3-container');
+            if (bbt) {
+                bbt.innerHTML = `
+                    <table class="w-full text-center border-collapse text-xs math-style">
+                        <tr class="border-b border-slate-150 bg-slate-50 font-semibold">
+                            <td class="p-2 w-16 border-r border-slate-200 bg-slate-100 font-sans font-bold text-slate-700">x</td>
+                            <td class="p-2 w-16">-&infin;</td>
+                            <td class="p-2"></td>
+                            <td class="p-2 border-r border-l border-slate-300 bg-rose-50 text-rose-700 font-bold">1</td>
+                            <td class="p-2"></td>
+                            <td class="p-2 w-16">+&infin;</td>
+                        </tr>
+                        <tr class="border-b border-slate-150">
+                            <td class="p-2 border-r border-slate-200 bg-slate-100 font-sans font-bold text-slate-700">y'</td>
+                            <td class="p-2"></td>
+                            <td class="p-2 font-bold text-rose-600 text-sm">-</td>
+                            <td class="p-2 border-r border-l border-slate-300 bg-rose-50 font-bold text-rose-600">||</td>
+                            <td class="p-2 font-bold text-rose-600 text-sm">-</td>
+                            <td class="p-2"></td>
+                        </tr>
+                        <tr class="h-24">
+                            <td class="p-2 border-r border-slate-200 bg-slate-100 font-sans font-bold text-slate-700">y</td>
+                            <td class="p-2 align-top pt-3 text-emerald-600 font-bold">2</td>
+                            <td class="p-1 align-middle text-center"><span class="arrow-down text-slate-400">↘</span></td>
+                            <td class="p-2 border-r border-l border-slate-300 bg-rose-50 text-rose-600 text-[10px] font-bold">
+                                <div class="flex justify-between flex-col h-full">
+                                    <span>-&infin;</span>
+                                    <span>+&infin;</span>
+                                </div>
+                            </td>
+                            <td class="p-1 align-middle text-center"><span class="arrow-down text-slate-400">↘</span></td>
+                            <td class="p-2 align-bottom pb-3 text-emerald-600 font-bold">2</td>
+                        </tr>
+                    </table>
+                `;
+            }
+        }
+
+        // --- BÀI 4: KHẢO SÁT VẼ ĐỒ THỊ (STEP BY STEP BUILDER) ---
+        let currentGraphType = 'bac3';
+        let currentBuildStep = 3;
+
+        function selectDemoGraph(type) {
+            currentGraphType = type;
+            updateLesson4Sandbox();
+        }
+
+        function setGraphStep(step) {
+            currentBuildStep = step;
+            updateLesson4Sandbox();
+        }
+
+        function updateLesson4Sandbox() {
+            // Cập nhật giao diện nút các bước
+            for (let i = 1; i <= 3; i++) {
+                const btn = document.getElementById(`btn-step-${i}`);
+                if (btn) {
+                    if (i === currentBuildStep) {
+                        btn.className = "step-btn flex-1 md:flex-none bg-indigo-600 text-white text-[11px] font-bold py-1.5 px-3 rounded-lg border border-indigo-700 transition shadow";
+                    } else {
+                        btn.className = "step-btn flex-1 md:flex-none bg-slate-100 text-slate-600 text-[11px] font-bold py-1.5 px-3 rounded-lg border transition hover:bg-slate-200";
+                    }
+                }
+            }
+
+            const title = document.getElementById('graph-title-display');
+            const svg = document.getElementById('svg-interactive-graph');
+            const bbtContainer = document.getElementById('interactive-bbt-container');
+            const explanation = document.getElementById('step-explanation');
+
+            if(!svg || !bbtContainer || !explanation) return;
+            svg.innerHTML = '';
+
+            const w = 300, h = 240;
+            const originX = 150, originY = 120;
+
+            // Render khung Oxy (Bước 1) luôn hiển thị
+            svg.innerHTML += `
+                <line x1="0" y1="${originY}" x2="300" y2="${originY}" stroke="#475569" stroke-width="1.5" />
+                <line x1="${originX}" y1="0" x2="${originX}" y2="240" stroke="#475569" stroke-width="1.5" />
+                <polygon points="300,${originY} 295,${originY-4} 295,${originY+4}" fill="#475569"/>
+                <polygon points="${originX},0 ${originX-4},5 ${originX+4},5" fill="#475569"/>
+                <text x="288" y="${originY+15}" fill="#94a3b8" font-size="10">x</text>
+                <text x="${originX+10}" y="15" fill="#94a3b8" font-size="10">y</text>
+                <text x="${originX-12}" y="${originY+15}" fill="#94a3b8" font-size="10">O</text>
+            `;
+
+            if (currentGraphType === 'bac3') {
+                title.innerText = "Hàm bậc ba: y = x³ - 3x";
+                const scaleX = 50, scaleY = 35;
+
+                // Thêm ticks tọa độ
+                for(let val = -2; val <= 2; val++) {
+                    if (val !== 0) {
+                        let tx = originX + val * scaleX;
+                        svg.innerHTML += `
+                            <line x1="${tx}" y1="${originY-3}" x2="${tx}" y2="${originY+3}" stroke="#94a3b8" stroke-width="1" />
+                            <text x="${tx-3}" y="${originY+12}" fill="#94a3b8" font-size="8">${val}</text>
+                        `;
+                    }
+                }
+
+                // 1. BBT
+                bbtContainer.innerHTML = `
+                    <table class="w-full text-center border-collapse text-[11px] math-style">
+                        <tr class="border-b border-slate-150 bg-slate-50 font-semibold">
+                            <td class="p-1.5 w-12 border-r border-slate-200 bg-slate-100 font-sans font-bold text-slate-700">x</td>
+                            <td class="p-1.5">-&infin;</td>
+                            <td class="p-1.5"></td>
+                            <td class="p-1.5 w-12 font-bold text-indigo-600">-1</td>
+                            <td class="p-1.5"></td>
+                            <td class="p-1.5 w-12 font-bold text-indigo-600">1</td>
+                            <td class="p-1.5"></td>
+                            <td class="p-1.5">+&infin;</td>
+                        </tr>
+                        <tr class="border-b border-slate-150">
+                            <td class="p-1.5 border-r border-slate-200 bg-slate-100 font-sans font-bold text-slate-700">y'</td>
+                            <td class="p-1.5"></td>
+                            <td class="p-1.5 font-bold text-emerald-600 text-sm">+</td>
+                            <td class="p-1.5 font-bold text-slate-400">0</td>
+                            <td class="p-1.5 font-bold text-rose-600 text-sm">-</td>
+                            <td class="p-1.5 font-bold text-slate-400">0</td>
+                            <td class="p-1.5 font-bold text-emerald-600 text-sm">+</td>
+                            <td class="p-1.5"></td>
+                        </tr>
+                        <tr class="h-20">
+                            <td class="p-1.5 border-r border-slate-200 bg-slate-100 font-sans font-bold text-slate-700">y</td>
+                            <td class="p-1.5 align-bottom pb-2">-&infin;</td>
+                            <td class="p-1 align-middle text-center"><span class="arrow-up text-slate-400 text-xs">↗</span></td>
+                            <td class="p-1.5 align-top pt-2">
+                                <span class="font-bold text-indigo-600 block">2</span>
+                            </td>
+                            <td class="p-1 align-middle text-center"><span class="arrow-down text-slate-400 text-xs">↘</span></td>
+                            <td class="p-1.5 align-bottom pb-2">
+                                <span class="font-bold text-indigo-600">-2</span>
+                            </td>
+                            <td class="p-1 align-middle text-center"><span class="arrow-up text-slate-400 text-xs">↗</span></td>
+                            <td class="p-1.5 align-top pt-2">+&infin;</td>
+                        </tr>
+                    </table>
+                `;
+
+                // 2. Xử lý các bước
+                if (currentBuildStep >= 2) {
+                    const cd_x = originX - 1 * scaleX, cd_y = originY - 2 * scaleY;
+                    const ct_x = originX + 1 * scaleX, ct_y = originY - (-2) * scaleY;
+
+                    svg.innerHTML += `
+                        <line x1="${cd_x}" y1="${originY}" x2="${cd_x}" y2="${cd_y}" stroke="#f43f5e" stroke-dasharray="2,2" />
+                        <line x1="${originX}" y1="${cd_y}" x2="${cd_x}" y2="${cd_y}" stroke="#f43f5e" stroke-dasharray="2,2" />
+                        <circle cx="${cd_x}" cy="${cd_y}" r="5" fill="#f43f5e" />
+                        <text x="${cd_x - 30}" y="${cd_y - 8}" fill="#f43f5e" font-size="9" font-weight="bold">(-1; 2)</text>
+
+                        <line x1="${ct_x}" y1="${originY}" x2="${ct_x}" y2="${ct_y}" stroke="#10b981" stroke-dasharray="2,2" />
+                        <line x1="${originX}" y1="${ct_y}" x2="${ct_x}" y2="${ct_y}" stroke="#10b981" stroke-dasharray="2,2" />
+                        <circle cx="${ct_x}" cy="${ct_y}" r="5" fill="#10b981" />
+                        <text x="${ct_x + 8}" y="${ct_y + 12}" fill="#10b981" font-size="9" font-weight="bold">(1; -2)</text>
+                    `;
+                }
+
+                if (currentBuildStep === 3) {
+                    let pathD = "";
+                    let first = true;
+                    for(let sx = -2.2; sx <= 2.2; sx += 0.05) {
+                        let sy = sx*sx*sx - 3*sx;
+                        let px = originX + sx * scaleX;
+                        let py = originY - sy * scaleY;
+                        if(px >= 0 && px <= w && py >= 0 && py <= h) {
+                            if(first) {
+                                pathD += `M ${px} ${py}`;
+                                first = false;
+                            } else {
+                                pathD += ` L ${px} ${py}`;
+                            }
+                        }
+                    }
+                    svg.innerHTML += `<path d="${pathD}" fill="none" stroke="#60a5fa" stroke-width="3" />`;
+                }
+
+                if (currentBuildStep === 1) explanation.innerText = "Bước 1: Dựng hệ trục tọa độ Oxy, đánh dấu các khoảng đơn vị 1, 2.";
+                if (currentBuildStep === 2) explanation.innerText = "Bước 2: Xác định tọa độ và dóng nét đứt biểu diễn điểm Cực đại (-1; 2) và điểm Cực tiểu (1; -2).";
+                if (currentBuildStep === 3) explanation.innerText = "Bước 3: Vẽ đường cong mềm mại mượt mà đi từ góc trái đi qua các điểm cực trị và hoàn thiện đồ thị.";
+
+            } else {
+                title.innerText = "Hàm phân thức: y = (x + 1)/(x - 1)";
+                const scaleX = 40, scaleY = 30;
+
+                // 1. BBT
+                bbtContainer.innerHTML = `
+                    <table class="w-full text-center border-collapse text-[11px] math-style">
+                        <tr class="border-b border-slate-150 bg-slate-50 font-semibold">
+                            <td class="p-1.5 w-12 border-r border-slate-200 bg-slate-100 font-sans font-bold text-slate-700">x</td>
+                            <td class="p-1.5">-&infin;</td>
+                            <td class="p-1.5"></td>
+                            <td class="p-1.5 w-12 border-r border-l border-slate-300 bg-rose-50 text-rose-700 font-bold">1</td>
+                            <td class="p-1.5"></td>
+                            <td class="p-1.5">+&infin;</td>
+                        </tr>
+                        <tr class="border-b border-slate-150">
+                            <td class="p-1.5 border-r border-slate-200 bg-slate-100 font-sans font-bold text-slate-700">y'</td>
+                            <td class="p-1.5"></td>
+                            <td class="p-1.5 font-bold text-rose-600 text-sm">-</td>
+                            <td class="p-1.5 border-r border-l border-slate-300 bg-rose-50 font-bold text-rose-600">||</td>
+                            <td class="p-1.5 font-bold text-rose-600 text-sm">-</td>
+                            <td class="p-1.5"></td>
+                        </tr>
+                        <tr class="h-20">
+                            <td class="p-1.5 border-r border-slate-200 bg-slate-100 font-sans font-bold text-slate-700">y</td>
+                            <td class="p-1.5 align-top pt-2">
+                                <span class="font-bold text-emerald-600">1</span>
+                            </td>
+                            <td class="p-1 align-middle text-center"><span class="arrow-down text-slate-400">↘</span></td>
+                            <td class="p-1.5 border-r border-l border-slate-300 bg-rose-50 text-center text-rose-800">
+                                <div class="flex justify-between h-full flex-col text-[10px]">
+                                    <span class="font-bold text-rose-600 block">-&infin;</span>
+                                    <span class="font-bold text-emerald-600 block">+&infin;</span>
+                                </div>
+                            </td>
+                            <td class="p-1 align-middle text-center"><span class="arrow-down text-slate-400">↘</span></td>
+                            <td class="p-1.5 align-bottom pb-2">
+                                <span class="font-bold text-emerald-600">1</span>
+                            </td>
+                        </tr>
+                    </table>
+                `;
+
+                const tcdX = originX + 1 * scaleX;
+                const tcnY = originY - 1 * scaleY;
+
+                if (currentBuildStep >= 2) {
+                    svg.innerHTML += `
+                        <line x1="${tcdX}" y1="0" x2="${tcdX}" y2="240" stroke="#f43f5e" stroke-width="1.5" stroke-dasharray="3,3" />
+                        <line x1="0" y1="${tcnY}" x2="300" y2="${tcnY}" stroke="#10b981" stroke-width="1.5" stroke-dasharray="3,3" />
+                        <text x="${tcdX + 5}" y="20" fill="#f43f5e" font-size="8" font-weight="bold">TCĐ: x = 1</text>
+                        <text x="10" y="${tcnY - 6}" fill="#10b981" font-size="8" font-weight="bold">TCN: y = 1</text>
+
+                        <!-- Giao điểm -->
+                        <circle cx="${originX - 1*scaleX}" cy="${originY}" r="4.5" fill="#6366f1" />
+                        <text x="${originX - 1*scaleX - 25}" y="${originY - 8}" fill="#6366f1" font-size="8">(-1; 0)</text>
+                        <circle cx="${originX}" cy="${originY - (-1)*scaleY}" r="4.5" fill="#6366f1" />
+                        <text x="${originX + 8}" y="${originY - (-1)*scaleY + 4}" fill="#6366f1" font-size="8">(0; -1)</text>
+                    `;
+                }
+
+                if (currentBuildStep === 3) {
+                    let pathLeft = "";
+                    let firstL = true;
+                    for(let sx = -2.5; sx <= 0.82; sx += 0.05) {
+                        let sy = (sx + 1)/(sx - 1);
+                        let px = tcdX + (sx - 1) * scaleX;
+                        let py = originY - sy * scaleY;
+                        if(px >= 0 && px < tcdX && py >= 0 && py <= h) {
+                            if(firstL) {
+                                pathLeft += `M ${px} ${py}`;
+                                firstL = false;
+                            } else {
+                                pathLeft += ` L ${px} ${py}`;
+                            }
+                        }
+                    }
+                    svg.innerHTML += `<path d="${pathLeft}" fill="none" stroke="#3b82f6" stroke-width="3" />`;
+
+                    let pathRight = "";
+                    let firstR = true;
+                    for(let sx = 1.18; sx <= 5.0; sx += 0.05) {
+                        let sy = (sx + 1)/(sx - 1);
+                        let px = tcdX + (sx - 1) * scaleX;
+                        let py = originY - sy * scaleY;
+                        if(px > tcdX && px <= w && py >= 0 && py <= h) {
+                            if(firstR) {
+                                pathRight += `M ${px} ${py}`;
+                                firstR = false;
+                            } else {
+                                pathRight += ` L ${px} ${py}`;
+                            }
+                        }
+                    }
+                    svg.innerHTML += `<path d="${pathRight}" fill="none" stroke="#3b82f6" stroke-width="3" />`;
+                }
+
+                if (currentBuildStep === 1) explanation.innerText = "Bước 1: Dựng hệ Oxy ban đầu.";
+                if (currentBuildStep === 2) explanation.innerText = "Bước 2: Vẽ đường TCĐ x=1, TCN y=1 bằng nét đứt. Định vị các giao điểm (-1; 0) và (0; -1).";
+                if (currentBuildStep === 3) explanation.innerText = "Bước 3: Dựng hai nhánh Hyperbol trơn tru tiệm cận sát các trục tiệm cận và đi qua giao điểm.";
+            }
+        }
+
+        // --- BÀI 5: ỨNG DỤNG THỰC TẾ (HÀM LỢI NHUẬN MẪU) ---
+        function initGraph5() {
+            const svg = document.getElementById('svg-profit-graph');
+            if(!svg) return;
+            svg.innerHTML = '';
+
+            const w = 200, h = 100;
+            const originX = 15, originY = 90;
+            const scaleX = 18, scaleY = 4.5; // Đỉnh ở (5, 15)
+
+            // Vẽ trục tọa độ
+            svg.innerHTML += `
+                <line x1="0" y1="${originY}" x2="200" y2="${originY}" stroke="#475569" stroke-width="1.2" />
+                <line x1="${originX}" y1="0" x2="${originX}" y2="100" stroke="#475569" stroke-width="1.2" />
+                <text x="190" y="${originY + 8}" fill="#94a3b8" font-size="7">x</text>
+                <text x="${originX + 5}" y="10" fill="#94a3b8" font-size="7">y</text>
+            `;
+
+            // Hàm số Lợi nhuận L(x) = -x^2 + 10x - 10
+            let pathD = "";
+            let first = true;
+            for(let sx = 0.5; sx <= 9.5; sx += 0.2) {
+                let sy = -sx*sx + 10*sx - 10;
+                let px = originX + sx * scaleX;
+                let py = originY - sy * scaleY;
+                if(px >= 0 && px <= w && py >= 0 && py <= h) {
+                    if(first) {
+                        pathD += `M ${px} ${py}`;
+                        first = false;
+                    } else {
+                        pathD += ` L ${px} ${py}`;
+                    }
+                }
+            }
+            svg.innerHTML += `<path d="${pathD}" fill="none" stroke="#f43f5e" stroke-width="2" />`;
+
+            // Vẽ chỉ điểm di động kèm đường dóng toạ độ chuẩn xác
+            svg.innerHTML += `
+                <line id="simulation-line-x" x1="105" y1="22.5" x2="105" y2="${originY}" stroke="#10b981" stroke-dasharray="1.5,1.5" stroke-width="1" />
+                <line id="simulation-line-y" x1="${originX}" y1="22.5" x2="105" y2="22.5" stroke="#10b981" stroke-dasharray="1.5,1.5" stroke-width="1" />
+                <circle id="simulation-point" cx="105" cy="22.5" r="4" fill="#10b981" stroke="#ffffff" stroke-width="1" />
+                <text x="112" y="26" fill="#10b981" font-size="8" font-weight="bold" id="sim-profit-text">L(5) = 15 Trđ</text>
+            `;
+        }
+
+        function updateEconomicSimulation() {
+            const x = parseInt(document.getElementById('slider-product').value);
+            document.getElementById('current-slider-val').innerText = x + " nghìn sản phẩm";
+
+            const revenue = x * (12 - x);
+            const cost = 2 * x + 10;
+            const profit = revenue - cost;
+
+            document.getElementById('val-revenue').innerText = revenue + " Trđ";
+            document.getElementById('val-cost').innerText = cost + " Trđ";
+            document.getElementById('val-profit').innerText = profit + " Trđ";
+
+            // Di chuyển chấm tọa độ dóng hàng trên đồ thị Parabol
+            const originX = 15, originY = 90;
+            const scaleX = 18, scaleY = 4.5;
+
+            const pixX = originX + x * scaleX;
+            const pixY = originY - profit * scaleY;
+
+            const simPoint = document.getElementById('simulation-point');
+            const simLineX = document.getElementById('simulation-line-x');
+            const simLineY = document.getElementById('simulation-line-y');
+            const simText = document.getElementById('sim-profit-text');
+
+            if (simPoint) {
+                simPoint.setAttribute('cx', pixX);
+                simPoint.setAttribute('cy', pixY);
+            }
+            if (simLineX) {
+                simLineX.setAttribute('x1', pixX);
+                simLineX.setAttribute('y1', pixY);
+                simLineX.setAttribute('x2', pixX);
+                simLineX.setAttribute('y2', originY);
+            }
+            if (simLineY) {
+                simLineY.setAttribute('x1', originX);
+                simLineY.setAttribute('y1', pixY);
+                simLineY.setAttribute('x2', pixX);
+                simLineY.setAttribute('y2', pixY);
+            }
+            if (simText) {
+                simText.setAttribute('x', pixX + 8);
+                simText.setAttribute('y', Math.max(15, pixY + 3));
+                simText.setAttribute('fill', profit >= 15 ? '#10b981' : '#f43f5e');
+                simText.textContent = `L(${x}) = ${profit} Trđ`;
+            }
+        }
+
+        // Khởi động toàn cục
+        window.onload = function() {
+            initGraph1();
+            updateLesson2Sandbox();
+            initGraph3();
+            updateLesson4Sandbox();
+            initGraph5();
+            updateEconomicSimulation();
+        };
+    </script>
+</body>
+</html>
