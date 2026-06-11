@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chuyên đề tương tác: Tính đơn điệu của hàm số</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Google Fonts (Inter) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- MathJax Configuration and Script for Beautiful Math Formulas -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      options: {
+        ignoreHtmlClass: 'tex2jax_ignore',
+        processHtmlClass: 'tex2jax_process'
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    /* Smooth Scroll */
+    html {
+      scroll-behavior: smooth;
+    }
+    /* Customized scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    /* Hide scrollbar for printing */
+    @media print {
+      body {
+        background-color: white;
+        color: black;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-card {
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        margin-bottom: 2rem !important;
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
+
+  <!-- Top Hero Header -->
+  <header class="bg-gradient-to-r from-indigo-700 via-violet-700 to-purple-800 text-white shadow-lg relative overflow-hidden no-print">
+    <!-- Decorative background blobs -->
+    <div class="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
+    <div class="absolute bottom-0 left-0 w-60 h-60 bg-indigo-500/20 rounded-full blur-2xl -ml-16 -mb-16"></div>
+    
+    <div class="max-w-7xl mx-auto px-4 py-8 sm:py-10 relative z-10">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        <div>
+          <span class="bg-indigo-500/30 text-indigo-200 text-xs font-semibold tracking-wider uppercase px-3 py-1 rounded-full border border-indigo-400/30">
+            Khảo sát hàm số - Toán học 12
+          </span>
+          <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight mt-2 text-white">
+            Chuyên Đề: Tính Đơn Điệu Của Hàm Số
+          </h1>
+          <p class="text-indigo-100/90 mt-2 text-base max-w-2xl font-light">
+            Hệ thống học tập, kiểm tra và ôn luyện tương tác toàn diện. Rèn luyện kỹ năng tìm khoảng đồng biến, nghịch biến từ cơ bản đến nâng cao.
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-3 self-start md:self-center">
+          <button onclick="window.print()" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white px-4 py-2.5 rounded-xl font-medium transition-all duration-200 flex items-center gap-2 text-sm backdrop-blur-sm">
+            <i class="fa-solid fa-print"></i> In / Xuất PDF
+          </button>
+          <a href="#test-section" class="bg-white text-indigo-700 hover:bg-indigo-50 shadow-md hover:shadow-lg px-5 py-2.5 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 text-sm">
+            Bắt đầu làm bài <i class="fa-solid fa-arrow-down"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sticky Controls and Info Bar -->
+  <div class="sticky top-0 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm z-50 py-4 no-print transition-all duration-200">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      
+      <!-- Filter Tabs -->
+      <div class="flex bg-slate-100 p-1 rounded-xl w-full sm:w-auto overflow-x-auto">
+        <button id="tab-all" onclick="switchTab('all')" class="flex-1 sm:flex-initial px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-150 bg-white text-indigo-600 shadow-sm">
+          Tất cả (${mcqsCount + essaysCount})
+        </button>
+        <button id="tab-mcq" onclick="switchTab('mcq')" class="flex-1 sm:flex-initial px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-slate-900 transition-all duration-150">
+          Trắc nghiệm (${mcqsCount})
+        </button>
+        <button id="tab-essay" onclick="switchTab('essay')" class="flex-1 sm:flex-initial px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-slate-900 transition-all duration-150">
+          Tự luận (${essaysCount})
+        </button>
+      </div>
+
+      <!-- Mode Toggle & Interactive Controls -->
+      <div class="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto border-t sm:border-t-0 pt-3 sm:pt-0">
+        
+        <!-- Interactive Mode Switch -->
+        <div class="flex items-center gap-3">
+          <div class="text-right">
+            <span class="block text-xs text-slate-400 uppercase tracking-widest font-bold">Chế độ tương tác</span>
+            <span id="mode-status-text" class="text-sm font-bold text-indigo-600">Đang BẬT</span>
+          </div>
+          <button id="interactive-toggle-btn" onclick="toggleInteractiveMode()" class="relative inline-flex h-7 w-14 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-indigo-600" aria-label="Toggle Interactive Mode">
+            <span id="toggle-circle" class="pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-7"></span>
+          </button>
+        </div>
+
+        <!-- Score/Reset Panel (Visible only in Interactive Mode) -->
+        <div id="interactive-panel" class="flex items-center gap-3 border-l border-slate-200 pl-4">
+          <div class="text-xs bg-indigo-50 border border-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg font-medium flex items-center gap-1.5">
+            <i class="fa-solid fa-star text-amber-500 animate-pulse"></i>
+            Điểm: <span id="score-counter" class="font-bold text-sm">0</span>/<span class="font-semibold text-sm">10</span>
+          </div>
+          <button onclick="resetInteractive()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 flex items-center gap-1" title="Làm lại bài trắc nghiệm">
+            <i class="fa-solid fa-rotate-left"></i> Làm lại
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Container -->
+  <main id="test-section" class="flex-grow max-w-7xl mx-auto px-4 py-8 w-full">
+    
+    <!-- Toast Message Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Overview Card (No Print) -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-6 mb-8 shadow-sm flex flex-col md:flex-row gap-6 justify-between items-start md:items-center no-print">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 text-xl shrink-0">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+        </div>
+        <div>
+          <h3 class="font-bold text-slate-800 text-lg">Đề ôn tập đánh giá năng lực 12</h3>
+          <p class="text-sm text-slate-500">Thời gian làm bài khuyến nghị: <strong class="text-slate-700">45 - 90 phút</strong>. Hãy tự làm và so sánh kết quả.</p>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <span class="px-3 py-1 bg-slate-100 border border-slate-200 text-slate-600 text-xs font-medium rounded-lg">#Đồng_Biến</span>
+        <span class="px-3 py-1 bg-slate-100 border border-slate-200 text-slate-600 text-xs font-medium rounded-lg">#Nghịch_Biến</span>
+        <span class="px-3 py-1 bg-slate-100 border border-slate-200 text-slate-600 text-xs font-medium rounded-lg">#Hàm_Hợp</span>
+        <span class="px-3 py-1 bg-slate-100 border border-slate-200 text-slate-600 text-xs font-medium rounded-lg">#Toán_12</span>
+      </div>
+    </div>
+
+    <!-- Active Filter Info Alert (No Print) -->
+    <div id="filter-alert" class="hidden mb-6 bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-xl flex items-center justify-between text-sm no-print">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-circle-info"></i>
+        <span>Đang lọc nội dung. Hãy đổi bộ lọc "Tất cả" để xem toàn bộ tài liệu.</span>
+      </div>
+      <button onclick="switchTab('all')" class="underline font-bold text-amber-900 hover:text-amber-950">Xem tất cả</button>
+    </div>
+
+    <!-- Section A: Multiple Choice Questions -->
+    <section id="section-mcq" class="space-y-6">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-3 mb-6">
+        <div class="flex items-center gap-3">
+          <span class="bg-indigo-600 text-white text-xs font-extrabold w-6 h-6 rounded-lg flex items-center justify-center shadow-sm">A</span>
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-800">Phần I: Câu hỏi Trắc nghiệm khách quan</h2>
+        </div>
+        <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Tối đa 6.0 Điểm</span>
+      </div>
+
+      <div id="mcq-container" class="space-y-6">
+        <!-- MCQs will be dynamically rendered here -->
+      </div>
+    </section>
+
+    <!-- Section B: Essay Questions -->
+    <section id="section-essay" class="space-y-6 mt-12">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-3 mb-6">
+        <div class="flex items-center gap-3">
+          <span class="bg-indigo-600 text-white text-xs font-extrabold w-6 h-6 rounded-lg flex items-center justify-center shadow-sm">B</span>
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-800">Phần II: Câu hỏi Tự luận giải tích</h2>
+        </div>
+        <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Tối đa 4.0 Điểm</span>
+      </div>
+
+      <div id="essay-container" class="space-y-6">
+        <!-- Essays will be dynamically rendered here -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 text-slate-400 border-t border-slate-800 py-10 mt-16 no-print">
+    <div class="max-w-7xl mx-auto px-4 text-center space-y-4">
+      <p class="text-sm">
+        Thiết kế phục vụ học tập và ôn luyện THPT Quốc Gia môn Toán 12.
+      </p>
+      <div class="flex justify-center gap-6 text-xs">
+        <a href="#test-section" class="hover:text-white transition-colors duration-150">Trở lên đầu trang</a>
+        <span>•</span>
+        <button onclick="window.print()" class="hover:text-white transition-colors duration-150">In tài liệu</button>
+        <span>•</span>
+        <button onclick="toggleInteractiveMode()" class="hover:text-white transition-colors duration-150">Chuyển chế độ tương tác</button>
+      </div>
+      <p class="text-xs text-slate-600 mt-4">
+        &copy; 2026 Chuyên Đề Giải Tích 12. Mọi quyền được bảo lưu.
+      </p>
+    </div>
+  </footer>
+
+  <!-- JavaScript App Logic -->
+  <script>
+    // DATA SOURCE
+    const mcqs = [
+      {
+        id: 1,
+        question: "Cho hàm số $y = -x^3 + 3x^2 - 3x + 2$. Khẳng định nào sau đây là khẳng định đúng?",
+        options: {
+          A: "Hàm số đồng biến trên $\\mathbb{R}$.",
+          B: "Hàm số nghịch biến trên $\\mathbb{R}$.",
+          C: "Hàm số đồng biến trên khoảng $(-\\infty; 1)$ và nghịch biến trên khoảng $(1; +\\infty)$.",
+          D: "Hàm số nghịch biến trên khoảng $(-\\infty; 1)$ và đồng biến trên khoảng $(1; +\\infty)$."
+        },
+        correct: "B",
+        explanation: `
+          <div class="space-y-2">
+            <p><strong>Tập xác định:</strong> $D = \\mathbb{R}$.</p>
+            <p><strong>Tính đạo hàm:</strong> $y' = -3x^2 + 6x - 3 = -3(x^2 - 2x + 1) = -3(x-1)^2$.</p>
+            <p><strong>Nhận xét:</strong> Ta thấy $(x-1)^2 \\ge 0, \\forall x \\in \\mathbb{R} \\Rightarrow y' \\le 0, \\forall x \\in \\mathbb{R}$. Dấu bằng xảy ra chỉ tại một điểm cô lập $x=1$.</p>
+            <p>Theo định lý mở rộng về tính đơn điệu, hàm số <strong>nghịch biến trên toàn bộ tập xác định $\\mathbb{R}$</strong>.</p>
+          </div>
+        `
+      },
+      {
+        id: 2,
+        question: "Các khoảng đồng biến của hàm số $y = x^4 - 8x^2 - 4$ là",
+        options: {
+          A: "$(-\\infty; -2)$ và $(0; 2)$.",
+          B: "$(-2; 0)$ và $(0; +\\infty)$.",
+          C: "$(-2; 0)$ và $(2; +\\infty)$.",
+          D: "$(-\\infty; -2)$ và $(2; +\\infty)$."
+        },
+        correct: "C",
+        explanation: `
+          <div class="space-y-2">
+            <p><strong>Tập xác định:</strong> $D = \\mathbb{R}$.</p>
+            <p><strong>Tính đạo hàm:</strong> $y' = 4x^3 - 16x = 4x(x^2 - 4)$.</p>
+            <p><strong>Xét dấu $y'$:</strong> $y' = 0 \\Leftrightarrow 4x(x^2 - 4) = 0 \\Leftrightarrow x \\in \\{-2; 0; 2\\}$.</p>
+            <p>Bảng xét dấu nhanh của đạo hàm:</p>
+            <ul class="list-disc pl-5 space-y-1">
+              <li>$y' > 0 \\Leftrightarrow x \\in (-2; 0) \\cup (2; +\\infty)$.</li>
+              <li>$y' < 0 \\Leftrightarrow x \\in (-\\infty; -2) \\cup (0; 2)$.</li>
+            </ul>
+            <p>Hàm số đồng biến trên các khoảng $(-2; 0)$ và $(2; +\\infty)$.</p>
+          </div>
+        `
+      },
+      {
+        id: 3,
+        question: "Cho hàm số $y = \\frac{3 - x}{x + 1}$. Mệnh đề nào sau đây đúng?",
+        options: {
+          A: "Hàm số nghịch biến trên khoảng $(-\\infty; -1)$.",
+          B: "Hàm số nghịch biến trên $\\mathbb{R}$.",
+          C: "Hàm số đồng biến trên khoảng $(-\\infty; -1)$.",
+          D: "Hàm số đồng biến trên $\\mathbb{R}$."
+        },
+        correct: "A",
+        explanation: `
+          <div class="space-y-2">
+            <p><strong>Tập xác định:</strong> $D = \\mathbb{R} \\setminus \\{-1\\}$.</p>
+            <p>Viết lại hàm số: $y = \\frac{-x + 3}{x + 1}$.</p>
+            <p><strong>Đạo hàm nhanh:</strong> $y' = \\frac{(-1)\\cdot 1 - 3\\cdot 1}{(x+1)^2} = \\frac{-4}{(x+1)^2} < 0, \\forall x \\ne -1$.</p>
+            <p>Hàm số nghịch biến trên từng khoảng xác định: $(-\\infty; -1)$ và $(-1; +\\infty)$.</p>
+            <p>Đối chiếu các phương án, mệnh đề "Hàm số nghịch biến trên khoảng $(-\\infty; -1)$" là hoàn toàn chính xác.</p>
+          </div>
+        `
+      },
+      {
+        id: 4,
+        question: "Cho hàm số $y = x + \\frac{1}{x}$. Mệnh đề nào sau đây đúng?",
+        options: {
+          A: "Hàm số nghịch biến trên khoảng $(-\\infty; -1)$.",
+          B: "Hàm số nghịch biến trên khoảng $(-1; 1)$.",
+          C: "Hàm số đồng biến trên khoảng $(-1; +\\infty)$.",
+          D: "Hàm số nghịch biến trên khoảng $(-1; 0)$."
+        },
+        correct: "D",
+        explanation: `
+          <div class="space-y-2">
+            <p><strong>Tập xác định:</strong> $D = \\mathbb{R} \\setminus \\{0\\}$.</p>
+            <p><strong>Đạo hàm:</strong> $y' = 1 - \\frac{1}{x^2} = \\frac{x^2 - 1}{x^2}$.</p>
+            <p><strong>Xét dấu $y'$:</strong> $y' = 0 \\Leftrightarrow x^2 - 1 = 0 \\Leftrightarrow x = \\pm 1$. Vì mẫu số $x^2 > 0 \\, (\\forall x \\ne 0)$ nên dấu của $y'$ là dấu của tử $x^2 - 1$.</p>
+            <ul class="list-disc pl-5 space-y-1">
+              <li>Hàm số nghịch biến trên $(-1; 0)$ và $(0; 1)$ (do $y' < 0$).</li>
+              <li>Hàm số đồng biến trên $(-\\infty; -1)$ và $(1; +\\infty)$ (do $y' > 0$).</li>
+            </ul>
+            <p>Do đó, khẳng định hàm số nghịch biến trên $(-1; 0)$ là mệnh đề đúng.</p>
+          </div>
+        `
+      },
+      {
+        id: 5,
+        question: "Cho hàm số $y = x - \\ln x$. Mệnh đề nào sau đây đúng?",
+        options: {
+          A: "Hàm số đồng biến trên khoảng $(0; +\\infty)$.",
+          B: "Hàm số đồng biến trên $\\mathbb{R}$.",
+          C: "Hàm số đồng biến trên khoảng $(1; +\\infty)$.",
+          D: "Hàm số nghịch biến trên khoảng $(-\\infty; 1)$."
+        },
+        correct: "C",
+        explanation: `
+          <div class="space-y-2">
+            <p><strong>Điều kiện xác định:</strong> $x > 0$. Tập xác định: $D = (0; +\\infty)$.</p>
+            <p><strong>Tính đạo hàm:</strong> $y' = 1 - \\frac{1}{x} = \\frac{x - 1}{x}$.</p>
+            <p>Xét trên khoảng $D = (0; +\\infty)$, mẫu số $x > 0$ nên dấu của $y'$ cùng dấu với tử $x - 1$.</p>
+            <ul class="list-disc pl-5 space-y-1">
+              <li>$y' = 0 \\Leftrightarrow x = 1$.</li>
+              <li>$y' > 0 \\Leftrightarrow x > 1$. Vậy hàm số đồng biến trên khoảng $(1; +\\infty)$.</li>
+              <li>$y' < 0 \\Leftrightarrow 0 < x < 1$. Vậy hàm số nghịch biến trên khoảng $(0; 1)$.</li>
+            </ul>
+          </div>
+        `
+      },
+      {
+        id: 6,
+        question: "Hàm số nào sau đây đồng biến trên $\\mathbb{R}$?",
+        options: {
+          A: "$y = x^3 + x$.",
+          B: "$y = \\frac{x - 1}{x + 2}$.",
+          C: "$y = x^4 + x^2 + 1$.",
+          D: "$y = x^3 + 3x^2 + 1$."
+        },
+        correct: "A",
+        explanation: `
+          <div class="space-y-2">
+            <p>Một hàm số đồng biến trên $\\mathbb{R}$ trước tiên phải có tập xác định $D = \\mathbb{R}$.</p>
+            <ul class="list-disc pl-5 space-y-1">
+              <li><strong>Loại B:</strong> Không xác định tại $x = -2$.</li>
+              <li><strong>Loại C:</strong> Hàm trùng phương có đạo hàm $y' = 4x^3 + 2x = 2x(2x^2 + 1)$ đổi dấu qua nghiệm $x = 0$.</li>
+              <li><strong>Loại D:</strong> $y' = 3x^2 + 6x$ có hai nghiệm phân biệt $x = 0, x = -2$.</li>
+              <li><strong>Xét hàm số A:</strong> $y' = 3x^2 + 1 > 0 \\, \\forall x \\in \\mathbb{R}$. Do đó hàm số $y=x^3+x$ đồng biến trên $\\mathbb{R}$.</li>
+            </ul>
+          </div>
+        `
+      },
+      {
+        id: 7,
+        question: "Cho hàm số $y = f(x) = \\sqrt{3x - x^2}$. Hàm số đồng biến trên khoảng nào?",
+        options: {
+          A: "$\\left(0; \\frac{3}{2}\\right)$.",
+          B: "$(0; 3)$.",
+          C: "$\\left(\\frac{3}{2}; 3\\right)$.",
+          D: "$\\left(-\\infty; \\frac{3}{2}\\right)$."
+        },
+        correct: "A",
+        explanation: `
+          <div class="space-y-2">
+            <p><strong>Tập xác định:</strong> Điều kiện $3x - x^2 \\ge 0 \\Leftrightarrow 0 \\le x \\le 3 \\Rightarrow D = [0; 3]$.</p>
+            <p><strong>Tính đạo hàm:</strong> Với mọi $x \\in (0; 3)$:</p>
+            <p>$$y' = \\frac{(3x - x^2)'}{2\\sqrt{3x - x^2}} = \\frac{3 - 2x}{2\\sqrt{3x - x^2}}$$</p>
+            <p>Mẫu thức dương với mọi $x \\in (0; 3)$ nên dấu $y'$ cùng dấu với tử $3 - 2x$.</p>
+            <p>$$y' > 0 \\Leftrightarrow 3 - 2x > 0 \\Leftrightarrow x < \\frac{3}{2}$$</p>
+            <p>Kết hợp điều kiện, ta thu được khoảng đồng biến là $\\left(0; \\frac{3}{2}\\right)$.</p>
+          </div>
+        `
+      },
+      {
+        id: 8,
+        question: "Hàm số nào sau đây đồng biến trên $\\mathbb{R}$?",
+        options: {
+          A: "$y = 2x - \\cos 2x - 5$.",
+          B: "$y = \\frac{2x - 1}{x + 1}$.",
+          C: "$y = x^2 - 2x$.",
+          D: "$y = \\sqrt{x}$."
+        },
+        correct: "A",
+        explanation: `
+          <div class="space-y-2">
+            <p><strong>Xét hàm số A:</strong> Tập xác định $D = \\mathbb{R}$.</p>
+            <p>Đạo hàm: $y' = 2 - (-\\sin 2x) \\cdot 2 = 2 + 2\\sin 2x = 2(1 + \\sin 2x)$.</p>
+            <p>Ta luôn có $\\sin 2x \\ge -1 \\Rightarrow 1 + \\sin 2x \\ge 0 \\Rightarrow y' \\ge 0 \\, \\forall x \\in \\mathbb{R}$. Dấu bằng xảy ra tại các điểm rời rạc $x = -\\frac{\pi}{4} + k\\pi$. Vậy hàm số đồng biến trên $\\mathbb{R}$.</p>
+            <p>Các hàm số khác loại vì không xác định trên $\\mathbb{R}$ (B, D) hoặc đổi chiều biến thiên (C).</p>
+          </div>
+        `
+      },
+      {
+        id: 9,
+        question: "Cho hàm số $y = f(x)$ có $f'(x) = (x + 1)^2(x - 1)^3(2 - x)$, $\\forall x \\in \\mathbb{R}$. Hàm số $y = f(x)$ đồng biến trên khoảng nào dưới đây?",
+        options: {
+          A: "$(1; 2)$.",
+          B: "$(-\\infty; -1)$.",
+          C: "$(-1; 1)$.",
+          D: "$(2; +\\infty)$."
+        },
+        correct: "A",
+        explanation: `
+          <div class="space-y-2">
+            <p>Để hàm số đồng biến ta giải bất phương trình $f'(x) \\ge 0$.</p>
+            <p>Ta có $f'(x) = 0 \\Leftrightarrow x \\in \\{-1; 1; 2\\}$.</p>
+            <ul class="list-disc pl-5 space-y-1">
+              <li>$(x + 1)^2 \\ge 0, \\forall x$ nên không làm đổi dấu $f'(x)$ khi đi qua $x = -1$ (nghiệm bội chẵn).</li>
+              <li>Dấu của $f'(x)$ cùng dấu với biểu thức tích $(x - 1)(2 - x)$.</li>
+            </ul>
+            <p>Xét trên khoảng $(1; 2)$, ta thấy $x - 1 > 0$ và $2 - x > 0 \\Rightarrow f'(x) > 0$.</p>
+            <p>Do đó, hàm số đồng biến trên khoảng $(1; 2)$.</p>
+          </div>
+        `
+      },
+      {
+        id: 10,
+        question: "Cho hàm số $y = f(x)$ có đạo hàm $f'(x) = x^2(x^2 - 1)$, $\\forall x \\in \\mathbb{R}$. Hàm số $y = 2f(-x)$ đồng biến trên khoảng",
+        options: {
+          A: "$(2; +\\infty)$.",
+          B: "$(-\\infty; -1)$.",
+          C: "$(0; 2)$.",
+          D: "$(-1; 1)$."
+        },
+        correct: "D",
+        explanation: `
+          <div class="space-y-2">
+            <p>Đặt $g(x) = 2f(-x)$. Áp dụng đạo hàm hàm hợp:</p>
+            <p>$$g'(x) = 2 \\cdot (-x)' \\cdot f'(-x) = -2f'(-x)$$</p>
+            <p>Thế $-x$ vào biểu thức $f'$:</p>
+            <p>$$f'(-x) = (-x)^2 \\left[ (-x)^2 - 1 \\right] = x^2(x^2 - 1)$$</p>
+            <p>$$\\Rightarrow g'(x) = -2x^2(x^2 - 1)$$</p>
+            <p>Hàm số $g(x)$ đồng biến khi $g'(x) \\ge 0 \\Leftrightarrow -2x^2(x^2 - 1) \\ge 0 \\Leftrightarrow x^2(x^2 - 1) \\le 0$.</p>
+            <p>Vì $x^2 \\ge 0, \\forall x$, điều này tương đương với $x^2 - 1 \\le 0 \\Leftrightarrow -1 \\le x \\le 1$.</p>
+            <p>Vậy hàm số đồng biến trên khoảng $(-1; 1)$.</p>
+          </div>
+        `
+      }
+    ];
+
+    const essays = [
+      {
+        id: 1,
+        title: "Bài 1",
+        question: "Tìm các khoảng đơn điệu của hàm số $y = -x^3 + 6x^2 - 9x + 4$.",
+        solution: `
+          <div class="space-y-3">
+            <p><strong>1. Tập xác định:</strong> $D = \\mathbb{R}$.</p>
+            <p><strong>2. Đạo hàm:</strong> $y' = -3x^2 + 12x - 9$.</p>
+            <p><strong>3. Tìm nghiệm đạo hàm:</strong></p>
+            <p>$$y' = 0 \\Leftrightarrow -3x^2 + 12x - 9 = 0 \\Leftrightarrow x^2 - 4x + 3 = 0 \\Leftrightarrow \\left[\\begin{aligned} &x = 1 \\\\ &x = 3 \\end{aligned}\\right.$$</p>
+            <p><strong>4. Xét dấu đạo hàm:</strong> Hệ số $a = -3 < 0$. Áp dụng quy tắc "Trong trái, ngoài cùng":</p>
+            <ul class="list-disc pl-5 space-y-1">
+              <li>$y' > 0 \\Leftrightarrow x \\in (1; 3)$.</li>
+              <li>$y' < 0 \\Leftrightarrow x \\in (-\\infty; 1) \\cup (3; +\\infty)$.</li>
+            </ul>
+            <p><strong>5. Kết luận:</strong></p>
+            <ul class="list-disc pl-5">
+              <li>Hàm số <strong>đồng biến</strong> trên khoảng $(1; 3)$.</li>
+              <li>Hàm số <strong>nghịch biến</strong> trên các khoảng $(-\\infty; 1)$ và $(3; +\\infty)$.</li>
+            </ul>
+          </div>
+        `
+      },
+      {
+        id: 2,
+        title: "Bài 2",
+        question: "Tìm các khoảng đơn điệu của hàm số $y = x^4 - 6x^2 + 8x + 1$.",
+        solution: `
+          <div class="space-y-3">
+            <p><strong>1. Tập xác định:</strong> $D = \\mathbb{R}$.</p>
+            <p><strong>2. Đạo hàm:</strong> $y' = 4x^3 - 12x + 8$.</p>
+            <p><strong>3. Nghiệm đạo hàm:</strong> $y' = 0 \\Leftrightarrow x^3 - 3x + 2 = 0$.</p>
+            <p>Phân tích thành nhân tử: $$(x - 1)^2(x + 2) = 0 \\Leftrightarrow \\left[\\begin{aligned} &x = -2 \\\\ &x = 1 \\quad (\\text{nghiệm kép}) \\end{aligned}\\right.$$</p>
+            <p><strong>4. Xét dấu $y'$:</strong> Vì $x = 1$ là nghiệm kép nên $y'$ không đổi dấu khi đi qua $x=1$. Dấu của $y'$ hoàn toàn phụ thuộc vào biểu thức $(x + 2)$.</p>
+            <ul class="list-disc pl-5 space-y-1">
+              <li>$y' < 0 \\Leftrightarrow x < -2$.</li>
+              <li>$y' > 0 \\Leftrightarrow x > -2 \\, (x \\neq 1)$.</li>
+            </ul>
+            <p><strong>5. Kết luận:</strong></p>
+            <ul class="list-disc pl-5">
+              <li>Hàm số <strong>nghịch biến</strong> trên khoảng $(-\\infty; -2)$.</li>
+              <li>Hàm số <strong>đồng biến</strong> trên khoảng $(-2; +\\infty)$ (có thể gộp cả điểm $x = 1$).</li>
+            </ul>
+          </div>
+        `
+      },
+      {
+        id: 3,
+        title: "Bài 3",
+        question: "Tìm các khoảng đơn điệu của hàm số $y = \\frac{3 - 2x}{x + 7}$.",
+        solution: `
+          <div class="space-y-3">
+            <p><strong>1. Tập xác định:</strong> $D = \\mathbb{R} \\setminus \\{-7\\}$.</p>
+            <p>Viết lại hàm số: $y = \\frac{-2x + 3}{x + 7}$.</p>
+            <p><strong>2. Đạo hàm:</strong> $$y' = \\frac{(-2)\\cdot 7 - 3\\cdot 1}{(x + 7)^2} = \\frac{-17}{(x + 7)^2}$$</p>
+            <p><strong>3. Nhận xét:</strong> Vì $-17 < 0$ và $(x+7)^2 > 0$ với mọi $x \\ne -7$ nên $y' < 0, \\forall x \\in D$.</p>
+            <p><strong>4. Kết luận:</strong> Hàm số luôn <strong>nghịch biến</strong> trên các khoảng $(-\\infty; -7)$ và $(-7; +\\infty)$. Hàm số không có khoảng đồng biến.</p>
+          </div>
+        `
+      },
+      {
+        id: 4,
+        title: "Bài 4",
+        question: "Tìm các khoảng đơn điệu của hàm số $y = \\frac{x^2 - x + 1}{x - 1}$.",
+        solution: `
+          <div class="space-y-3">
+            <p><strong>1. Tập xác định:</strong> $D = \\mathbb{R} \\setminus \\{1\\}$.</p>
+            <p><strong>2. Đạo hàm:</strong> Sử dụng công thức $\\left(\\frac{u}{v}\\right)'$: </p>
+            <p>$$y' = \\frac{(2x - 1)(x - 1) - (x^2 - x + 1)}{(x - 1)^2} = \\frac{x^2 - 2x}{(x - 1)^2}$$</p>
+            <p><strong>3. Tìm nghiệm:</strong> $y' = 0 \\Leftrightarrow x^2 - 2x = 0 \\Leftrightarrow \\left[\\begin{aligned} &x = 0 \\\\ &x = 2 \\end{aligned}\\right.$$</p>
+            <p><strong>4. Xét dấu:</strong> Dấu của $y'$ cùng dấu với tử thức $x^2 - 2x$ (với $x \\neq 1$).</p>
+            <ul class="list-disc pl-5 space-y-1">
+              <li>$y' > 0 \\Leftrightarrow x \\in (-\\infty; 0) \\cup (2; +\\infty)$.</li>
+              <li>$y' < 0 \\Leftrightarrow x \\in (0; 1) \\cup (1; 2)$.</li>
+            </ul>
+            <p><strong>5. Kết luận:</strong></p>
+            <ul class="list-disc pl-5">
+              <li>Hàm số <strong>đồng biến</strong> trên các khoảng $(-\\infty; 0)$ và $(2; +\\infty)$.</li>
+              <li>Hàm số <strong>nghịch biến</strong> trên các khoảng $(0; 1)$ và $(1; 2)$.</li>
+            </ul>
+          </div>
+        `
+      },
+      {
+        id: 5,
+        title: "Bài 5",
+        question: "Tìm các khoảng đồng biến, nghịch biến của hàm số $y = x + \\sqrt{16 - x^2}$.",
+        solution: `
+          <div class="space-y-3">
+            <p><strong>1. Tập xác định:</strong> Điều kiện $16 - x^2 \\ge 0 \\Leftrightarrow -4 \\le x \\le 4 \\Rightarrow D = [-4; 4]$.</p>
+            <p><strong>2. Đạo hàm:</strong> Với mọi $x \\in (-4; 4)$:</p>
+            <p>$$y' = 1 + \\frac{-2x}{2\\sqrt{16 - x^2}} = 1 - \\frac{x}{\\sqrt{16 - x^2}} = \\frac{\\sqrt{16 - x^2} - x}{\\sqrt{16 - x^2}}$$</p>
+            <p><strong>3. Tìm nghiệm:</strong> $$y' = 0 \\Leftrightarrow \\sqrt{16 - x^2} = x \\Leftrightarrow \\left\\{\\begin{aligned} &x \\ge 0 \\\\ &16 - x^2 = x^2 \\end{aligned}\\right. \\Leftrightarrow x = 2\\sqrt{2}$$</p>
+            <p><strong>4. Xét dấu $y'$:</strong> Dấu $y'$ phụ thuộc vào biểu thức tử số $T(x) = \\sqrt{16 - x^2} - x$.</p>
+            <ul class="list-disc pl-5 space-y-1">
+              <li>$y' > 0 \\Leftrightarrow x \\in [-4; 2\\sqrt{2})$.</li>
+              <li>$y' < 0 \\Leftrightarrow x \\in (2\\sqrt{2}; 4]$.</li>
+            </ul>
+            <p><strong>5. Kết luận:</strong></p>
+            <ul class="list-disc pl-5">
+              <li>Hàm số <strong>đồng biến</strong> trên khoảng $(-4; 2\\sqrt{2})$.</li>
+              <li>Hàm số <strong>nghịch biến</strong> trên khoảng $(2\\sqrt{2}; 4)$.</li>
+            </ul>
+          </div>
+        `
+      }
+    ];
+
+    // COUNTS
+    const mcqsCount = mcqs.length;
+    const essaysCount = essays.length;
+
+    // STATE VARIABLES
+    let isInteractive = true;
+    let userAnswers = {}; // Stores chosen option: { qId: 'A'|'B'|'C'|'D' }
+    let revealedMCQExplanations = {}; // Stores shown explanations state in interactive mode
+    let revealedEssaySolutions = {}; // Stores shown essay solutions state in interactive mode
+
+    // RUN TIME INITS
+    document.getElementById('tab-all').innerText = `Tất cả (${mcqsCount + essaysCount})`;
+    document.getElementById('tab-mcq').innerText = `Trắc nghiệm (${mcqsCount})`;
+    document.getElementById('tab-essay').innerText = `Tự luận (${essaysCount})`;
+
+    // TOAST MESSAGES
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `p-4 rounded-xl shadow-lg border text-sm font-semibold flex items-center gap-2 transform translate-y-2 opacity-0 transition-all duration-300 pointer-events-auto max-w-sm ${
+        type === 'success' 
+          ? 'bg-emerald-50 border-emerald-200 text-emerald-800' 
+          : type === 'info'
+          ? 'bg-indigo-50 border-indigo-200 text-indigo-800'
+          : 'bg-rose-50 border-rose-200 text-rose-800'
+      }`;
+      
+      const icon = type === 'success' 
+        ? '<i class="fa-solid fa-circle-check text-emerald-500 text-lg"></i>' 
+        : type === 'info'
+        ? '<i class="fa-solid fa-circle-info text-indigo-500 text-lg"></i>'
+        : '<i class="fa-solid fa-circle-exclamation text-rose-500 text-lg"></i>';
+
+      toast.innerHTML = `${icon} <span class="flex-1">${message}</span>`;
+      container.appendChild(toast);
+
+      // Trigger animation
+      setTimeout(() => {
+        toast.classList.remove('opacity-0', 'translate-y-2');
+      }, 50);
+
+      // Remove after 3 seconds
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    // TOGGLE INTERACTIVE MODE
+    function toggleInteractiveMode() {
+      isInteractive = !isInteractive;
+      
+      // Update toggle UI
+      const btn = document.getElementById('interactive-toggle-btn');
+      const circle = document.getElementById('toggle-circle');
+      const text = document.getElementById('mode-status-text');
+      const panel = document.getElementById('interactive-panel');
+
+      if (isInteractive) {
+        btn.classList.replace('bg-slate-300', 'bg-indigo-600');
+        circle.classList.replace('translate-x-1', 'translate-x-7');
+        text.innerText = "Đang BẬT";
+        panel.classList.remove('hidden');
+        showToast("Chế độ Tương tác: BẬT. Đáp án đã được ẩn để bạn tự luyện tập!", "info");
+      } else {
+        btn.classList.replace('bg-indigo-600', 'bg-slate-300');
+        circle.classList.replace('translate-x-7', 'translate-x-1');
+        text.innerText = "Đang TẮT";
+        panel.classList.add('hidden');
+        showToast("Chế độ tương tác: TẮT. Đang hiển thị tài liệu học tập đầy đủ lời giải.", "success");
+      }
+
+      renderAll();
+    }
+
+    // RENDER ALL CONTENT
+    function renderAll() {
+      renderMCQs();
+      renderEssays();
+      
+      // Re-trigger MathJax typesetting for any dynamic formulas
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise();
+      }
+    }
+
+    // RENDER MCQS
+    function renderMCQs() {
+      const container = document.getElementById('mcq-container');
+      container.innerHTML = '';
+
+      mcqs.forEach((q) => {
+        const card = document.createElement('div');
+        card.className = "bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-200 print-card";
+        
+        let headerHTML = `
+          <div class="flex items-start justify-between gap-4 mb-4">
+            <h3 class="font-bold text-slate-800 text-base sm:text-lg flex gap-2">
+              <span class="text-indigo-600 font-extrabold">Câu ${q.id}.</span>
+              <span class="tex2jax_process">${q.question}</span>
+            </h3>
+          </div>
+        `;
+
+        let optionsHTML = '<div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">';
+        
+        const isAnswered = userAnswers[q.id] !== undefined;
+        const chosen = userAnswers[q.id];
+
+        Object.entries(q.options).forEach(([key, text]) => {
+          let btnClass = "w-full text-left px-4 py-3 rounded-xl border text-sm font-medium transition-all duration-150 flex items-center justify-between ";
+          let statusIcon = "";
+
+          if (isInteractive) {
+            if (isAnswered) {
+              // Answer is locked
+              if (key === q.correct) {
+                btnClass += "bg-emerald-50 border-emerald-400 text-emerald-800 ring-1 ring-emerald-400";
+                statusIcon = '<span class="bg-emerald-500 text-white w-5 h-5 rounded-full flex items-center justify-center text-xs shadow-sm"><i class="fa-solid fa-check"></i></span>';
+              } else if (key === chosen) {
+                btnClass += "bg-rose-50 border-rose-400 text-rose-800 ring-1 ring-rose-400";
+                statusIcon = '<span class="bg-rose-500 text-white w-5 h-5 rounded-full flex items-center justify-center text-xs shadow-sm"><i class="fa-solid fa-xmark"></i></span>';
+              } else {
+                btnClass += "bg-slate-50 border-slate-200 text-slate-400 cursor-not-allowed";
+              }
+            } else {
+              // Not answered, clickable
+              btnClass += "bg-slate-50 hover:bg-indigo-50/50 hover:border-indigo-300 border-slate-200 text-slate-700 active:scale-[0.98]";
+            }
+          } else {
+            // Document Mode - highlight correct answers instantly
+            if (key === q.correct) {
+              btnClass += "bg-indigo-50 border-indigo-400 text-indigo-900 font-semibold ring-1 ring-indigo-400";
+              statusIcon = '<span class="bg-indigo-600 text-white px-2 py-0.5 rounded text-xs font-bold shadow-sm">Đáp án đúng</span>';
+            } else {
+              btnClass += "bg-slate-50/50 border-slate-100 text-slate-500 cursor-default";
+            }
+          }
+
+          optionsHTML += `
+            <button 
+              ${isInteractive && !isAnswered ? `onclick="selectOption(${q.id}, '${key}')"` : 'disabled'}
+              class="${btnClass}">
+              <span class="flex items-center gap-3 pr-2">
+                <span class="w-6 h-6 rounded-lg bg-white shadow-sm border border-slate-200 flex items-center justify-center font-bold text-slate-600 text-xs shrink-0">${key}</span>
+                <span class="tex2jax_process">${text}</span>
+              </span>
+              ${statusIcon}
+            </button>
+          `;
+        });
+        optionsHTML += '</div>';
+
+        // Solution block
+        let solutionHTML = '';
+        if (!isInteractive) {
+          // Document Mode: Always visible
+          solutionHTML = `
+            <div class="mt-4 p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-indigo-100 text-indigo-800">
+                <i class="fa-solid fa-book"></i> Hướng dẫn giải chi tiết:
+              </span>
+              <div class="text-sm text-slate-600 leading-relaxed pt-2 border-t border-slate-200/60 tex2jax_process">
+                ${q.explanation}
+              </div>
+            </div>
+          `;
+        } else {
+          // Interactive Mode: Shown only if answered or manual toggle clicked
+          const showExp = isAnswered || revealedMCQExplanations[q.id];
+          if (showExp) {
+            solutionHTML = `
+              <div class="mt-4 p-4 bg-indigo-50/50 border border-indigo-100 rounded-xl space-y-2 animate-fadeIn">
+                <div class="flex items-center justify-between border-b border-indigo-100/60 pb-2">
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-indigo-100 text-indigo-800">
+                    <i class="fa-solid fa-circle-info"></i> Lời giải chi tiết câu hỏi:
+                  </span>
+                  ${!isAnswered ? `
+                    <button onclick="hideMCQExplanation(${q.id})" class="text-xs text-indigo-600 hover:text-indigo-800 font-semibold flex items-center gap-1">
+                      <i class="fa-solid fa-eye-slash"></i> Ẩn giải thích
+                    </button>
+                  ` : ''}
+                </div>
+                <div class="text-sm text-slate-600 leading-relaxed pt-2 tex2jax_process">
+                  ${q.explanation}
+                </div>
+              </div>
+            `;
+          } else {
+            solutionHTML = `
+              <div class="mt-4 flex justify-end no-print">
+                <button onclick="revealMCQExplanation(${q.id})" class="text-xs bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 font-semibold px-3 py-1.5 rounded-lg transition-all duration-150 flex items-center gap-1.5">
+                  <i class="fa-solid fa-eye"></i> Xem hướng dẫn giải
+                </button>
+              </div>
+            `;
+          }
+        }
+
+        card.innerHTML = headerHTML + optionsHTML + solutionHTML;
+        container.appendChild(card);
+      });
+
+      updateScore();
+    }
+
+    // RENDER ESSAYS
+    function renderEssays() {
+      const container = document.getElementById('essay-container');
+      container.innerHTML = '';
+
+      essays.forEach((essay) => {
+        const card = document.createElement('div');
+        card.className = "bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-200 print-card";
+
+        const showSol = !isInteractive || revealedEssaySolutions[essay.id];
+
+        let bodyHTML = `
+          <div class="flex items-start justify-between gap-4 mb-4">
+            <h3 class="font-bold text-slate-800 text-base sm:text-lg flex gap-2">
+              <span class="text-violet-600 font-extrabold">${essay.title}.</span>
+              <span class="tex2jax_process">${essay.question}</span>
+            </h3>
+          </div>
+        `;
+
+        let solutionHTML = "";
+
+        if (showSol) {
+          solutionHTML = `
+            <div class="mt-4 p-5 bg-slate-50 border border-slate-200 rounded-xl space-y-3 animate-fadeIn">
+              <div class="flex items-center justify-between border-b border-slate-200/60 pb-2 mb-2 no-print">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-violet-100 text-violet-800">
+                  <i class="fa-solid fa-square-poll-horizontal"></i> Lời giải tự luận chi tiết:
+                </span>
+                ${isInteractive ? `
+                  <button onclick="toggleEssaySolution(${essay.id}, false)" class="text-xs text-violet-600 hover:text-violet-800 font-semibold flex items-center gap-1">
+                    <i class="fa-solid fa-eye-slash"></i> Ẩn lời giải
+                  </button>
+                ` : ''}
+              </div>
+              
+              <!-- For print, always show standard title header -->
+              <span class="hidden print:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-slate-100 text-slate-800 mb-2">
+                Lời giải bài tập:
+              </span>
+
+              <div class="text-sm text-slate-600 leading-relaxed tex2jax_process">
+                ${essay.solution}
+              </div>
+            </div>
+          `;
+        } else {
+          solutionHTML = `
+            <div class="mt-4 flex justify-between items-center bg-slate-50 border border-slate-100 p-3 rounded-xl no-print">
+              <span class="text-xs text-slate-400 italic font-medium"><i class="fa-solid fa-pen-fancy"></i> Hãy tự giải nháp trước khi bấm nút xem đáp án</span>
+              <button onclick="toggleEssaySolution(${essay.id}, true)" class="bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold px-4 py-2 rounded-xl transition-all duration-150 flex items-center gap-1.5 shadow-sm shadow-violet-100 active:scale-95">
+                <i class="fa-solid fa-lightbulb"></i> Xem hướng dẫn giải
+              </button>
+            </div>
+          `;
+        }
+
+        card.innerHTML = bodyHTML + solutionHTML;
+        container.appendChild(card);
+      });
+    }
+
+    // MULTIPLE CHOICE INTERACTION LOGIC
+    function selectOption(qId, key) {
+      if (userAnswers[qId] !== undefined) return; // Prevent double submission
+      
+      userAnswers[qId] = key;
+      const q = mcqs.find(item => item.id === qId);
+
+      if (key === q.correct) {
+        showToast(`Chính xác! Câu ${qId} đáp án đúng là ${key}.`, 'success');
+      } else {
+        showToast(`Sai rồi! Câu ${qId} bạn chọn ${key}. Đáp án đúng là ${q.correct}.`, 'error');
+      }
+
+      renderMCQs();
+      
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise();
+      }
+    }
+
+    // EXPLAIN / REVEAL CONTROLS
+    function revealMCQExplanation(qId) {
+      revealedMCQExplanations[qId] = true;
+      renderMCQs();
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise();
+      }
+    }
+
+    function hideMCQExplanation(qId) {
+      revealedMCQExplanations[qId] = false;
+      renderMCQs();
+    }
+
+    function toggleEssaySolution(essayId, state) {
+      revealedEssaySolutions[essayId] = state;
+      renderEssays();
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise();
+      }
+    }
+
+    // CALC SCORE & COUNTERS
+    function updateScore() {
+      let correctCount = 0;
+      mcqs.forEach((q) => {
+        if (userAnswers[q.id] === q.correct) {
+          correctCount++;
+        }
+      });
+      document.getElementById('score-counter').innerText = correctCount;
+    }
+
+    // RESET QUIZ
+    function resetInteractive() {
+      userAnswers = {};
+      revealedMCQExplanations = {};
+      revealedEssaySolutions = {};
+      renderAll();
+      showToast("Đã thiết lập lại bài tập trắc nghiệm!", "info");
+    }
+
+    // FILTER TABS LOGIC
+    function switchTab(type) {
+      const tabAll = document.getElementById('tab-all');
+      const tabMcq = document.getElementById('tab-mcq');
+      const tabEssay = document.getElementById('tab-essay');
+
+      const secMcq = document.getElementById('section-mcq');
+      const secEssay = document.getElementById('section-essay');
+      const alertBox = document.getElementById('filter-alert');
+
+      // Reset all classes
+      [tabAll, tabMcq, tabEssay].forEach(tab => {
+        tab.className = "flex-1 sm:flex-initial px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-slate-900 transition-all duration-150";
+      });
+
+      if (type === 'all') {
+        tabAll.className = "flex-1 sm:flex-initial px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-150 bg-white text-indigo-600 shadow-sm";
+        secMcq.classList.remove('hidden');
+        secEssay.classList.remove('hidden');
+        alertBox.classList.add('hidden');
+      } else if (type === 'mcq') {
+        tabMcq.className = "flex-1 sm:flex-initial px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-150 bg-white text-indigo-600 shadow-sm";
+        secMcq.classList.remove('hidden');
+        secEssay.classList.add('hidden');
+        alertBox.classList.remove('hidden');
+      } else if (type === 'essay') {
+        tabEssay.className = "flex-1 sm:flex-initial px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-150 bg-white text-indigo-600 shadow-sm";
+        secMcq.classList.add('hidden');
+        secEssay.classList.remove('hidden');
+        alertBox.classList.remove('hidden');
+      }
+      
+      // Call Mathjax to ensure scaling of newly shown cards is correct
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise();
+      }
+    }
+
+    // INITIAL APP LAUNCH
+    window.onload = function() {
+      renderAll();
+    };
+  </script>
+</body>
+</html>
