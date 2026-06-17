@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chuyên đề Toán 12: Chinh phục Tham số m trong Đơn điệu & Cực trị</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body { background-color: #e0f7fa; color: #374151; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+        .text-custom-gold { color: #8b5a2b; }
+        .bg-custom-gold { background-color: #d2b48c; }
+        .bg-custom-gold-dark { background-color: #8b5a2b; }
+        .border-custom-gold { border-color: #d2b48c; }
+        .card { background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(139,90,43,0.08); padding: 24px; transition: all 0.3s ease; }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(139,90,43,0.12); }
+        .tab-btn.active { background-color: #8b5a2b; color: white; box-shadow: 0 4px 10px rgba(139,90,43,0.3); }
+    </style>
+</head>
+<body class="p-3 md:p-8 min-h-screen">
+
+    <div class="max-w-7xl mx-auto">
+        <!-- HEADER -->
+        <header class="text-center mb-8 bg-white p-6 rounded-2xl shadow-md border-b-4 border-[#8b5a2b]">
+            <span class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Chuyên đề Hàm Số 12</span>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-[#8b5a2b] mt-2 mb-1">BẬC THẦY KHẢO SÁT THAM SỐ \(m\)</h1>
+            <p class="text-gray-600 text-base md:text-lg italic">Bản đồ tư duy & Chiến thuật thực chiến dành riêng cho Sĩ tử 2K8</p>
+        </header>
+
+        <!-- GRID LAYOUT -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- LEFT COLUMN: LÝ THUYẾT & BÀI TẬP (8 COLS) -->
+            <div class="lg:col-span-8 space-y-6">
+                
+                <!-- NAVIGATION TABS -->
+                <div class="flex flex-wrap gap-2 justify-start p-1.5 bg-amber-50 rounded-xl border border-amber-200">
+                    <button onclick="switchTab('ly-thuyet')" id="btn-ly-thuyet" class="tab-btn active px-4 py-2 rounded-lg font-bold text-sm transition">🎯 1. Vũ Khí Cốt Lõi</button>
+                    <button onclick="switchTab('dang-1')" id="btn-dang-1" class="tab-btn px-4 py-2 rounded-lg font-bold text-sm text-gray-700 hover:bg-amber-100 transition">🚀 2. Dạng 1: Đơn Điệu</button>
+                    <button onclick="switchTab('dang-2')" id="btn-dang-2" class="tab-btn px-4 py-2 rounded-lg font-bold text-sm text-gray-700 hover:bg-amber-100 transition">⚡ 3. Dạng 2: Cực Trị</button>
+                </div>
+
+                <!-- SECTION 1: LÝ THUYẾT CHI TIẾT -->
+                <div id="sec-ly-thuyet" class="tab-content space-y-6">
+                    <div class="card">
+                        <h2 class="text-2xl font-bold text-custom-gold-dark mb-4 flex items-center border-b pb-2 border-amber-100">
+                            <span class="mr-2">⚔️</span> Hai "Vũ Khí" Tối Thượng Trong Toán Học Lớp 12
+                        </h2>
+                        <p class="text-gray-700 leading-relaxed mb-4">
+                            Chào các em! Để chinh phục hoàn toàn điểm 8+, 9+ của chương Khảo sát hàm số, chúng ta không học thuộc lòng công thức vẹt. Thay vào đó, hãy trang bị hai bộ tư duy mạnh mẽ nhất dưới đây:
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                            <div class="p-5 bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl border border-amber-200">
+                                <h3 class="font-bold text-lg text-amber-900 mb-2 flex items-center">
+                                    <span class="bg-amber-200 text-amber-800 rounded-full w-6 h-6 flex items-center justify-center text-xs mr-2">1</span>
+                                    Cô Lập Tham Số \(m\)
+                                </h3>
+                                <p class="text-sm text-gray-700 leading-relaxed">
+                                    <strong>Bản chất:</strong> Khi chữ \(m\) đứng đơn lẻ một mình (bậc 1), ta dồn hết biến \(x\) sang một vế, đưa về bài toán so sánh chiều cao đồ thị:
+                                </p>
+                                <ul class="list-disc ml-5 mt-2 text-xs text-gray-600 space-y-1">
+                                    <li>Nếu \(m \ge f(x)\) với mọi \(x \in D\): \(m\) phải cao hơn đỉnh núi cao nhất \(\implies m \ge \max_D f(x)\).</li>
+                                    <li>Nếu \(m \le f(x)\) với mọi \(x \in D\): \(m\) phải thấp hơn đáy thung lũng sâu nhất \(\implies m \le \min_D f(x)\).</li>
+                                </ul>
+                            </div>
+
+                            <div class="p-5 bg-gradient-to-br from-cyan-50 to-blue-50 rounded-xl border border-cyan-200">
+                                <h3 class="font-bold text-lg text-cyan-900 mb-2 flex items-center">
+                                    <span class="bg-cyan-200 text-cyan-800 rounded-full w-6 h-6 flex items-center justify-center text-xs mr-2">2</span>
+                                    Dấu Tam Thức Bậc Hai (\(\Delta\))
+                                </h3>
+                                <p class="text-sm text-gray-700 leading-relaxed">
+                                    <strong>Bản chất:</strong> Áp dụng cho các bài toán trên toàn tập xác định \(\mathbb{R}\). Đồ thị của đạo hàm là một Parabol. Để đạo hàm luôn không đổi dấu, vách ngăn trục hoành không được cắt ngang qua cơ thể của Parabol, tức là đạo hàm vô nghiệm hoặc nghiệm kép:
+                                </p>
+                                <ul class="list-disc ml-5 mt-2 text-xs text-gray-600 space-y-1">
+                                    <li>Biểu thức luôn dương: \(\Delta \le 0\) và hệ số \(a > 0\).</li>
+                                    <li>Biểu thức luôn âm: \(\Delta \le 0\) và hệ số \(a < 0\).</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CHI TIẾT PHƯƠNG PHÁP -->
+                    <div class="card space-y-6">
+                        <div>
+                            <h3 class="text-xl font-bold text-custom-gold-dark mb-2">🎯 DẠNG 1: Tìm m để hàm số đơn điệu trên khoảng/đoạn D</h3>
+                            <p class="text-sm text-gray-600 mb-4">Mục tiêu cốt lõi: Bắt đạo hàm \(y'\) phải luôn dương (đồng biến) hoặc luôn âm (nghịch biến) trên vùng đất khảo sát \(D\).</p>
+                            
+                            <div class="space-y-4 ml-2">
+                                <div class="border-l-4 border-[#8b5a2b] pl-3">
+                                    <h4 class="font-bold text-amber-900">Chiến thuật 1: Cô lập \(m\) (Được khuyên dùng nhiều nhất)</h4>
+                                    <p class="text-sm text-gray-700 mt-1">Sử dụng khi có thể tách biệt chữ \(m\) ra riêng biệt. Các bước hành động cực kỳ chuẩn chỉ:</p>
+                                    <ol class="list-decimal ml-5 mt-2 text-xs text-gray-600 space-y-1">
+                                        <li>Tính đạo hàm \(y'\).</li>
+                                        <li>Đồng biến trên \(D \implies y' \ge 0\) với mọi \(x \in D\). Nghịch biến trên \(D \implies y' \le 0\) với mọi \(x \in D\).</li>
+                                        <li>Biến đổi bất phương trình đưa về dạng \(m \ge f(x)\) hoặc \(m \le f(x)\).</li>
+                                        <li>Lập bảng biến thiên của hàm số \(f(x)\) trên vùng \(D\) để tìm cực trị tuyệt đối (GTLN, GTNN) rồi kết luận.</li>
+                                    </ol>
+                                </div>
+
+                                <div class="border-l-4 border-cyan-500 pl-3">
+                                    <h4 class="font-bold text-cyan-950">Chiến thuật 2: Định lý dấu tam thức bậc hai (Cho hàm bậc 3 đơn điệu trên \(\mathbb{R}\))</h4>
+                                    <p class="text-sm text-gray-700 mt-1">Áp dụng độc quyền cho hàm bậc 3 khi đề bảo khảo sát trên toàn bộ vương quốc số thực \(\mathbb{R}\):</p>
+                                    <ul class="list-disc ml-5 mt-2 text-xs text-gray-600 space-y-1">
+                                        <li>Đồng biến trên \(\mathbb{R}\): \(\begin{cases} a > 0 \\ \Delta_{y'} \le 0 \end{cases}\)</li>
+                                        <li>Nghịch biến trên \(\mathbb{R}\): \(\begin{cases} a < 0 \\ \Delta_{y'} \le 0 \end{cases}\)</li>
+                                        <li><i>Lưu ý vàng:</i> Nếu hệ số \(a\) chứa \(m\), phải xét riêng trường hợp \(a = 0\) xem có thỏa mãn không.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-bold text-custom-gold-dark mb-2">🎯 DẠNG 2: Tìm m để hàm số có Cực trị (Số cực trị)</h3>
+                            <p class="text-sm text-gray-600 mb-4">Bản chất: Đạo hàm \(y'\) phải đổi dấu khi đi qua hoành độ cực trị. Nếu đạo hàm không đổi dấu, điểm đó chỉ là một điểm dừng thông thường.</p>
+                            
+                            <div class="space-y-4 ml-2">
+                                <div class="p-4 bg-amber-50 rounded-xl border border-amber-200">
+                                    <h4 class="font-bold text-amber-900 mb-2">Loại 1: Hàm số bậc ba (\(y = ax^3 + bx^2 + cx + d\))</h4>
+                                    <p class="text-xs text-gray-700">Đạo hàm là tam thức bậc hai: \(y' = 3ax^2 + 2bx + c\).</p>
+                                    <ul class="list-disc ml-5 mt-1 text-xs text-gray-600 space-y-1">
+                                        <li>Để có 2 điểm cực trị (1 đại, 1 tiểu): \(y' = 0\) phải có 2 nghiệm phân biệt \(\iff \begin{cases} a \ne 0 \\ \Delta_{y'} > 0 \end{cases}\).</li>
+                                        <li>Để không có điểm cực trị nào: Đồ thị trơn tuột đi lên hoặc đi xuống \(\iff \Delta_{y'} \le 0\).</li>
+                                    </ul>
+                                </div>
+
+                                <div class="p-4 bg-cyan-50 rounded-xl border border-cyan-200">
+                                    <h4 class="font-bold text-cyan-950 mb-2">Loại 2: Hàm trùng phương (\(y = ax^4 + bx^2 + c\) với \(a \ne 0\))</h4>
+                                    <p class="text-xs text-gray-700">Đây là hàm số có tính đối xứng trục qua trục tung Oy. Số cực trị được xác định cực kỳ nhanh chóng bằng tích của hai hệ số:</p>
+                                    <ul class="list-disc ml-5 mt-1 text-xs text-gray-600 space-y-1">
+                                        <li>Có đúng 3 điểm cực trị (tạo thành một tam giác cân): Hai hệ số \(a\) và \(b\) phải trái dấu nhau \(\iff a \cdot b < 0\).</li>
+                                        <li>Có đúng 1 điểm cực trị (nằm ngay trên trục tung): Hai hệ số cùng dấu hoặc có một hệ số bằng 0 \(\iff a \cdot b \ge 0\).</li>
+                                    </ul>
+                                </div>
+
+                                <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                                    <h4 class="font-bold text-gray-800 mb-2">Loại 3: Tìm m để đạt cực trị tại một điểm \(x_0\) cụ thể</h4>
+                                    <p class="text-xs text-gray-700">Sử dụng quy tắc kiểm tra nhanh bằng đạo hàm cấp một và đạo hàm cấp hai:</p>
+                                    <ul class="list-disc ml-5 mt-1 text-xs text-gray-600 space-y-1">
+                                        <li>Đạt cực đại tại \(x_0\): \(\begin{cases} y'(x_0) = 0 \\ y''(x_0) < 0 \end{cases}\) (Độ cong úp xuống).</li>
+                                        <li>Đạt cực tiểu tại \(x_0\): \(\begin{cases} y'(x_0) = 0 \\ y''(x_0) > 0 \end{cases}\) (Độ cong ngửa lên).</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 2: DẠNG 1 - TÌM M ĐỂ ĐƠN ĐIỆU TRÊN D -->
+                <div id="sec-dang-1" class="tab-content hidden space-y-6">
+                    <div class="card bg-amber-50/50 border border-amber-100">
+                        <h2 class="text-xl font-bold text-custom-gold-dark mb-2">🚀 HƯỚNG DẪN GIẢI DẠNG 1 CHI TIẾT (5 BÀI TẬP GRADED)</h2>
+                        <p class="text-xs text-gray-600">Độ khó được sắp xếp tăng dần từ cơ bản đến nâng cao bậc trung học phổ thông.</p>
+                    </div>
+
+                    <!-- BÀI 1 -->
+                    <div class="card">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-xs font-bold px-2 py-1 bg-green-100 text-green-800 rounded">Mức độ 1: Cơ bản</span>
+                            <span class="text-sm font-semibold text-gray-500">Dùng điều kiện Delta</span>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2">Bài 1: Tìm \(m\) để hàm số \(y = x^3 - 3x^2 + mx + 1\) đồng biến trên toàn bộ tập xác định \(\mathbb{R}\).</h3>
+                        
+                        <button onclick="toggleCollapse('sol-d1-1')" class="mt-2 text-sm text-[#8b5a2b] font-bold hover:underline flex items-center">
+                            📖 Xem lời giải tự luận chi tiết & Bảng Biến Thiên
+                        </button>
+                        
+                        <div id="sol-d1-1" class="hidden mt-4 p-5 bg-[#fffaf0] rounded-xl border-l-4 border-[#d2b48c] space-y-4">
+                            <p class="font-bold text-gray-800">Lời giải chi tiết:</p>
+                            <div class="text-sm text-gray-700 leading-relaxed space-y-2">
+                                <p><strong>Bước 1: Tập xác định.</strong> Hàm số có tập xác định \(D = \mathbb{R}\).</p>
+                                <p><strong>Bước 2: Tính đạo hàm.</strong> Ta có: \(y' = 3x^2 - 6x + m\).</p>
+                                <p><strong>Bước 3: Lập luận điều kiện.</strong> Để hàm số luôn đồng biến trên \(\mathbb{R}\) khi và chỉ khi:</p>
+                                <div class="bg-white p-3 rounded border border-amber-200 inline-block font-semibold">
+                                    \(y' \ge 0, \forall x \in \mathbb{R} \iff 3x^2 - 6x + m \ge 0, \forall x \in \mathbb{R}\)
+                                </div>
+                                <p>Vì hệ số \(a = 3 > 0\) đã luôn dương, để bất phương trình bậc hai nghiệm đúng với mọi \(x \in \mathbb{R}\) thì đồ thị Parabol của \(y'\) không được cắt trục hoành, nghĩa là biệt thức \(\Delta'\) phải nhỏ hơn hoặc bằng 0:</p>
+                                <p>\[\Delta' = (-3)^2 - 3 \cdot m \le 0 \iff 9 - 3m \le 0 \iff 3m \ge 9 \iff m \ge 3\]</p>
+                                
+                                <p><strong>Bảng Biến Thiên (Khi \(m = 3\), đồ thị có điểm uốn tại \(x=1\) nhưng luôn đi lên):</strong></p>
+                                <!-- BBT CHUẨN -->
+                                <div class="overflow-x-auto max-w-md mx-auto my-3 border border-amber-200 rounded-lg bg-white">
+                                    <div class="grid grid-cols-4 text-center border-b border-amber-100 text-xs font-bold bg-amber-50">
+                                        <div class="p-2 border-r border-amber-100">x</div>
+                                        <div class="p-2">\(-\infty\)</div>
+                                        <div class="p-2">\(1\)</div>
+                                        <div class="p-2">\(+\infty\)</div>
+                                    </div>
+                                    <div class="grid grid-cols-4 text-center border-b border-amber-100 text-xs">
+                                        <div class="p-2 border-r border-amber-100 font-bold">y'</div>
+                                        <div class="p-2">+</div>
+                                        <div class="p-2">0</div>
+                                        <div class="p-2">+</div>
+                                    </div>
+                                    <div class="grid grid-cols-4 text-center text-xs h-20 items-stretch">
+                                        <div class="p-2 border-r border-amber-100 font-bold flex items-center justify-center">y</div>
+                                        <div class="p-2 flex flex-col justify-end text-gray-500 font-bold">\(-\infty\)</div>
+                                        <div class="p-2 flex flex-col justify-center text-amber-800 font-bold">\(2\)</div>
+                                        <div class="p-2 flex flex-col justify-start text-gray-500 font-bold">\(+\infty\)</div>
+                                    </div>
+                                </div>
+                                
+                                <p><strong>Kết luận:</strong> Vậy giá trị tham số cần tìm là \(m \ge 3\).</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BÀI 2 -->
+                    <div class="card">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-xs font-bold px-2 py-1 bg-blue-100 text-blue-800 rounded">Mức độ 2: Trung bình</span>
+                            <span class="text-sm font-semibold text-gray-500">Cô lập m trên khoảng</span>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2">Bài 2: Tìm \(m\) để hàm số \(y = \frac{1}{3}x^3 - 2x^2 + mx - 5\) đồng biến trên khoảng \((0; +\infty)\).</h3>
+                        
+                        <button onclick="toggleCollapse('sol-d1-2')" class="mt-2 text-sm text-[#8b5a2b] font-bold hover:underline flex items-center">
+                            📖 Xem lời giải tự luận chi tiết & Bảng Biến Thiên
+                        </button>
+                        
+                        <div id="sol-d1-2" class="hidden mt-4 p-5 bg-[#fffaf0] rounded-xl border-l-4 border-[#d2b48c] space-y-4">
+                            <p class="font-bold text-gray-800">Lời giải chi tiết:</p>
+                            <div class="text-sm text-gray-700 leading-relaxed space-y-2">
+                                <p><strong>Bước 1: Tập xác định.</strong> Hàm số có tập xác định \(D = \mathbb{R}\).</p>
+                                <p><strong>Bước 2: Tính đạo hàm.</strong> Ta có: \(y' = x^2 - 4x + m\).</p>
+                                <p><strong>Bước 3: Lập luận điều kiện.</strong> Để hàm số luôn đồng biến trên khoảng \((0; +\infty)\) khi và chỉ khi:</p>
+                                <div class="bg-white p-3 rounded border border-amber-200 inline-block font-semibold">
+                                    \(y' \ge 0, \forall x \in (0; +\infty) \iff x^2 - 4x + m \ge 0, \forall x > 0\)
+                                </div>
+                                <p>Áp dụng vũ khí <strong>Cô lập tham số \(m\)</strong>, ta chuyển vế cô lập \(m\) đứng một bên:</p>
+                                <p>\[m \ge -x^2 + 4x, \forall x > 0\]</p>
+                                <p>Đặt \(g(x) = -x^2 + 4x\). Để \(m \ge g(x)\) với mọi \(x > 0\) thì \(m\) phải lớn hơn giá trị lớn nhất của \(g(x)\) trên vùng đất đó. Ta tiến hành lập bảng biến thiên cho \(g(x)\) trên \((0; +\infty)\):</p>
+                                <p>Ta có: \(g'(x) = -2x + 4 = 0 \iff x = 2 \in (0; +\infty)\).</p>
+                                
+                                <p><strong>Bảng Biến Thiên của hàm số \(g(x) = -x^2 + 4x\) trên khoảng \((0; +\infty)\):</strong></p>
+                                <div class="overflow-x-auto max-w-md mx-auto my-3 border border-amber-200 rounded-lg bg-white">
+                                    <div class="grid grid-cols-5 text-center border-b border-amber-100 text-xs font-bold bg-amber-50">
+                                        <div class="p-2 border-r border-amber-100">x</div>
+                                        <div class="p-2">\(0\)</div>
+                                        <div class="p-2">\(2\)</div>
+                                        <div class="p-2" colspan="2">\(+\infty\)</div>
+                                    </div>
+                                    <div class="grid grid-cols-5 text-center border-b border-amber-100 text-xs">
+                                        <div class="p-2 border-r border-amber-100 font-bold">g'(x)</div>
+                                        <div class="p-2 text-green-600 font-bold">+</div>
+                                        <div class="p-2">0</div>
+                                        <div class="p-2 text-red-600 font-bold" colspan="2">-</div>
+                                    </div>
+                                    <div class="grid grid-cols-5 text-center text-xs h-20 items-stretch">
+                                        <div class="p-2 border-r border-amber-100 font-bold flex items-center justify-center">g(x)</div>
+                                        <div class="p-2 flex flex-col justify-end text-gray-500 font-bold">\(0\)</div>
+                                        <div class="p-2 flex flex-col justify-start text-amber-800 font-bold">\(4\) (Cực đại)</div>
+                                        <div class="p-2 flex flex-col justify-end text-gray-500 font-bold" colspan="2">\(-\infty\)</div>
+                                    </div>
+                                </div>
+                                
+                                <p>Dựa vào bảng biến thiên, ta thấy cực đại tuyệt đối của \(g(x)\) trên \((0; +\infty)\) đạt được tại điểm có giá trị bằng \(4\) khi \(x = 2\).</p>
+                                <p>Do đó, điều kiện để \(m \ge g(x)\) trên khoảng đang xét là: \[m \ge \max_{(0; +\infty)} g(x) \iff m \ge 4\]</p>
+                                <p><strong>Kết luận:</strong> Vậy tập hợp giá trị cần tìm của \(m\) là \(m \ge 4\).</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BÀI 3 -->
+                    <div class="card">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-xs font-bold px-2 py-1 bg-yellow-100 text-yellow-800 rounded">Mức độ 3: Khá</span>
+                            <span class="text-sm font-semibold text-gray-500">Hàm số phân thức</span>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2">Bài 3: Tìm \(m\) để hàm số bậc nhất trên bậc nhất \(y = \frac{mx - 4}{x - m}\) đồng biến trên khoảng \((1; +\infty)\).</h3>
+                        
+                        <button onclick="toggleCollapse('sol-d1-3')" class="mt-2 text-sm text-[#8b5a2b] font-bold hover:underline flex items-center">
+                            📖 Xem lời giải tự luận chi tiết & Bảng Biến Thiên
+                        </button>
+                        
+                        <div id="sol-d1-3" class="hidden mt-4 p-5 bg-[#fffaf0] rounded-xl border-l-4 border-[#d2b48c] space-y-4">
+                            <p class="font-bold text-gray-800">Lời giải chi tiết:</p>
+                            <div class="text-sm text-gray-700 leading-relaxed space-y-2">
+                                <p><strong>Bước 1: Điều kiện xác định.</strong> Hàm số có tập xác định là \(D = \mathbb{R} \setminus \{m\}\).</p>
+                                <p>Để khảo sát sự đồng biến trên khoảng \((1; +\infty)\) thì điểm không xác định của đồ thị hàm số (đường tiệm cận đứng) \(x = m\) tuyệt đối không được phép nằm đè lên khoảng đang xét:</p>
+                                <div class="bg-white p-2 rounded border border-amber-200 inline-block font-semibold">
+                                    \(m \notin (1; +\infty) \iff m \le 1\) (Điều kiện số 1)
+                                </div>
+                                <p><strong>Bước 2: Đạo hàm.</strong> Áp dụng công thức tính nhanh đạo hàm bậc nhất trên bậc nhất:</p>
+                                <p>\[y' = \frac{m \cdot (-m) - (-4) \cdot 1}{(x - m)^2} = \frac{-m^2 + 4}{(x - m)^2}\]</p>
+                                <p><strong>Bước 3: Lập luận điều kiện đơn điệu.</strong> Để hàm số luôn đồng biến trên khoảng \((1; +\infty)\) thì đạo hàm phải hoàn toàn dương (không có dấu bằng xảy ra vì tử số không đổi):</p>
+                                <p>\[y' > 0, \forall x \in (1; +\infty) \iff \frac{-m^2 + 4}{(x-m)^2} > 0, \forall x > 1\]</p>
+                                <p>\[\iff -m^2 + 4 > 0 \iff m^2 < 4 \iff -2 < m < 2\]</p>
+                                <p>Kết hợp điều kiện số 1 (\(m \le 1\)) và điều kiện đạo hàm \(-2 < m < 2\), ta có hệ điều kiện giao nhau:</p>
+                                <p>\[\begin{cases} -2 < m < 2 \\ m \le 1 \end{cases} \iff -2 < m \le 1\]</p>
+                                <p><strong>Kết luận:</strong> Vậy giá trị tham số cần tìm là \(-2 < m \le 1\).</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BÀI 4 -->
+                    <div class="card">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-xs font-bold px-2 py-1 bg-orange-100 text-orange-800 rounded">Mức độ 4: Khá giỏi</span>
+                            <span class="text-sm font-semibold text-gray-500">Khảo sát trên khoảng hữu hạn</span>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2">Bài 4: Tìm \(m\) để hàm số \(y = -x^3 + 3x^2 + 3mx - 1\) nghịch biến trên khoảng \((0; 2)\).</h3>
+                        
+                        <button onclick="toggleCollapse('sol-d1-4')" class="mt-2 text-sm text-[#8b5a2b] font-bold hover:underline flex items-center">
+                            📖 Xem lời giải tự luận chi tiết & Bảng Biến Thiên
+                        </button>
+                        
+                        <div id="sol-d1-4" class="hidden mt-4 p-5 bg-[#fffaf0] rounded-xl border-l-4 border-[#d2b48c] space-y-4">
+                            <p class="font-bold text-gray-800">Lời giải chi tiết:</p>
+                            <div class="text-sm text-gray-700 leading-relaxed space-y-2">
+                                <p><strong>Bước 1: Tập xác định.</strong> Hàm số xác định trên \(D = \mathbb{R}\).</p>
+                                <p><strong>Bước 2: Tính đạo hàm.</strong> Ta có: \(y' = -3x^2 + 6x + 3m\).</p>
+                                <p><strong>Bước 3: Lập luận điều kiện nghịch biến.</strong> Hàm số nghịch biến trên khoảng \((0; 2)\) khi và chỉ khi:</p>
+                                <p>\[y' \le 0, \forall x \in (0; 2) \iff -3x^2 + 6x + 3m \le 0, \forall x \in (0; 2)\]</p>
+                                <p>Rút gọn hệ số 3 ở hai vế, ta được:</p>
+                                <p>\[-x^2 + 2x + m \le 0, \forall x \in (0; 2)\]</p>
+                                <p>Áp dụng chiến thuật <strong>Cô lập tham số \(m\)</strong>:</p>
+                                <p>\[m \le x^2 - 2x, \forall x \in (0; 2)\]</p>
+                                <p>Đặt \(h(x) = x^2 - 2x\). Để \(m \le h(x)\) trên toàn vùng \((0; 2)\) thì \(m\) buộc phải nhỏ hơn thằng thấp bé nhất của đồ thị \(h(x)\) trong khoảng đó:</p>
+                                <p>\[m \le \min_{[0; 2]} h(x)\]</p>
+                                <p>Ta có: \(h'(x) = 2x - 2 = 0 \iff x = 1 \in (0; 2)\). Tính các giá trị: \(h(0) = 0, h(1) = -1, h(2) = 0\).</p>
+                                
+                                <p><strong>Bảng Biến Thiên của \(h(x) = x^2 - 2x\) trên khoảng \((0; 2)\):</strong></p>
+                                <div class="overflow-x-auto max-w-md mx-auto my-3 border border-amber-200 rounded-lg bg-white">
+                                    <div class="grid grid-cols-5 text-center border-b border-amber-100 text-xs font-bold bg-amber-50">
+                                        <div class="p-2 border-r border-amber-100">x</div>
+                                        <div class="p-2">\(0\)</div>
+                                        <div class="p-2">\(1\)</div>
+                                        <div class="p-2" colspan="2">\(2\)</div>
+                                    </div>
+                                    <div class="grid grid-cols-5 text-center border-b border-amber-100 text-xs">
+                                        <div class="p-2 border-r border-amber-100 font-bold">h'(x)</div>
+                                        <div class="p-2 text-red-600 font-bold">-</div>
+                                        <div class="p-2">0</div>
+                                        <div class="p-2 text-green-600 font-bold" colspan="2">+</div>
+                                    </div>
+                                    <div class="grid grid-cols-5 text-center text-xs h-20 items-stretch">
+                                        <div class="p-2 border-r border-amber-100 font-bold flex items-center justify-center">h(x)</div>
+                                        <div class="p-2 flex flex-col justify-start text-gray-500 font-bold">\(0\)</div>
+                                        <div class="p-2 flex flex-col justify-end text-amber-800 font-bold">\(-1\) (Cực tiểu)</div>
+                                        <div class="p-2 flex flex-col justify-start text-gray-500 font-bold" colspan="2">\(0\)</div>
+                                    </div>
+                                </div>
+                                
+                                <p>Dựa vào bảng biến thiên, giá trị nhỏ nhất của \(h(x)\) trên đoạn \([0; 2]\) đạt được tại đỉnh Parabol bằng \(-1\).</p>
+                                <p>Vậy điều kiện chính xác là: \[m \le -1\]</p>
+                                <p><strong>Kết luận:</strong> Để hàm số nghịch biến trên khoảng \((0; 2)\) thì \(m \le -1\).</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BÀI 5 -->
+                    <div class="card">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-xs font-bold px-2 py-1 bg-red-100 text-red-800 rounded">Mức độ 5: Vận dụng cao</span>
+                            <span class="text-sm font-semibold text-gray-500">Hàm số bậc 2 trên bậc 1</span>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2">Bài 5: Tìm tất cả giá trị thực của \(m\) để hàm số \(y = \frac{x^2 - 2mx + 2m^2 - 2}{x - m}\) đồng biến trên khoảng \((1; +\infty)\).</h3>
+                        
+                        <button onclick="toggleCollapse('sol-d1-5')" class="mt-2 text-sm text-[#8b5a2b] font-bold hover:underline flex items-center">
+                            📖 Xem lời giải tự luận chi tiết & Bảng Biến Thiên
+                        </button>
+                        
+                        <div id="sol-d1-5" class="hidden mt-4 p-5 bg-[#fffaf0] rounded-xl border-l-4 border-[#d2b48c] space-y-4">
+                            <p class="font-bold text-gray-800">Lời giải chi tiết:</p>
+                            <div class="text-sm text-gray-700 leading-relaxed space-y-2">
+                                <p><strong>Bước 1: Tập xác định & Điều kiện biên.</strong> Hàm số có tập xác định \(D = \mathbb{R} \setminus \{m\}\).</p>
+                                <p>Để hàm số có thể đồng biến liên tục trên khoảng \((1; +\infty)\) thì điểm đứt gãy \(x = m\) không được chắn ngang đường đi, tức là:</p>
+                                <div class="bg-white p-2 rounded border border-amber-200 inline-block font-semibold">
+                                    \(m \notin (1; +\infty) \iff m \le 1\) (Điều kiện số 1)
+                                </div>
+                                <p><strong>Bước 2: Tính đạo hàm của hàm số.</strong></p>
+                                <p>Ta có đạo hàm nhanh của hàm số bậc hai trên bậc nhất:</p>
+                                <p>\[y' = \frac{(2x-2m)(x-m) - (x^2-2mx+2m^2-2)}{(x-m)^2} = \frac{x^2 - 2mx + 2}{(x-m)^2}\]</p>
+                                <p><strong>Bước 3: Lập luận điều kiện đồng biến.</strong></p>
+                                <p>Để hàm số đồng biến trên \((1; +\infty)\) khi và chỉ khi đạo hàm không âm trên vùng này:</p>
+                                <p>\[y' \ge 0, \forall x \in (1; +\infty) \iff x^2 - 2mx + 2 \ge 0, \forall x > 1\]</p>
+                                <p>Vì \(x > 1\), ta hoàn toàn có thể chia hai vế cho biểu thức chứa \(x\) để cô lập tham số \(m\):</p>
+                                <p>\[2mx \le x^2 + 2 \iff 2m \le x + \frac{2}{x}, \forall x > 1\]</p>
+                                <p>Đặt \(f(x) = x + \frac{2}{x}\). Ta cần tìm giá trị bé nhất của \(f(x)\) trên khoảng \((1; +\infty)\).</p>
+                                <p>Ta có: \(f'(x) = 1 - \frac{2}{x^2} = \frac{x^2 - 2}{x^2}\). Trong khoảng \(x > 1\), \(f'(x) = 0 \iff x = \sqrt{2}\).</p>
+                                
+                                <p><strong>Bảng Biến Thiên của \(f(x) = x + \frac{2}{x}\) trên khoảng \((1; +\infty)\):</strong></p>
+                                <div class="overflow-x-auto max-w-md mx-auto my-3 border border-amber-200 rounded-lg bg-white">
+                                    <div class="grid grid-cols-5 text-center border-b border-amber-100 text-xs font-bold bg-amber-50">
+                                        <div class="p-2 border-r border-amber-100">x</div>
+                                        <div class="p-2">\(1\)</div>
+                                        <div class="p-2">\(\sqrt{2}\)</div>
+                                        <div class="p-2" colspan="2">\(+\infty\)</div>
+                                    </div>
+                                    <div class="grid grid-cols-5 text-center border-b border-amber-100 text-xs">
+                                        <div class="p-2 border-r border-amber-100 font-bold">f'(x)</div>
+                                        <div class="p-2 text-red-600 font-bold">-</div>
+                                        <div class="p-2">0</div>
+                                        <div class="p-2 text-green-600 font-bold" colspan="2">+</div>
+                                    </div>
+                                    <div class="grid grid-cols-5 text-center text-xs h-20 items-stretch">
+                                        <div class="p-2 border-r border-amber-100 font-bold flex items-center justify-center">f(x)</div>
+                                        <div class="p-2 flex flex-col justify-start text-gray-500 font-bold">\(3\)</div>
+                                        <div class="p-2 flex flex-col justify-end text-amber-800 font-bold">\(2\sqrt{2}\) (Cực tiểu)</div>
+                                        <div class="p-2 flex flex-col justify-start text-gray-500 font-bold" colspan="2">\(+\infty\)</div>
+                                    </div>
+                                </div>
+
+                                <p>Để bảo đảm \(2m \le f(x)\) trên toàn khoảng thì \(2m \le \min_{(1; +\infty)} f(x)\):</p>
+                                <p>\[2m \le 2\sqrt{2} \iff m \le \sqrt{2}\]</p>
+                                <p>Kết hợp điều kiện số 1 (\(m \le 1\)), vì \(1 \approx 1,0 < \sqrt{2} \approx 1,414\) nên ta có giao kết quả cuối cùng:</p>
+                                <p>\[m \le 1\]</p>
+                                <p><strong>Kết luận:</strong> Vậy điều kiện của tham số thỏa mãn bài toán là \(m \le 1\).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 3: DẠNG 2 - TÌM M ĐỂ HÀM SỐ CÓ CỰC TRỊ -->
+                <div id="sec-dang-2" class="tab-content hidden space-y-6">
+                    <div class="card bg-cyan-50/50 border border-cyan-100">
+                        <h2 class="text-xl font-bold text-custom-gold-dark mb-2">🚀 HƯỚNG DẪN GIẢI DẠNG 2 CHI TIẾT (5 BÀI TẬP GRADED)</h2>
+                        <p class="text-xs text-gray-600">Đầy đủ các thể loại toán về cực trị: Hàm số bậc 3, hàm trùng phương, cực trị tại điểm.</p>
+                    </div>
+
+                    <!-- BÀI 1 -->
+                    <div class="card">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-xs font-bold px-2 py-1 bg-green-100 text-green-800 rounded">Mức độ 1: Cơ bản</span>
+                            <span class="text-sm font-semibold text-gray-500">Bậc 3 có cực trị</span>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2">Bài 1: Tìm \(m\) để hàm số \(y = \frac{1}{3}x^3 - mx^2 + (2m - 1)x + 3\) có hai điểm cực trị.</h3>
+                        
+                        <button onclick="toggleCollapse('sol-d2-1')" class="mt-2 text-sm text-[#8b5a2b] font-bold hover:underline flex items-center">
+                            📖 Xem lời giải tự luận chi tiết & Bảng Biến Thiên
+                        </button>
+                        
+                        <div id="sol-d2-1" class="hidden mt-4 p-5 bg-[#fffaf0] rounded-xl border-l-4 border-[#d2b48c] space-y-4">
+                            <p class="font-bold text-gray-800">Lời giải chi tiết:</p>
+                            <div class="text-sm text-gray-700 leading-relaxed space-y-2">
+                                <p><strong>Bước 1: Tập xác định.</strong> Hàm số có tập xác định \(D = \mathbb{R}\).</p>
+                                <p><strong>Bước 2: Tính đạo hàm.</strong> Ta có: \(y' = x^2 - 2mx + 2m - 1\).</p>
+                                <p><strong>Bước 3: Lập luận điều kiện cực trị.</strong></p>
+                                <p>Hàm số bậc 3 đạt 2 điểm cực trị (1 điểm cực đại và 1 điểm cực tiểu) khi và chỉ khi phương trình đạo hàm \(y' = 0\) có hai nghiệm phân biệt và đạo hàm đổi dấu khi đi qua các nghiệm này.</p>
+                                <p>Vì \(y' = 0\) là phương trình bậc hai có hệ số \(a = 1 \ne 0\), để có hai nghiệm phân biệt ta cần biệt thức \(\Delta'\) luôn dương:</p>
+                                <p>\[\Delta' = (-m)^2 - 1 \cdot (2m - 1) > 0\]</p>
+                                <p>\[\iff m^2 - 2m + 1 > 0 \iff (m-1)^2 > 0 \iff m \ne 1\]</p>
+                                <p><strong>Kết luận:</strong> Để hàm số có 2 điểm cực trị thì \(m \ne 1\).</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BÀI 2 -->
+                    <div class="card">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-xs font-bold px-2 py-1 bg-blue-100 text-blue-800 rounded">Mức độ 2: Trung bình</span>
+                            <span class="text-sm font-semibold text-gray-500">Cực đại tại một điểm</span>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2">Bài 2: Tìm giá trị thực của tham số \(m\) để hàm số \(y = x^3 - 3mx^2 + 3(m^2 - 1)x + 1\) đạt cực đại tại hoành độ \(x = 1\).</h3>
+                        
+                        <button onclick="toggleCollapse('sol-d2-2')" class="mt-2 text-sm text-[#8b5a2b] font-bold hover:underline flex items-center">
+                            📖 Xem lời giải tự luận chi tiết & Bảng Biến Thiên
+                        </button>
+                        
+                        <div id="sol-d2-2" class="hidden mt-4 p-5 bg-[#fffaf0] rounded-xl border-l-4 border-[#d2b48c] space-y-4">
+                            <p class="font-bold text-gray-800">Lời giải chi tiết:</p>
+                            <div class="text-sm text-gray-700 leading-relaxed space-y-2">
+                                <p><strong>Bước 1: Tính các cấp đạo hàm.</strong></p>
+                                <p>Đạo hàm cấp một: \(y' = 3x^2 - 6mx + 3(m^2 - 1)\).</p>
+                                <p>Đạo hàm cấp hai: \(y'' = 6x - 6m\).</p>
+                                <p><strong>Bước 2: Sử dụng điều kiện của đạo hàm.</strong></p>
+                                <p>Để hàm số đạt cực đại tại \(x = 1\) thì điều kiện cần là \(y'(1) = 0\):</p>
+                                <p>\[y'(1) = 3(1)^2 - 6m(1) + 3(m^2 - 1) = 0\]</p>
+                                <p>\[\iff 3 - 6m + 3m^2 - 3 = 0 \iff 3m^2 - 6m = 0 \iff m = 0 \text{ hoặc } m = 2\]</p>
+                                <p>Bây giờ ta sử dụng đạo hàm cấp hai làm điều kiện đủ để thử lại từng trường hợp:</p>
+                                <ul class="list-disc ml-5 space-y-2">
+                                    <li><strong>Trường hợp 1: \(m = 0\)</strong>. Ta có: \(y''(1) = 6 \cdot 1 - 6 \cdot 0 = 6 > 0\). Đạo hàm cấp hai dương chứng tỏ đồ thị có bề lõm hướng lên trên, điểm \(x = 1\) đạt cực tiểu (Loại).</li>
+                                    <li><strong>Trường hợp 2: \(m = 2\)</strong>. Ta có: \(y''(1) = 6 \cdot 1 - 6 \cdot 2 = -6 < 0\). Đạo hàm cấp hai âm chứng tỏ đồ thị có bề lõm hướng úp xuống, điểm \(x = 1\) đạt cực đại (Thỏa mãn).</li>
+                                </ul>
+                                <p><strong>Kết luận:</strong> Vậy giá trị tham số cần tìm là \(m = 2\).</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BÀI 3 -->
+                    <div class="card">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-xs font-bold px-2 py-1 bg-yellow-100 text-yellow-800 rounded">Mức độ 3: Khá</span>
+                            <span class="text-sm font-semibold text-gray-500">Trùng phương có 3 cực trị</span>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2">Bài 3: Tìm \(m\) để hàm trùng phương \(y = (m-1)x^4 - 2(m+1)x^2 + 1\) có đúng 3 điểm cực trị.</h3>
+                        
+                        <button onclick="toggleCollapse('sol-d2-3')" class="mt-2 text-sm text-[#8b5a2b] font-bold hover:underline flex items-center">
+                            📖 Xem lời giải tự luận chi tiết & Bảng Biến Thiên
+                        </button>
+                        
+                        <div id="sol-d2-3" class="hidden mt-4 p-5 bg-[#fffaf0] rounded-xl border-l-4 border-[#d2b48c] space-y-4">
+                            <p class="font-bold text-gray-800">Lời giải chi tiết:</p>
+                            <div class="text-sm text-gray-700 leading-relaxed space-y-2">
+                                <p><strong>Bước 1: Tập xác định.</strong> Hàm số xác định trên \(D = \mathbb{R}\).</p>
+                                <p><strong>Bước 2: Tìm hệ số và đạo hàm.</strong></p>
+                                <p>Đây là hàm trùng phương dạng \(y = ax^4 + bx^2 + c\) có hệ số: \(a = m - 1\) và \(b = -2(m + 1)\).</p>
+                                <p><strong>Bước 3: Lập luận điều kiện số điểm cực trị.</strong></p>
+                                <p>Hàm trùng phương có đúng 3 điểm cực trị khi và chỉ khi hệ số \(a \ne 0\) và hai hệ số \(a\) và \(b\) trái dấu nhau:</p>
+                                <div class="bg-white p-3 rounded border border-amber-200 inline-block font-semibold">
+                                    \(a \cdot b < 0 \iff -2(m - 1)(m + 1) < 0\)
+                                </div>
+                                <p>Chia cả hai vế cho \(-2\) và đổi chiều bất phương trình:</p>
+                                <p>\[(m - 1)(m + 1) > 0 \iff m^2 - 1 > 0 \iff m > 1 \text{ hoặc } m < -1\]</p>
+                                <p>Khi điều kiện này thỏa mãn, đồ thị hàm trùng phương sẽ có 3 điểm cực trị (1 điểm cực trị nằm trên trục tung Oy và 2 điểm cực trị đối xứng nhau qua Oy).</p>
+                                <p><strong>Kết luận:</strong> Vậy điều kiện thỏa mãn đề bài là \(m \in (-\infty; -1) \cup (1; +∞)\).</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BÀI 4 -->
+                    <div class="card">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-xs font-bold px-2 py-1 bg-orange-100 text-orange-800 rounded">Mức độ 4: Khá giỏi</span>
+                            <span class="text-sm font-semibold text-gray-500">Trùng phương có 1 cực trị</span>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2">Bài 4: Tìm tất cả giá trị thực của \(m\) để hàm số \(y = mx^4 + (m^2 - 9)x^2 + 10\) có duy nhất một điểm cực trị.</h3>
+                        
+                        <button onclick="toggleCollapse('sol-d2-4')" class="mt-2 text-sm text-[#8b5a2b] font-bold hover:underline flex items-center">
+                            📖 Xem lời giải tự luận chi tiết & Bảng Biến Thiên
+                        </button>
+                        
+                        <div id="sol-d2-4" class="hidden mt-4 p-5 bg-[#fffaf0] rounded-xl border-l-4 border-[#d2b48c] space-y-4">
+                            <p class="font-bold text-gray-800">Lời giải chi tiết:</p>
+                            <div class="text-sm text-gray-700 leading-relaxed space-y-2">
+                                <p><strong>Bước 1: Xét trường hợp hệ số chứa tham số bằng 0.</strong></p>
+                                <p>Nếu \(m = 0\), hàm số trở thành hàm parabol bậc hai: \(y = -9x^2 + 10\). Đây là parabol có bề lõm úp xuống, có duy nhất một điểm cực trị tại đỉnh (Cực đại tại \(x = 0\)). \(\implies m = 0\) (Thỏa mãn).</p>
+                                <p><strong>Trường hợp 2: Khi \(m \ne 0\).</strong></p>
+                                <p>Hàm trùng phương có đúng một điểm cực trị khi và chỉ khi tích của hai hệ số không âm:</p>
+                                <div class="bg-white p-3 rounded border border-amber-200 inline-block font-semibold">
+                                    \(a \cdot b \ge 0 \iff m(m^2 - 9) \ge 0 \iff m(m - 3)(m + 3) \ge 0\)
+                                </div>
+                                <p>Lập bảng xét dấu của biểu thức \(P(m) = m(m-3)(m+3)\) trên trục số:</p>
+                                <ul class="list-disc ml-5 space-y-1 text-xs">
+                                    <li>\(P(m) \ge 0 \iff m \in [-3; 0] \cup [3; +\infty)\).</li>
+                                    <li>Vì ta đang xét điều kiện \(m \ne 0 \implies m \in [-3; 0) \cup [3; +\infty)\).</li>
+                                </ul>
+                                <p>Kết hợp cả hai trường hợp lại, ta được kết quả đầy đủ:</p>
+                                <p>\[m \in [-3; 0] \cup [3; +\infty)\]</p>
+                                <p><strong>Kết luận:</strong> Vậy giá trị của tham số \(m\) cần tìm là \(-3 \le m \le 0\) hoặc \(m \ge 3\).</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BÀI 5 -->
+                    <div class="card">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-xs font-bold px-2 py-1 bg-red-100 text-red-800 rounded">Mức độ 5: Vận dụng cao</span>
+                            <span class="text-sm font-semibold text-gray-500">Bậc 2 trên bậc 1 có cực trị</span>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2">Bài 5: Tìm giá trị thực của tham số \(m\) để hàm số phân thức bậc hai trên bậc nhất \(y = \frac{x^2 - 2mx + m + 2}{x - m}\) có hai cực trị.</h3>
+                        
+                        <button onclick="toggleCollapse('sol-d2-5')" class="mt-2 text-sm text-[#8b5a2b] font-bold hover:underline flex items-center">
+                            📖 Xem lời giải tự luận chi tiết & Bảng Biến Thiên
+                        </button>
+                        
+                        <div id="sol-d2-5" class="hidden mt-4 p-5 bg-[#fffaf0] rounded-xl border-l-4 border-[#d2b48c] space-y-4">
+                            <p class="font-bold text-gray-800">Lời giải chi tiết:</p>
+                            <div class="text-sm text-gray-700 leading-relaxed space-y-2">
+                                <p><strong>Bước 1: Điều kiện xác định.</strong> Hàm số có tập xác định là \(D = \mathbb{R} \setminus \{m\}\).</p>
+                                <p><strong>Bước 2: Tính đạo hàm của hàm số.</strong></p>
+                                <p>Ta có: \[y' = \frac{(2x-2m)(x-m) - (x^2-2mx+m+2)}{(x-m)^2} = \frac{x^2 - 2mx + m^2 - m - 2}{(x-m)^2}\]</p>
+                                <p><strong>Bước 3: Lập luận điều kiện có cực trị.</strong></p>
+                                <p>Hàm số bậc hai trên bậc nhất có 2 cực trị khi và chỉ khi phương trình tử số \(y' = 0\) có 2 nghiệm phân biệt khác \(m\).</p>
+                                <p>Xét tam thức tử số: \(g(x) = x^2 - 2mx + m^2 - m - 2\).</p>
+                                <p>Ta cần đồng thời hai điều kiện sau:</p>
+                                <ol class="list-decimal ml-5 space-y-2">
+                                    <li>Biệt thức \(\Delta'_g > 0\) để có hai nghiệm phân biệt:
+                                        \[\Delta'_g = (-m)^2 - 1 \cdot (m^2 - m - 2) = m + 2 > 0 \iff m > -2\]
+                                    </li>
+                                    <li>Giá trị của \(g(m) \ne 0\) để các nghiệm của tử số không bị trùng với nghiệm của mẫu số:
+                                        \[g(m) = m^2 - 2m^2 + m^2 - m - 2 \ne 0 \iff -m - 2 \ne 0 \iff m \ne -2\]
+                                    </li>
+                                </ol>
+                                <p>Kết hợp cả hai điều kiện trên, ta có điều kiện giao cuối cùng là: \[m > -2\]</p>
+                                <p><strong>Kết luận:</strong> Vậy hàm số có hai điểm cực trị khi và chỉ khi \(m > -2\).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT COLUMN: INTERACTIVE VISUAL PLOTTER (4 COLS) -->
+            <div class="lg:col-span-4 space-y-6">
+                
+                <!-- SIMULATOR CARD -->
+                <div class="card border-t-4 border-[#8b5a2b] sticky top-6">
+                    <h3 class="text-lg font-bold text-custom-gold-dark mb-2 flex items-center">
+                        <span class="mr-2">📈</span> Phòng Mô Phỏng Đồ Thị Tương Tác
+                    </h3>
+                    <p class="text-xs text-gray-500 mb-4 leading-relaxed">
+                        Di chuyển thanh trượt để thay đổi giá trị của tham số \(m\) trong hàm bậc ba sau:
+                        <br><strong class="text-amber-800">\(y = x^3 - 3x^2 + mx + 1\)</strong>
+                    </p>
+
+                    <!-- CANVAS -->
+                    <div class="relative bg-amber-50/40 border border-amber-200 rounded-xl overflow-hidden mb-4 p-2">
+                        <canvas id="graphCanvas" class="w-full h-64 bg-white rounded-lg shadow-inner"></canvas>
+                    </div>
+
+                    <!-- CONTROL SLIDER -->
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-semibold text-gray-700">Giá trị của m:</span>
+                            <span id="m-val" class="text-lg font-extrabold text-custom-gold-dark bg-amber-100 px-3 py-1 rounded">3.0</span>
+                        </div>
+                        <input type="range" id="mSlider" min="0" max="6" step="0.1" value="3" class="w-full h-2 bg-amber-200 rounded-lg appearance-none cursor-pointer accent-[#8b5a2b]">
+                    </div>
+
+                    <!-- REAL-TIME ANALYSIS -->
+                    <div class="mt-6 p-4 rounded-xl border text-sm space-y-2 bg-[#fffaf0]" id="analysis-box">
+                        <p class="font-bold text-amber-900 flex items-center">
+                            <span class="mr-1.5" id="status-icon">✅</span> 
+                            <span>Phân tích trạng thái hiện tại:</span>
+                        </p>
+                        <div class="text-xs text-gray-700 space-y-1.5" id="status-desc">
+                            <!-- JS WILL POPULATE THIS -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- FOOTER / CREDIT -->
+        <footer class="text-center mt-12 text-sm text-gray-500 border-t border-amber-200 pt-6">
+            <p>© 2026 Chuyên đề Đạo hàm Toán 12 - Hệ thống Học tập Thông minh Thiên An</p>
+            <p class="text-xs mt-1 text-gray-400">Thiết kế chuẩn mực sư phạm, tối ưu hóa hiển thị di động và trải nghiệm tương tác.</p>
+        </footer>
+    </div>
+
+    <!-- MAIN JAVASCRIPT FOR ROUTING, TABS AND CANVAS PLOTTING -->
+    <script>
+        // Tab switching logic
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('active', 'bg-custom-gold', 'text-white');
+                el.classList.add('text-gray-700', 'hover:bg-amber-100');
+            });
+
+            document.getElementById('sec-' + tabId).classList.remove('hidden');
+            const activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.classList.add('active');
+            activeBtn.classList.remove('text-gray-700', 'hover:bg-amber-100');
+        }
+
+        // Toggle solution collapse
+        function toggleCollapse(divId) {
+            const el = document.getElementById(divId);
+            el.classList.toggle('hidden');
+        }
+
+        // --- CANVAS PLOTTER IMPLEMENTATION ---
+        const canvas = document.getElementById('graphCanvas');
+        const ctx = canvas.getContext('2d');
+        const slider = document.getElementById('mSlider');
+        const mValLabel = document.getElementById('m-val');
+        const statusIcon = document.getElementById('status-icon');
+        const statusDesc = document.getElementById('status-desc');
+
+        // Set high resolution for canvas
+        function resizeCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * window.devicePixelRatio;
+            canvas.height = rect.height * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        }
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            draw();
+        });
+
+        // Drawing parameters
+        const scaleX = 40; // Pixels per unit
+        const scaleY = 30; // Pixels per unit
+
+        function draw() {
+            const m = parseFloat(slider.value);
+            mValLabel.innerText = m.toFixed(1);
+
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const w = canvas.width / window.devicePixelRatio;
+            const h = canvas.height / window.devicePixelRatio;
+
+            const originX = w / 2;
+            const originY = h / 2 + 30; // Shift origin slightly down for better view
+
+            // Draw grid
+            ctx.strokeStyle = '#f3f4f6';
+            ctx.lineWidth = 1;
+            for (let x = originX % scaleX; x < w; x += scaleX) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+            }
+            for (let y = originY % scaleY; y < h; y += scaleY) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+            }
+
+            // Draw coordinate axes
+            ctx.strokeStyle = '#9ca3af';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.moveTo(0, originY); ctx.lineTo(w, originY); ctx.stroke(); // Ox
+            ctx.beginPath(); ctx.moveTo(originX, 0); ctx.lineTo(originX, h); ctx.stroke(); // Oy
+
+            // Labels and marks
+            ctx.font = '10px Segoe UI';
+            ctx.fillStyle = '#6b7280';
+            ctx.fillText('x', w - 15, originY - 5);
+            ctx.fillText('y', originX + 5, 15);
+
+            // Draw math curve y = x^3 - 3x^2 + mx + 1
+            ctx.strokeStyle = '#8b5a2b';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+
+            let first = true;
+            for (let px = 0; px < w; px++) {
+                // Convert pixel X to math X
+                const x = (px - originX) / scaleX;
+                // Compute math Y
+                const y = x * x * x - 3 * x * x + m * x + 1;
+                // Convert math Y to pixel Y
+                const py = originY - y * scaleY;
+
+                if (py >= 0 && py <= h) {
+                    if (first) {
+                        ctx.moveTo(px, py);
+                        first = false;
+                    } else {
+                        ctx.lineTo(px, py);
+                    }
+                }
+            }
+            ctx.stroke();
+
+            // Draw derivative y' = 3x^2 - 6x + m (dashed line)
+            ctx.strokeStyle = '#22d3ee';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+
+            first = true;
+            for (let px = 0; px < w; px++) {
+                const x = (px - originX) / scaleX;
+                const dy = 3 * x * x - 6 * x + m;
+                const py = originY - dy * scaleY;
+
+                if (py >= 0 && py <= h) {
+                    if (first) {
+                        ctx.moveTo(px, py);
+                        first = false;
+                    } else {
+                        ctx.lineTo(px, py);
+                    }
+                }
+            }
+            ctx.stroke();
+            ctx.setLineDash([]); // Reset dash
+
+            // Update real-time pedagogical state description
+            updateAnalysis(m);
+        }
+
+        function updateAnalysis(m) {
+            if (m < 3.0) {
+                statusIcon.innerText = '⚡';
+                statusDesc.innerHTML = `
+                    <p class="text-red-700 font-semibold">Trạng thái: Có Cực trị (Không đơn điệu)</p>
+                    <ul class="list-disc ml-4 mt-1 text-gray-600 space-y-1">
+                        <li>Vì \(m = ${m.toFixed(1)} < 3\), biệt thức của đạo hàm \(\Delta' = 9 - 3m = ${(9 - 3 * m).toFixed(2)} > 0\).</li>
+                        <li>Đạo hàm \(y' = 0\) có <strong>2 nghiệm phân biệt</strong>. Đồ thị lượn sóng tạo ra 2 điểm cực trị độc lập.</li>
+                        <li>Hàm số không đồng biến trên toàn bộ khoảng \(\mathbb{R}\).</li>
+                    </ul>
+                `;
+            } else if (m === 3.0) {
+                statusIcon.innerText = '🎯';
+                statusDesc.innerHTML = `
+                    <p class="text-amber-800 font-semibold">Trạng thái: Điểm Uốn / Nghiệm Kép</p>
+                    <ul class="list-disc ml-4 mt-1 text-gray-600 space-y-1">
+                        <li>Vì \(m = 3.0\), biệt thức \(\Delta' = 9 - 3m = 0\).</li>
+                        <li>Đạo hàm có <strong>nghiệm kép \(x = 1\)</strong>. Tại đây đồ thị hàm số phẳng lại rồi tiếp tục tăng lên mà không bị đi xuống.</li>
+                        <li>Hàm số vừa đủ điều kiện để đồng biến trên toàn bộ khoảng \(\mathbb{R}\).</li>
+                    </ul>
+                `;
+            } else {
+                statusIcon.innerText = '✅';
+                statusDesc.innerHTML = `
+                    <p class="text-green-700 font-semibold">Trạng thái: Đồng Biến Trên Toàn Bộ \(\mathbb{R}\)</p>
+                    <ul class="list-disc ml-4 mt-1 text-gray-600 space-y-1">
+                        <li>Vì \(m = ${m.toFixed(1)} > 3\), biệt thức \(\Delta' = 9 - 3m = ${(9 - 3 * m).toFixed(2)} < 0\).</li>
+                        <li>Đạo hàm luôn luôn lớn hơn 0 với mọi \(x\), đồ thị đạo hàm nằm hoàn toàn phía trên trục hoành.</li>
+                        <li>Hàm số luôn luôn đi lên một mạch từ trái sang phải, không có bất kỳ điểm lượn hay cực trị nào.</li>
+                    </ul>
+                `;
+            }
+            // Trigger MathJax update for dynamically altered text inside statusdesc
+            if (window.MathJax && MathJax.typesetPromise) {
+                MathJax.typesetPromise([statusDesc]);
+            }
+        }
+
+        // Initialize and Bind events
+        window.onload = function() {
+            resizeCanvas();
+            draw();
+            slider.addEventListener('input', draw);
+        };
+    </script>
+</body>
+</html>
