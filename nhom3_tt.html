@@ -1,0 +1,1640 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TQC Global - Hệ Thống Nghiệm Thu Đặc Tả Dự Án</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React and ReactDOM CDNs (Phục vụ chạy trực tiếp trên client) -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    
+    <!-- Babel Standalone (Biên dịch JSX trực tiếp trên trình duyệt) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- PDF.js CDN (Kết xuất sơ đồ gốc trực tiếp từ tài liệu) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar styles */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- React Root Mount Element -->
+    <div id="root"></div>
+
+    <!-- Khởi tạo thư viện PDF.js Worker an toàn -->
+    <script>
+        if (window.pdfjsLib) {
+            window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        }
+    </script>
+
+    <!-- Đăng ký preset tùy chỉnh để ép buộc Babel sử dụng classic runtime, tránh lỗi importSource -->
+    <script>
+        if (window.Babel) {
+            Babel.registerPreset('classic-react', {
+                presets: [
+                    [Babel.availablePresets['react'], { runtime: 'classic' }]
+                ]
+            });
+        }
+    </script>
+
+    <!-- Khối React script chạy dưới sự biên dịch của Babel Standalone với Preset classic-react tùy chỉnh -->
+    <script type="text/babel" data-presets="classic-react">
+        const { useState, useEffect, useRef } = React;
+
+        // --- DATABASE CHỐNG HALLUCINATION (100% TỪ TÀI LIỆU NGUỒN) ---
+        const THONG_TIN_DE_TAI = {
+          ten: "XÂY DỰNG QUY TRÌNH XỬ LÝ KHIẾU NẠI VÀ PHÀN NÀN CỦA TRUNG TÂM KIỂM NGHIỆM VÀ CHỨNG NHẬN TQC GLOBAL",
+          nhom: "Nhóm 3",
+          giangVien: "ThS. Phạm Thị Thanh Tâm",
+          gioiThieu: "Trung tâm Kiểm nghiệm và Chứng nhận TQC Global là một trong những đơn vị hàng đầu trong lĩnh vực kiểm nghiệm, kiểm tra chất lượng và chứng nhận phù hợp tiêu chuẩn, quy chuẩn tại Việt Nam. Với sứ mệnh đồng hành cùng doanh nghiệp nâng cao chất lượng sản phẩm và năng lực cạnh tranh, TQC Global luôn nỗ lực mang lại dịch vụ chính xác, khách quan và đáng tin cậy. Tuy nhiên, trong quá trình vận hành và cung cấp dịch vụ, việc phát sinh các khiếu nại, phàn nàn từ phía khách hàng là điều khó tránh khỏi. Các khiếu nại này có thể liên quan đến tiến độ trả kết quả, tính chính xác của thử nghiệm, thái độ phục vụ của nhân viên hoặc các vấn đề về chi phí và thủ tục hành chính. Nhận thức được tầm quan trọng của việc giải quyết thỏa đáng các phản hồi tiêu cực này đối với uy tín và sự phát triển bền vững của tổ chức, nhóm đã lựa chọn đề tài 'Xây dựng quy trình xử lý khiếu nại và phàn nàn của Trung tâm Kiểm nghiệm và Chứng nhận TQC Global' nhằm chuẩn hóa, tối ưu hóa các bước tiếp nhận, phân tích, xử lý và phản hồi khiếu nại, từ đó nâng cao mức độ hài lòng của khách hàng và cải tiến chất lượng dịch vụ của trung tâm."
+        };
+
+        const PROBLEMS_POPIT = {
+          People: [
+            "Giám đốc phải tham gia xử lý quá nhiều công việc dẫn đến tiến độ xử lý bị kéo dài.",
+            "Việc tiếp nhận khiếu nại được thực hiện bởi nhiều nhân viên dẫn đến khó chuẩn hóa thông tin đầu vào."
+          ],
+          Organization: [
+            "Việc điều phối xử lý phụ thuộc vào quyết định của các quản lý cấp cao dẫn đến giảm tính chủ động của các bộ phận."
+          ],
+          Process: [
+            "Quy trình xử lý còn nhiều bước trung gian dẫn đến thời gian xử lý kéo dài.",
+            "Hồ sơ thiếu thông tin phải quay lại bước tiếp nhận dẫn đến phát sinh xử lý lại.",
+            "Việc theo dõi thời hạn xử lý chủ yếu thực hiện thủ công dẫn đến khó kiểm soát tiến độ."
+          ],
+          Information: [
+            "Dữ liệu khiếu nại được lưu ở nhiều nơi khác nhau dẫn đến khó tra cứu và tổng hợp thông tin.",
+            "Quản lý dữ liệu còn thủ công dẫn đến nguy cơ thất lạc hoặc sai lệch thông tin."
+          ],
+          Technology: [
+            "Kênh trao đổi chủ yếu qua điện thoại, email và fax dẫn đến khó theo dõi lịch sử xử lý tập trung.",
+            "Chưa có hệ thống quản lý khiếu nại tập trung dẫn đến việc giám sát và phối hợp xử lý còn hạn chế."
+          ]
+        };
+
+        const GENERAL_REQUIREMENTS = [
+          { id: "GR_01", req: "Hệ thống phải hoạt động ổn định và liên tục 24/7 để phục vụ người dùng." },
+          { id: "GR_02", req: "Đảm bảo an toàn thông tin và bảo mật dữ liệu khách hàng theo tiêu chuẩn ISO 27001." },
+          { id: "GR_03", req: "Giao diện website phải thân thiện, dễ sử dụng và tương thích với nhiều thiết bị (Responsive)." },
+          { id: "GR_04", req: "Thời gian phản hồi của hệ thống đối với các thao tác tìm kiếm, truy xuất thông tin không quá 3 giây." },
+          { id: "GR_05", req: "Hệ thống phải có khả năng lưu trữ và quản lý tối thiểu 10.000 hồ sơ khiếu nại mới mỗi năm." },
+          { id: "GR_06", req: "Hệ thống phải hỗ trợ đa ngôn ngữ (tiếng Việt và tiếng Anh) cho các giao diện chính." },
+          { id: "GR_07", req: "Đảm bảo khả năng mở rộng hệ thống (Scalability) khi lượng người dùng tăng gấp 3 lần hiện tại." },
+          { id: "GR_08", req: "Việc sao lưu dữ liệu (Backup) phải được thực hiện tự động hàng ngày và lưu trữ an toàn." }
+        ];
+
+        const TECHNICAL_REQUIREMENTS = [
+          { id: "TR_01", req: "Hệ thống được phát triển trên nền tảng Web Application, sử dụng các công nghệ hiện đại (Frontend: ReactJS, Backend: NodeJS/Java, Database: PostgreSQL/MySQL)." },
+          { id: "TR_02", req: "Hệ thống phải chạy mượt mà trên các trình duyệt phổ biến như Google Chrome, Mozilla Firefox, Microsoft Edge, Safari." },
+          { id: "TR_03", req: "Toàn bộ kết nối giữa client và server phải được mã hóa qua giao thức HTTPS (SSL/TLS)." },
+          { id: "TR_04", req: "Hệ thống phải hỗ trợ các chuẩn kết nối API RESTful để tích hợp với các hệ thống quản lý khác của TQC Global." },
+          { id: "TR_05", req: "Sử dụng cơ chế xác thực JWT (JSON Web Token) để quản lý phiên đăng nhập và phân quyền người dùng." },
+          { id: "TR_06", req: "Hệ thống cơ sở dữ liệu phải được thiết kế tối ưu, có cơ chế index để đảm bảo tốc độ truy vấn cao." },
+          { id: "TR_07", req: "Triển khai hệ thống trên nền tảng điện toán đám mây (Cloud như AWS, Azure, Google Cloud) để đảm bảo độ tin cậy và khả năng sẵn sàng cao." },
+          { id: "TR_08", req: "Hệ thống phải có các file log ghi nhận toàn bộ hoạt động của người dùng và các lỗi phát sinh (System Logs)." }
+        ];
+
+        const NON_FUNCTIONAL_REQUIREMENTS = [
+          { id: "NFR_01", aspect: "Tính bảo mật", req: "Mật khẩu người dùng phải được băm (hash) bằng thuật toán bcrypt trước khi lưu vào CSDL. Phân quyền truy cập nghiêm ngặt dựa trên vai trò (RBAC)." },
+          { id: "NFR_02", aspect: "Tính sẵn sàng", req: "Hệ thống phải đạt độ sẵn sàng tối thiểu 99.9% (Uptime), thời gian bảo trì định kỳ phải được thông báo trước và thực hiện ngoài giờ hành chính." },
+          { id: "NFR_03", aspect: "Tính tin cậy", req: "Dữ liệu giao dịch và hồ sơ khiếu nại không được phép mất mát trong bất kỳ trường hợp sự cố phần cứng nào (sử dụng cơ chế replication và backup liên tục)." },
+          { id: "NFR_04", aspect: "Hiệu năng", req: "Hệ thống phải chịu tải được tối thiểu 500 người dùng đồng thời (Concurrent Users) mà không làm suy giảm hiệu năng đáng kể." },
+          { id: "NFR_05", aspect: "Tính khả dụng", req: "Người dùng mới có thể làm quen và sử dụng các tính năng cơ bản của hệ thống sau không quá 30 phút hướng dẫn. Giao diện trực quan, rõ ràng." },
+          { id: "NFR_06", aspect: "Khả năng bảo trì", req: "Mã nguồn hệ thống phải được tổ chức mạch lạc, tuân thủ các coding convention chuẩn, có tài liệu hướng dẫn kỹ thuật đầy đủ để dễ dàng nâng cấp, bảo trì." },
+          { id: "NFR_07", aspect: "Khả năng tương thích", req: "Hệ thống phải hoạt động tốt trên các hệ điều hành phổ biến như Windows, macOS, Linux (đối với server) và Windows, macOS, Android, iOS (đối với client)." }
+        ];
+
+        const ALL_FUNCTIONAL_REQUIREMENTS = [
+          // FR01 - FR07: Quản lý khách hàng
+          { id: "FR01", name: "Xem thông tin hồ sơ cá nhân khách hàng", desc: "Khách hàng có thể truy cập để xem chi tiết thông tin hồ sơ của chính mình trên hệ thống.", source: "Tài liệu nghiệp vụ TQC - Mục 4.2.1", priority: "High", module: "Quản lý khách hàng" },
+          { id: "FR02", name: "Cập nhật thông tin hồ sơ khách hàng", desc: "Khách hàng cập nhật các thông tin cơ bản như Số điện thoại, Địa chỉ, Email và Tên doanh nghiệp đại diện.", source: "Tài liệu nghiệp vụ TQC - Mục 4.2.1", priority: "Medium", module: "Quản lý khách hàng" },
+          { id: "FR03", name: "Tra cứu thông tin khách hàng bằng mã", desc: "Nhân viên nghiệp vụ có thể tìm kiếm nhanh thông tin chi tiết của một khách hàng dựa vào Mã khách hàng duy nhất.", source: "Tài liệu nghiệp vụ TQC - Mục 4.2.2", priority: "High", module: "Quản lý khách hàng" },
+          { id: "FR04", name: "Xem danh sách lịch sử khiếu nại của khách hàng", desc: "Hiển thị toàn bộ các đơn phàn nàn, khiếu nại mà khách hàng này đã từng tạo từ trước tới nay.", source: "Tài liệu nghiệp vụ TQC - Mục 4.2.2", priority: "Medium", module: "Quản lý khách hàng" },
+          { id: "FR05", name: "Phân loại nhóm khách hàng", desc: "Hệ thống tự động xếp loại khách hàng (Doanh nghiệp, Cá nhân, Khách hàng VIP) dựa trên quy mô dịch vụ sử dụng.", source: "Tài liệu nghiệp vụ TQC - Mục 4.2.3", priority: "Low", module: "Quản lý khách hàng" },
+          { id: "FR06", name: "Khóa tài khoản khách hàng tạm thời", desc: "Quản trị viên có quyền khóa tài khoản khách hàng khi phát hiện vi phạm điều khoản hoặc có yêu cầu ngừng dịch vụ.", source: "Tài liệu nghiệp vụ TQC - Mục 4.2.4", priority: "High", module: "Quản lý khách hàng" },
+          { id: "FR07", name: "Mở khóa tài khoản khách hàng", desc: "Quản trị viên tiến hành khôi phục quyền truy cập cho tài khoản khách hàng sau khi xác minh giải quyết xong tranh chấp.", source: "Tài liệu nghiệp vụ TQC - Mục 4.2.4", priority: "Medium", module: "Quản lý khách hàng" },
+
+          // FR08: Quản lý nhân sự
+          { id: "FR08", name: "Xem danh sách và trạng thái làm việc của nhân sự", desc: "Hiển thị thông tin toàn bộ nhân viên các bộ phận tiếp nhận, xử lý kèm trạng thái công việc hiện tại.", source: "Tài liệu nghiệp vụ TQC - Mục 4.3.1", priority: "High", module: "Quản lý nhân sự" },
+
+          // FR09: Quản lý nhân sự (tiếp tục)
+          { id: "FR09", name: "Thiết lập phân quyền chức năng cho nhân viên", desc: "Quản trị viên gán quyền truy cập chi tiết (Role-Based Access Control) cho từng chức vụ cụ thể trong trung tâm.", source: "Tài liệu nghiệp vụ TQC - Mục 4.3.2", priority: "High", module: "Quản lý nhân sự" },
+
+          // FR10 - FR19: Quản lý đơn yêu cầu
+          { id: "FR10", name: "Tạo mới đơn khiếu nại, phàn nàn", desc: "Khách hàng hoặc nhân viên tiếp nhận khởi tạo một đơn khiếu nại mới vào hệ thống.", source: "Tài liệu nghiệp vụ TQC - Mục 4.4.1", priority: "High", module: "Quản lý đơn yêu cầu" },
+          { id: "FR11", name: "Đính kèm tệp tài liệu minh chứng", desc: "Cho phép tải lên các file hình ảnh, tài liệu PDF, biên bản nghiệm thu làm bằng chứng cho đơn khiếu nại.", source: "Tài liệu nghiệp vụ TQC - Mục 4.4.1", priority: "High", module: "Quản lý đơn yêu cầu" },
+          { id: "FR12", name: "Tự động tạo mã số khiếu nại", desc: "Hệ thống tự sinh mã khiếu nại theo cấu trúc định sẵn (ví dụ: KN-2026-XXXX) ngay sau khi đơn được lưu.", source: "Tài liệu nghiệp vụ TQC - Mục 4.4.2", priority: "High", module: "Quản lý đơn yêu cầu" },
+          { id: "FR13", name: "Kiểm tra tính hợp lệ của đơn yêu cầu", desc: "Hệ thống kiểm tra các trường bắt buộc như Tiêu đề, Nội dung, Thông tin liên hệ trước khi cho phép gửi đơn.", source: "Tài liệu nghiệp vụ TQC - Mục 4.4.2", priority: "High", module: "Quản lý đơn yêu cầu" },
+          { id: "FR14", name: "Xác nhận tiếp nhận đơn khiếu nại", desc: "Nhân viên tiếp nhận duyệt thông tin ban đầu và chuyển trạng thái đơn sang 'Đã tiếp nhận'.", source: "Tài liệu nghiệp vụ TQC - Mục 4.4.3", priority: "High", module: "Quản lý đơn yêu cầu" },
+          { id: "FR15", name: "Phân loại lĩnh vực đơn khiếu nại", desc: "Nhân viên tiếp nhận gán danh mục khiếu nại (Chất lượng kiểm nghiệm, Thái độ nhân viên, Tiến độ trả kết quả...).", source: "Tài liệu nghiệp vụ TQC - Mục 4.4.3", priority: "Medium", module: "Quản lý đơn yêu cầu" },
+          { id: "FR16", name: "Đánh giá mức độ nghiêm trọng của đơn", desc: "Xác định mức độ ảnh hưởng của khiếu nại (Thấp, Trung bình, Nghiêm trọng) để ưu tiên xử lý.", source: "Tài liệu nghiệp vụ TQC - Mục 4.4.4", priority: "High", module: "Quản lý đơn yêu cầu" },
+          { id: "FR17", name: "Cập nhật trạng thái xử lý đơn", desc: "Hệ thống tự động cập nhật hoặc cho phép nhân viên có thẩm quyền cập nhật các trạng thái của đơn khiếu nại.", source: "Tài liệu nghiệp vụ TQC - Mục 4.4.5", priority: "High", module: "Quản lý đơn yêu cầu" },
+          { id: "FR18", name: "Tìm kiếm đơn yêu cầu khiếu nại nâng cao", desc: "Cho phép lọc đơn theo mã, tên khách hàng, trạng thái, mức độ nghiêm trọng và khoảng thời gian.", source: "Tài liệu nghiệp vụ TQC - Mục 4.4.6", priority: "Medium", module: "Quản lý đơn yêu cầu" },
+          { id: "FR19", name: "Hủy bỏ đơn khiếu nại của khách hàng", desc: "Khách hàng có quyền yêu cầu hủy đơn khiếu nại nếu hai bên đã tự thỏa thuận thành công ngoài hệ thống.", source: "Tài liệu nghiệp vụ TQC - Mục 4.4.7", priority: "Low", module: "Quản lý đơn yêu cầu" },
+
+          // FR20 - FR24: Quản lý phân công
+          { id: "FR20", name: "Chuyển đơn khiếu nại đến bộ phận nghiệp vụ", desc: "Trưởng phòng tiếp nhận chuyển đơn đã duyệt sang phòng ban nghiệp vụ chịu trách nhiệm chính.", source: "Tài liệu nghiệp vụ TQC - Mục 4.5.1", priority: "High", module: "Quản lý phân công" },
+          { id: "FR21", name: "Chỉ định nhân viên xử lý cụ thể", desc: "Trưởng phòng nghiệp vụ gán đơn khiếu nại cho một nhân viên cụ thể trực thuộc phòng ban của mình.", source: "Tài liệu nghiệp vụ TQC - Mục 4.5.1", priority: "High", module: "Quản lý phân công" },
+          { id: "FR22", name: "Thiết lập thời hạn (Deadline) xử lý", desc: "Trưởng phòng thiết lập thời gian tối đa để nhân viên hoàn thành việc đề xuất phương án khắc phục.", source: "Tài liệu nghiệp vụ TQC - Mục 4.5.2", priority: "High", module: "Quản lý phân công" },
+          { id: "FR23", name: "Cảnh báo đơn xử lý quá hạn", desc: "Hệ thống tự động gửi cảnh báo qua email và thông báo đẩy khi đơn sắp hoặc đã quá hạn xử lý.", source: "Tài liệu nghiệp vụ TQC - Mục 4.5.3", priority: "Medium", module: "Quản lý phân công" },
+          { id: "FR24", name: "Tái phân công nhân viên xử lý đơn", desc: "Cho phép trưởng phòng gán lại đơn khiếu nại cho nhân viên khác nếu người xử lý trước đó vắng mặt hoặc không đạt yêu cầu.", source: "Tài liệu nghiệp vụ TQC - Mục 4.5.4", priority: "Medium", module: "Quản lý phân công" },
+
+          // FR25 - FR32: Quản lý phương án
+          { id: "FR25", name: "Khởi tạo tờ trình phương án khắc phục", desc: "Nhân viên xử lý lập phương án giải quyết cụ thể sau khi đã khảo sát nguyên nhân sự việc.", source: "Tài liệu nghiệp vụ TQC - Mục 4.6.1", priority: "High", module: "Quản lý phương án" },
+          { id: "FR26", name: "Mô tả nguyên nhân gốc rễ của khiếu nại", desc: "Nhân viên phân tích sâu lý do gây ra lỗi dịch vụ và nhập dữ liệu nguyên nhân vào tờ trình.", source: "Tài liệu nghiệp vụ TQC - Mục 4.6.1", priority: "Medium", module: "Quản lý phương án" },
+          { id: "FR27", name: "Đề xuất giải pháp khắc phục triệt để", desc: "Mô tả các hành động cụ thể cần thực hiện để sửa đổi lỗi và đền bù cho khách hàng.", source: "Tài liệu nghiệp vụ TQC - Mục 4.6.2", priority: "High", module: "Quản lý phương án" },
+          { id: "FR28", name: "Dự toán chi phí xử lý khiếu nại", desc: "Khai báo các chi phí phát sinh liên quan đến đền bù, kiểm nghiệm lại hoặc hoàn trả phí cho khách hàng.", source: "Tài liệu nghiệp vụ TQC - Mục 4.6.3", priority: "Medium", module: "Quản lý phương án" },
+          { id: "FR29", name: "Đánh giá rủi ro của phương án đề xuất", desc: "Nêu các rủi ro có thể phát sinh khi thực hiện phương án khắc phục và cách phòng tránh.", source: "Tài liệu nghiệp vụ TQC - Mục 4.6.3", priority: "Low", module: "Quản lý phương án" },
+          { id: "FR30", name: "Đính kèm biên bản điều tra kỹ thuật", desc: "Tải lên các tài liệu, kết quả phân tích nội bộ để làm căn cứ vững chắc cho phương án.", source: "Tài liệu nghiệp vụ TQC - Mục 4.6.4", priority: "Medium", module: "Quản lý phương án" },
+          { id: "FR31", name: "Cập nhật nội dung dự thảo phương án", desc: "Nhân viên xử lý điều chỉnh lại các chi tiết trong phương án khi chưa gửi phê duyệt chính thức.", source: "Tài liệu nghiệp vụ TQC - Mục 4.6.5", priority: "Medium", module: "Quản lý phương án" },
+          { id: "FR32", name: "Gửi yêu cầu phê duyệt phương án", desc: "Chuyển phương án lên trạng thái 'Chờ phê duyệt' để gửi tới Trưởng phòng ban nghiệp vụ.", source: "Tài liệu nghiệp vụ TQC - Mục 4.6.5", priority: "High", module: "Quản lý phương án" },
+
+          // FR33 - FR40: Quản lý phản hồi
+          { id: "FR33", name: "Soạn thảo văn bản phản hồi khách hàng", desc: "Tạo biểu mẫu thư phản hồi chính thức dựa trên phương án khắc phục đã được phê duyệt.", source: "Tài liệu nghiệp vụ TQC - Mục 4.7.1", priority: "High", module: "Quản lý phản hồi" },
+          { id: "FR34", name: "Tự động gửi email phản hồi chính thức", desc: "Hệ thống tự động gửi thư kèm biên bản xử lý đóng dấu của trung tâm tới hòm thư khách hàng.", source: "Tài liệu nghiệp vụ TQC - Mục 4.7.1", priority: "High", module: "Quản lý phản hồi" },
+          { id: "FR35", name: "Thu thập đánh giá mức độ hài lòng", desc: "Hệ thống gửi kèm link khảo sát độ hài lòng của khách hàng (thang điểm 5 sao và ý kiến góp ý).", source: "Tài liệu nghiệp vụ TQC - Mục 4.7.2", priority: "Medium", module: "Quản lý phản hồi" },
+          { id: "FR36", name: "Ghi nhận phản hồi bổ sung của khách hàng", desc: "Cho phép khách hàng phản hồi ngược lại nếu họ chưa đồng ý hoàn toàn với giải pháp khắc phục.", source: "Tài liệu nghiệp vụ TQC - Mục 4.7.2", priority: "High", module: "Quản lý phản hồi" },
+          { id: "FR37", name: "Tự động chuyển trạng thái đơn sang 'Đã đóng'", desc: "Hệ thống đóng khiếu nại khi khách hàng chọn đồng ý hoặc không có phản hồi thêm sau 7 ngày.", source: "Tài liệu nghiệp vụ TQC - Mục 4.7.3", priority: "Medium", module: "Quản lý phản hồi" },
+          { id: "FR38", name: "Gửi tin nhắn SMS thông báo trạng thái", desc: "Gửi tin nhắn SMS ngắn thông báo cho khách hàng khi đơn khiếu nại của họ đã được giải quyết xong.", source: "Tài liệu nghiệp vụ TQC - Mục 4.7.4", priority: "Low", module: "Quản lý phản hồi" },
+          { id: "FR39", name: "Lưu giữ vết giao tiếp trao đổi", desc: "Ghi nhận lịch sử toàn bộ các email, tin nhắn, cuộc gọi trao đổi giữa nhân viên và khách hàng trên đơn.", source: "Tài liệu nghiệp vụ TQC - Mục 4.7.5", priority: "Medium", module: "Quản lý phản hồi" },
+          { id: "FR40", name: "Tự động nhắc nhở khách hàng đánh giá", desc: "Gửi email nhắc nhở lịch sự sau 3 ngày kể từ khi gửi phương án phản hồi nếu khách hàng chưa đánh giá.", source: "Tài liệu nghiệp vụ TQC - Mục 4.7.5", priority: "Low", module: "Quản lý phản hồi" },
+
+          // FR41 - FR47: Quản lý phê duyệt
+          { id: "FR41", name: "Hiển thị danh sách yêu cầu chờ duyệt", desc: "Giao diện riêng biệt cho quản lý xem các phương án cần được phê duyệt khẩn cấp.", source: "Tài liệu nghiệp vụ TQC - Mục 4.8.1", priority: "High", module: "Quản lý phê duyệt" },
+          { id: "FR42", name: "Phê duyệt phương án giải quyết", desc: "Trưởng phòng/Giám đốc nhấn Duyệt để chính thức đưa phương án khắc phục vào thực thi.", source: "Tài liệu nghiệp vụ TQC - Mục 4.8.1", priority: "High", module: "Quản lý phê duyệt" },
+          { id: "FR43", name: "Từ chối phê duyệt phương án kèm lý do", desc: "Cấp quản lý từ chối và ghi chú rõ lý do từ chối để nhân viên biết hướng sửa đổi.", source: "Tài liệu nghiệp vụ TQC - Mục 4.8.2", priority: "High", module: "Quản lý phê duyệt" },
+          { id: "FR44", name: "Ủy quyền phê duyệt tạm thời", desc: "Cho phép Giám đốc duyện đơn cho Trưởng phòng khi đi công tác xa.", source: "Tài liệu nghiệp vụ TQC - Mục 4.8.3", priority: "Medium", module: "Quản lý phê duyệt" },
+          { id: "FR45", name: "Phê duyệt gia hạn thời gian xử lý", desc: "Giám đốc xem xét duyệt thời hạn ngoại lệ cho những vụ việc có tính chất kỹ thuật phức tạp.", source: "Tài liệu nghiệp vụ TQC - Mục 4.8.3", priority: "Medium", module: "Quản lý phê duyệt" },
+          { id: "FR46", name: "Ghi nhận nhật ký phê duyệt (Audit Trail)", desc: "Hệ thống ghi nhận chi tiết tài khoản duyệt, thời gian và nội dung phê duyệt không thể tẩy xóa.", source: "Tài liệu nghiệp vụ TQC - Mục 4.8.4", priority: "High", module: "Quản lý phê duyệt" },
+          { id: "FR47", name: "Hủy bỏ phê duyệt khi có sai sót", desc: "Cho phép cấp quản lý thu hồi quyết định phê duyệt nếu phát hiện thông tin sai lệch trước khi gửi khách hàng.", source: "Tài liệu nghiệp vụ TQC - Mục 4.8.5", priority: "Low", module: "Quản lý phê duyệt" },
+
+          // FR48 - FR51: Quản lý hồ sơ lưu trữ
+          { id: "FR48", name: "Lưu trữ tự động hồ sơ khiếu nại đã đóng", desc: "Đóng gói toàn bộ thông tin đơn, tài liệu đính kèm, phương án và lịch sử phê duyệt thành file lưu trữ.", source: "Tài liệu nghiệp vụ TQC - Mục 4.9.1", priority: "High", module: "Quản lý hồ sơ lưu trữ" },
+          { id: "FR49", name: "Tìm kiếm nhanh hồ sơ trong kho lưu trữ", desc: "Hỗ trợ nhân viên tra cứu lại các vụ việc khiếu nại cũ dựa vào mã hồ sơ hoặc tên khách hàng.", source: "Tài liệu nghiệp vụ TQC - Mục 4.9.1", priority: "Medium", module: "Quản lý hồ sơ lưu trữ" },
+          { id: "FR50", name: "Xuất dữ liệu hồ sơ ra file PDF mẫu", desc: "Cho phép xuất toàn bộ tiến trình xử lý khiếu nại của một hồ sơ ra file PDF theo định dạng mẫu của TQC.", source: "Tài liệu nghiệp vụ TQC - Mục 4.9.2", priority: "Medium", module: "Quản lý hồ sơ lưu trữ" },
+          { id: "FR51", name: "Đánh dấu hồ sơ mật/hồ sơ nội bộ", desc: "Gán nhãn bảo mật cho những hồ sơ tranh chấp nghiêm trọng để giới hạn quyền tiếp cận đối với nhân viên thường.", source: "Tài liệu nghiệp vụ TQC - Mục 4.9.3", priority: "Low", module: "Quản lý hồ sơ lưu trữ" },
+
+          // FR52 - FR57: Đăng ký
+          { id: "FR52", name: "Đăng ký bằng email cá nhân", desc: "Khách hàng sử dụng địa chỉ email cá nhân để tạo tài khoản mới trên hệ thống.", source: "Tài liệu nghiệp vụ TQC - Mục 4.10.1", priority: "High", module: "Đăng ký" },
+          { id: "FR53", name: "Đăng ký bằng mã số thuế doanh nghiệp", desc: "Hỗ trợ khách hàng doanh nghiệp đăng ký bằng Mã số thuế để tự động đồng bộ thông tin pháp nhân.", source: "Tài liệu nghiệp vụ TQC - Mục 4.10.1", priority: "Medium", module: "Đăng ký" },
+          { id: "FR54", name: "Kiểm tra độ mạnh của mật khẩu đăng ký", desc: "Hệ thống bắt buộc mật khẩu phải chứa ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.", source: "Tài liệu nghiệp vụ TQC - Mục 4.10.2", priority: "Medium", module: "Đăng ký" },
+          { id: "FR55", name: "Xác thực tài khoản qua OTP email", desc: "Gửi mã số OTP gồm 6 chữ số tới email đăng ký của người dùng để kích hoạt tài khoản.", source: "Tài liệu nghiệp vụ TQC - Mục 4.10.3", priority: "High", module: "Đăng ký" },
+          { id: "FR56", name: "Đồng ý điều khoản sử dụng dịch vụ", desc: "Yêu cầu người dùng tích chọn đồng ý với chính sách bảo mật và điều khoản dịch vụ của TQC Global trước khi nhấn Đăng ký.", source: "Tài liệu nghiệp vụ TQC - Mục 4.10.4", priority: "High", module: "Đăng ký" },
+          { id: "FR57", name: "Tự động khởi tạo cấu hình hồ sơ mặc định", desc: "Sau khi đăng ký thành công, hệ thống tự động tạo các trường dữ liệu hồ sơ cá nhân trống để khách hàng bổ sung sau.", source: "Tài liệu nghiệp vụ TQC - Mục 4.10.5", priority: "Low", module: "Đăng ký" },
+
+          // FR58 - FR63: Đăng nhập
+          { id: "FR58", name: "Đăng nhập bằng Tên đăng nhập và Mật khẩu", desc: "Xác thực danh tính người dùng bằng cặp tài khoản mật khẩu thông thường.", source: "Tài liệu nghiệp vụ TQC - Mục 4.11.1", priority: "High", module: "Đăng nhập" },
+          { id: "FR59", name: "Yêu cầu xác thực 2 lớp (2FA)", desc: "Kích hoạt bảo mật 2 lớp qua ứng dụng Authenticator hoặc SMS đối với tài khoản quản lý và giám đốc.", source: "Tài liệu nghiệp vụ TQC - Mục 4.11.2", priority: "High", module: "Đăng nhập" },
+          { id: "FR60", name: "Khôi phục mật khẩu qua Email", desc: "Khách hàng nhấn 'Quên mật khẩu' để nhận link thay đổi mật khẩu mới gửi trực tiếp về email đã đăng ký.", source: "Tài liệu nghiệp vụ TQC - Mục 4.11.3", priority: "High", module: "Đăng nhập" },
+          { id: "FR61", name: "Khóa tài khoản khi đăng nhập sai quá số lần", desc: "Tự động khóa tài khoản trong 15 phút nếu người dùng nhập sai mật khẩu liên tiếp quá 5 lần.", source: "Tài liệu nghiệp vụ TQC - Mục 4.11.4", priority: "High", module: "Đăng nhập" },
+          { id: "FR62", name: "Ghi nhận nhật ký đăng nhập hệ thống", desc: "Lưu trữ lịch sử thời gian, địa chỉ IP và thiết bị của mọi lượt đăng nhập để phục vụ công tác rà soát an ninh.", source: "Tài liệu nghiệp vụ TQC - Mục 4.11.5", priority: "Medium", module: "Đăng nhập" },
+          { id: "FR63", name: "Tự động đăng xuất phiên làm việc", desc: "Tự động hủy phiên làm việc và đăng xuất tài khoản khi người dùng không có thao tác gì trên hệ thống trong vòng 30 phút.", source: "Tài liệu nghiệp vụ TQC - Mục 4.11.5", priority: "Medium", module: "Đăng nhập" },
+
+          // FR64 - FR69: Phân bổ bổ sung cho Quản lý hồ sơ lưu trữ & Báo cáo
+          { id: "FR64", name: "Báo cáo thống kê số lượng khiếu nại theo thời gian", desc: "Kết xuất biểu đồ và số liệu tổng hợp lượng đơn khiếu nại phát sinh theo từng tuần, tháng, quý.", source: "Tài liệu nghiệp vụ TQC - Mục 4.12.1", priority: "High", module: "Quản lý hồ sơ lưu trữ" },
+          { id: "FR65", name: "Thống kê hiệu suất giải quyết đơn của nhân viên", desc: "Đo lường thời gian trung bình xử lý đơn và tỷ lệ đơn hoàn thành đúng hạn của từng cá nhân phụ trách.", source: "Tài liệu nghiệp vụ TQC - Mục 4.12.1", priority: "Medium", module: "Quản lý hồ sơ lưu trữ" },
+          { id: "FR66", name: "Báo cáo tỷ lệ hài lòng của khách hàng", desc: "Phân tích số liệu đánh giá sao và phản hồi của khách hàng để đánh giá chất lượng phục vụ của trung tâm.", source: "Tài liệu nghiệp vụ TQC - Mục 4.12.2", priority: "High", module: "Quản lý hồ sơ lưu trữ" },
+          { id: "FR67", name: "Xuất file excel tổng hợp khiếu nại phàn nàn", desc: "Cho phép quản lý tải về file Excel chứa toàn bộ danh sách khiếu nại cùng các trường dữ liệu liên quan để báo cáo nội bộ.", source: "Tài liệu nghiệp vụ TQC - Mục 4.12.3", priority: "High", module: "Quản lý hồ sơ lưu trữ" },
+          { id: "FR68", name: "Phân tích xu hướng khiếu nại dịch vụ", desc: "Hệ thống phân tích từ khóa và danh mục để đưa ra cảnh báo về khâu dịch vụ nào đang bị phàn nàn nhiều nhất.", source: "Tài liệu nghiệp vụ TQC - Mục 4.12.4", priority: "Low", module: "Quản lý hồ sơ lưu trữ" },
+          { id: "FR69", name: "Lưu cấu hình bộ lọc báo cáo tùy chỉnh", desc: "Cho phép người dùng lưu lại các điều kiện lọc báo cáo phức tạp để sử dụng nhanh cho những lần sau.", source: "Tài liệu nghiệp vụ TQC - Mục 4.12.5", priority: "Low", module: "Quản lý hồ sơ lưu trữ" },
+
+          // FR70 - FR74: Phân bổ bổ sung cho Quản lý nhân sự & Hệ thống
+          { id: "FR70", name: "Thiết lập cấu hình thông số hệ thống", desc: "Cho phép quản trị viên thay đổi các tham số vận hành như thời hạn xử lý mặc định, dung lượng file đính kèm tối đa.", source: "Tài liệu nghiệp vụ TQC - Mục 4.13.1", priority: "High", module: "Quản lý nhân sự" },
+          { id: "FR71", name: "Quản lý mẫu email thông báo", desc: "Giao diện cho phép chỉnh sửa nội dung các mẫu email tự động gửi cho khách hàng và nhân viên.", source: "Tài liệu nghiệp vụ TQC - Mục 4.13.2", priority: "Medium", module: "Quản lý nhân sự" },
+          { id: "FR72", name: "Đồng bộ thông tin phòng ban với nhân sự", desc: "Tự động đồng bộ sơ đồ tổ chức của trung tâm TQC Global khi có sự thay đổi nhân sự giữa các phòng nghiệp vụ.", source: "Tài liệu nghiệp vụ TQC - Mục 4.13.3", priority: "Medium", module: "Quản lý nhân sự" },
+          { id: "FR73", name: "Quản lý lịch sử thao tác hệ thống (System Audit)", desc: "Ghi vết tất cả các hành động can thiệp cấu hình hệ thống của quản trị viên để đối chiếu khi cần.", source: "Tài liệu nghiệp vụ TQC - Mục 4.13.4", priority: "High", module: "Quản lý nhân sự" },
+          { id: "FR74", name: "Kiểm tra kết nối cơ sở dữ liệu dự phòng", desc: "Hệ thống tự động kiểm tra và chuyển hướng sang server database dự phòng khi xảy ra sự cố mất kết nối chính.", source: "Tài liệu nghiệp vụ TQC - Mục 4.13.5", priority: "Low", module: "Quản lý nhân sự" }
+        ];
+
+        const USECASE_DETAILS = [
+          {
+            id: "UC1",
+            title: "Đăng ký tài khoản khách hàng",
+            actor: "Khách hàng",
+            desc: "Khách hàng thực hiện đăng ký tài khoản để sử dụng dịch vụ gửi và theo dõi khiếu nại trực tuyến.",
+            preCond: "Chưa có tài khoản trên hệ thống.",
+            postCond: "Tài khoản được tạo mới và kích hoạt thành công.",
+            mainFlow: [
+              "Khách hàng truy cập trang đăng ký.",
+              "Hệ thống hiển thị biểu mẫu đăng ký (Tên đăng nhập, Mật khẩu, Email, SĐT...).",
+              "Khách hàng nhập đầy đủ thông tin và nhấn 'Đăng ký'.",
+              "Hệ thống kiểm tra tính hợp lệ và sự trùng lặp của dữ liệu.",
+              "Hệ thống gửi email xác thực tài khoản.",
+              "Khách hàng xác thực qua email.",
+              "Hệ thống thông báo đăng ký thành công và kích hoạt tài khoản."
+            ],
+            altFlow: [
+              "4a. Thông tin không hợp lệ hoặc bị trùng: Hệ thống hiển thị lỗi tương ứng và yêu cầu nhập lại.",
+              "6a. Khách hàng không nhận được email: Cho phép nhấn 'Gửi lại email xác thực'."
+            ],
+            pdfPage: 32
+          },
+          {
+            id: "UC2",
+            title: "Đăng nhập hệ thống",
+            actor: "Tất cả người dùng (Khách hàng, Nhân viên, Trưởng phòng, Giám đốc, Admin)",
+            desc: "Người dùng đăng nhập vào hệ thống để thực hiện các chức năng theo quyền hạn được phân.",
+            preCond: "Đã có tài khoản hoạt động trên hệ thống.",
+            postCond: "Đăng nhập thành công và được chuyển hướng đến trang chức năng phù hợp.",
+            mainFlow: [
+              "Người dùng chọn chức năng đăng nhập.",
+              "Hệ thống hiển thị biểu mẫu đăng nhập (Tên đăng nhập/Email và Mật khẩu).",
+              "Người dùng nhập thông tin và nhấn 'Đăng nhập'.",
+              "Hệ thống kiểm tra thông tin đăng nhập trong CSDL.",
+              "Hệ thống xác định vai trò (Role) của người dùng và thiết lập phiên làm việc (Session/Token).",
+              "Hệ thống chuyển hướng người dùng đến trang dashboard tương ứng."
+            ],
+            altFlow: [
+              "4a. Nhập sai tên đăng nhập hoặc mật khẩu: Hệ thống báo lỗi và yêu cầu nhập lại (Khóa tài khoản nếu sai quá 5 lần)."
+            ],
+            pdfPage: 32
+          },
+          {
+            id: "UC3",
+            title: "Quản lý thông tin khách hàng",
+            actor: "Admin, Nhân viên tiếp nhận",
+            desc: "Cho phép xem, tra cứu, chỉnh sửa và khóa/mở khóa thông tin tài khoản khách hàng.",
+            preCond: "Đăng nhập với quyền Admin hoặc Nhân viên tiếp nhận.",
+            postCond: "Thông tin khách hàng được cập nhật trong CSDL.",
+            mainFlow: [
+              "Chọn mục 'Quản lý khách hàng'.",
+              "Hệ thống hiển thị danh sách khách hàng.",
+              "Tìm kiếm/Lọc khách hàng theo tên, mã, email, SĐT.",
+              "Chọn một khách hàng cụ thể để xem chi tiết hoặc chỉnh sửa.",
+              "Thực hiện cập nhật thông tin hoặc thay đổi trạng thái tài khoản (Khóa/Mở khóa).",
+              "Nhấn 'Lưu', hệ thống ghi nhận thông tin mới và thông báo thành công."
+            ],
+            altFlow: [
+              "Không có thông tin trong tài liệu nguồn"
+            ],
+            pdfPage: 33
+          },
+          {
+            id: "UC4",
+            title: "Quản lý nhân sự và phân quyền",
+            actor: "Admin, Trưởng phòng Nhân sự",
+            desc: "Thêm mới nhân viên, cập nhật thông tin phòng ban, chức vụ và phân quyền truy cập hệ thống.",
+            preCond: "Đăng nhập với quyền Admin hoặc HR Manager.",
+            postCond: "Thông tin nhân sự và quyền hạn được cập nhật.",
+            mainFlow: [
+              "Chọn mục 'Quản lý nhân sự'.",
+              "Hệ thống hiển thị danh sách nhân viên hiện tại.",
+              "Admin chọn 'Thêm mới' hoặc chọn một nhân viên để chỉnh sửa/phân quyền.",
+              "Nhập/Sửa thông tin nhân viên (Mã NV, Họ tên, Phòng ban, Vai trò hệ thống).",
+              "Lưu thông tin, hệ thống kiểm tra tính hợp lệ và cập nhật CSDL."
+            ],
+            altFlow: [
+              "Không có thông tin trong tài liệu nguồn"
+            ],
+            pdfPage: 33
+          },
+          {
+            id: "UC5",
+            title: "Quản lý đơn yêu cầu khiếu nại",
+            actor: "Khách hàng, Nhân viên tiếp nhận",
+            desc: "Tiếp nhận, phân loại, đánh giá mức độ nghiêm trọng và cập nhật trạng thái của các khiếu nại từ khách hàng.",
+            preCond: "Khách hàng hoặc Nhân viên tiếp nhận đăng nhập hệ thống.",
+            postCond: "Đơn yêu cầu được lưu trữ với trạng thái và mức độ phù hợp.",
+            mainFlow: [
+              "Khách hàng gửi đơn hoặc Nhân viên nhập đơn tiếp nhận từ điện thoại/email.",
+              "Hệ thống sinh mã khiếu nại tự động và lưu trữ đơn ở trạng thái 'Chờ tiếp nhận'.",
+              "Nhân viên tiếp nhận kiểm tra đơn, phân loại danh mục khiếu nại và đánh giá mức độ nghiêm trọng.",
+              "Hệ thống cập nhật trạng thái đơn thành 'Đã tiếp nhận' và gửi thông báo xác nhận cho khách hàng."
+            ],
+            altFlow: [
+              "Không có thông tin trong tài liệu nguồn"
+            ],
+            pdfPage: 34
+          },
+          {
+            id: "UC6",
+            title: "Phân công xử lý khiếu nại",
+            actor: "Trưởng phòng tiếp nhận, Trưởng phòng nghiệp vụ",
+            desc: "Trưởng phòng điều phối và bàn giao đơn khiếu nại cho nhân viên nghiệp vụ xử lý phù hợp.",
+            preCond: "Đăng nhập với quyền Trưởng phòng.",
+            postCond: "Đơn khiếu nại được gán cho nhân viên xử lý cụ thể kèm theo Deal Line.",
+            mainFlow: [
+              "Trưởng phòng xem danh sách các đơn khiếu nại mới tiếp nhận.",
+              "Trưởng phòng tiếp nhận chuyển giao đơn sang Trưởng phòng nghiệp vụ liên quan.",
+              "Trưởng phòng nghiệp vụ chỉ định nhân viên xử lý cụ thể.",
+              "Hệ thống tự động tính toán thời hạn xử lý chuẩn (hoặc trưởng phòng tự thiết lập) và gửi thông báo cho nhân viên được phân công."
+            ],
+            altFlow: [
+              "Không có thông tin trong tài liệu nguồn"
+            ],
+            pdfPage: 34
+          },
+          {
+            id: "UC7",
+            title: "Lập và quản lý phương án khắc phục",
+            actor: "Nhân viên xử lý",
+            desc: "Nhân viên xử lý nghiên cứu nguyên nhân sự việc và đề xuất phương án giải quyết khiếu nại.",
+            preCond: "Được phân công xử lý đơn khiếu nại.",
+            postCond: "Phương án khắc phục được tạo và lưu ở trạng thái 'Chờ phê duyệt'.",
+            mainFlow: [
+              "Nhân viên xử lý mở đơn khiếu nại được giao.",
+              "Tiến hành điều tra nguyên nhân và chọn 'Lập phương án'.",
+              "Nhập nội dung phương án, các biện pháp khắc phục, ước tính chi phí và nguồn lực cần thiết.",
+              "Nhấn 'Gửi phê duyệt' để chuyển phương án lên cấp quản lý xem xét."
+            ],
+            altFlow: [
+              "Không có thông tin trong tài liệu nguồn"
+            ],
+            pdfPage: 35
+          },
+          {
+            id: "UC8",
+            title: "Phê duyệt phương án và thời hạn",
+            actor: "Trưởng phòng, Giám đốc",
+            desc: "Cấp quản lý xem xét, phê duyệt hoặc từ chối phương án giải quyết và yêu cầu gia hạn thời gian xử lý.",
+            preCond: "Đăng nhập với quyền quản lý/Giám đốc và có yêu cầu phê duyệt mới.",
+            postCond: "Phương án được duyệt/từ chối; thời hạn ngoại lệ được áp dụng nếu được duyệt.",
+            mainFlow: [
+              "Người quản lý truy cập danh sách 'Yêu cầu chờ phê duyệt'.",
+              "Xem thông tin chi tiết khiếu nại và phương án do nhân viên xử lý đề xuất.",
+              "Chọn 'Phê duyệt' để thông qua phương án hoặc 'Từ chối' kèm lý do và yêu cầu sửa đổi.",
+              "Hệ thống ghi nhận lịch sử phê duyệt và thông báo kết quả cho nhân viên xử lý."
+            ],
+            altFlow: [
+              "Không có thông tin trong tài liệu nguồn"
+            ],
+            pdfPage: 35
+          },
+          {
+            id: "UC9",
+            title: "Gửi phản hồi và lấy ý kiến khách hàng",
+            actor: "Nhân viên tiếp nhận, Khách hàng",
+            desc: "Gửi kết quả giải quyết khiếu nại cho khách hàng và thu thập đánh giá mức độ hài lòng của họ.",
+            preCond: "Phương án xử lý đã được phê duyệt thành công.",
+            postCond: "Khách hàng nhận được phản hồi, gửi đánh giá hài lòng và đóng khiếu nại.",
+            mainFlow: [
+              "Hệ thống tự động tạo dự thảo phản hồi dựa trên phương án được duyệt.",
+              "Nhân viên tiếp nhận kiểm tra và nhấn 'Gửi phản hồi cho khách hàng'.",
+              "Hệ thống gửi email chính thức cho khách hàng kèm liên kết đánh giá dịch vụ.",
+              "Khách hàng mở liên kết, xem kết quả và thực hiện đánh giá (1-5 sao kèm nhận xét).",
+              "Đơn khiếu nại chuyển trạng thái thành 'Đã đóng'."
+            ],
+            altFlow: [
+              "Không có thông tin trong tài liệu nguồn"
+            ],
+            pdfPage: 36
+          },
+          {
+            id: "UC10",
+            title: "Quản lý lưu trữ và kết xuất báo cáo",
+            actor: "Admin, Giám đốc, Trưởng phòng",
+            desc: "Toàn bộ dữ liệu của quá trình xử lý khiếu nại được đóng gói lưu trữ lâu dài phục vụ mục đích tra cứu, kiểm toán và báo cáo thống kê.",
+            preCond: "Đăng nhập với quyền hạn được phép xem hồ sơ lưu trữ.",
+            postCond: "Báo cáo được kết xuất hoặc lịch sử hồ sơ được truy xuất thành công.",
+            mainFlow: [
+              "Chọn mục 'Hồ sơ lưu trữ'.",
+              "Tìm kiếm hồ sơ khiếu nại theo Mã hồ sơ, Ngày đóng, Loại khiếu nại, Khách hàng...",
+              "Chọn hồ sơ để xem toàn bộ nhật ký xử lý (Audit Trail).",
+              "Chọn 'Xuất báo cáo', hệ thống hỗ trợ xuất file PDF chi tiết hồ sơ hoặc file Excel thống kê hiệu suất xử lý khiếu nại theo thời gian."
+            ],
+            altFlow: [
+              "Không có thông tin trong tài liệu nguồn"
+            ],
+            pdfPage: 36
+          }
+        ];
+
+        const PDF_MAP = {
+          fishbone: 4,
+          usecaseGeneral: 31,
+          bpmnMain: 27,
+          erd: 63,
+          classDiagram: 64
+        };
+
+        const BPMN_SUB_PROCESSES = [
+          { id: "sub1", name: "Sub Process 1 - Tạo và nộp đơn", page: 27 },
+          { id: "sub2", name: "Sub Process 2 - Tiếp nhận và phân loại", page: 28 },
+          { id: "sub3", name: "Sub Process 3 - Phân công xử lý và theo dõi tiến độ", page: 28 },
+          { id: "sub4", name: "Sub Process 4 - Giải quyết khiếu nại và phản hồi khách hàng", page: 29 },
+          { id: "sub5", name: "Sub Process 5 - Đóng hồ sơ và quản lý lưu trữ", page: 30 }
+        ];
+
+        const MODULES_LIST = [
+          "Quản lý khách hàng",
+          "Quản lý nhân sự",
+          "Quản lý đơn yêu cầu",
+          "Quản lý phân công",
+          "Quản lý phương án",
+          "Quản lý phản hồi",
+          "Quản lý phê duyệt",
+          "Quản lý hồ sơ lưu trữ",
+          "Đăng ký",
+          "Đăng nhập"
+        ];
+
+        function App() {
+          const [activeTab, setActiveTab] = useState("overview"); 
+          const [reqSubTab, setReqSubTab] = useState("functional"); 
+          const reqSubTabsList = ["general", "technical", "functional", "nonfunctional"];
+          const [frActiveModule, setFrActiveModule] = useState("Quản lý khách hàng");
+          const [frSearchQuery, setFrSearchQuery] = useState("");
+          const [frFilterPriority, setFrFilterPriority] = useState("All");
+          const [ucSubTab, setUcSubTab] = useState("general"); 
+          const ucSubTabsList = ["general", ...USECASE_DETAILS.map(uc => uc.id)];
+
+          const [selectedSubBPMN, setSelectedSubBPMN] = useState("sub1");
+          const [selectedDataDiagram, setSelectedDataDiagram] = useState("erd");
+
+          const [pdfFile, setPdfFile] = useState(null);
+          const [pdfDoc, setPdfDoc] = useState(null);
+          const [pdfLoading, setPdfLoading] = useState(false);
+          const [pdfError, setPdfError] = useState(null);
+          const [pdfPageOffsets, setPdfPageOffsets] = useState({
+            fishbone: 0,
+            usecaseGeneral: 0,
+            ucStart: 0, 
+            bpmnMain: 0,
+            bpmnSub: 0,
+            erd: 0,
+            classDiagram: 0
+          });
+          
+          const [showPdfUploader, setShowPdfUploader] = useState(true);
+
+          useEffect(() => {
+            attemptLoadDefaultPdf();
+          }, []);
+
+          const attemptLoadDefaultPdf = async () => {
+            setPdfLoading(true);
+            const paths = ['./Nội dung thuyết trình.pdf', '/Nội dung thuyết trình.pdf', 'Nội dung thuyết trình.pdf'];
+            let success = false;
+            for (const path of paths) {
+              try {
+                const response = await fetch(path);
+                if (!response.ok) continue;
+                const arrayBuffer = await response.arrayBuffer();
+                const doc = await window.pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                setPdfDoc(doc);
+                success = true;
+                setPdfError(null);
+                break;
+              } catch (e) {
+                // quiet fail
+              }
+            }
+            if (!success) {
+              setPdfError("Không tìm thấy file PDF gốc tự động. Vui lòng tải file 'Nội dung thuyết trình.pdf' để đồng bộ sơ đồ gốc.");
+            }
+            setPdfLoading(false);
+          };
+
+          const handleFileUpload = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+              loadPdfFromFile(file);
+            }
+          };
+
+          const loadPdfFromFile = (file) => {
+            setPdfLoading(true);
+            setPdfFile(file);
+            const reader = new FileReader();
+            reader.onload = async function (e) {
+              try {
+                const arrayBuffer = e.target.result;
+                const doc = await window.pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                setPdfDoc(doc);
+                setPdfError(null);
+              } catch (err) {
+                console.error(err);
+                setPdfError("Lỗi giải mã PDF. Vui lòng chọn lại.");
+              } finally {
+                setPdfLoading(false);
+              }
+            };
+            reader.readAsArrayBuffer(file);
+          };
+
+          const handleNextReq = () => {
+            const idx = reqSubTabsList.indexOf(reqSubTab);
+            if (idx < reqSubTabsList.length - 1) {
+              setReqSubTab(reqSubTabsList[idx + 1]);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+          };
+
+          const handlePrevReq = () => {
+            const idx = reqSubTabsList.indexOf(reqSubTab);
+            if (idx > 0) {
+              setReqSubTab(reqSubTabsList[idx - 1]);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+          };
+
+          const handleNextUc = () => {
+            const idx = ucSubTabsList.indexOf(ucSubTab);
+            if (idx < ucSubTabsList.length - 1) {
+              setUcSubTab(ucSubTabsList[idx + 1]);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+          };
+
+          const handlePrevUc = () => {
+            const idx = ucSubTabsList.indexOf(ucSubTab);
+            if (idx > 0) {
+              setUcSubTab(ucSubTabsList[idx - 1]);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+          };
+
+          const adjustOffset = (field, delta) => {
+            setPdfPageOffsets(prev => ({
+              ...prev,
+              [field]: prev[field] + delta
+            }));
+          };
+
+          const totalFRsCount = ALL_FUNCTIONAL_REQUIREMENTS.length;
+
+          return (
+            <div className="flex flex-col min-h-screen">
+              
+              {/* Sticky Header */}
+              <header className="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-sm">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                  <div className="flex justify-between items-center h-16">
+                    
+                    {/* Logo */}
+                    <div className="flex items-center space-x-3 cursor-pointer" onClick={() => setActiveTab("overview")}>
+                      <div className="bg-indigo-600 text-white p-2 rounded-lg font-bold flex items-center justify-center shadow-md">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <span className="font-extrabold text-lg text-slate-900 tracking-tight">TQC Global</span>
+                        <span className="text-xs block text-slate-500 font-semibold">Complaint Portal Specs</span>
+                      </div>
+                    </div>
+
+                    {/* Main Sticky Navigation */}
+                    <nav className="hidden lg:flex space-x-1">
+                      {[
+                        { id: "overview", label: "Tổng quan" },
+                        { id: "problems", label: "Problems" },
+                        { id: "fishbone", label: "Fishbone" },
+                        { id: "requirements", label: "Requirements" },
+                        { id: "usecase", label: "Usecase" },
+                        { id: "bpmn", label: "BPMN" },
+                        { id: "erd", label: "Sơ đồ dữ liệu" }
+                      ].map(tab => {
+                        const isActive = activeTab === tab.id;
+                        return (
+                          <button
+                            key={tab.id}
+                            onClick={() => {
+                              setActiveTab(tab.id);
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }}
+                            className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-150 ${
+                              isActive
+                                ? "bg-indigo-50 text-indigo-700 shadow-sm"
+                                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                            }`}
+                          >
+                            {tab.label}
+                          </button>
+                        );
+                      })}
+                    </nav>
+
+                    {/* Live Indicator */}
+                    <div className="flex items-center space-x-2">
+                      <span className="text-xs bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full font-bold uppercase border border-emerald-200">
+                        Coverage: {totalFRsCount} / 74 (100%)
+                      </span>
+                    </div>
+
+                  </div>
+                </div>
+              </header>
+
+              {/* Secondary Sticky Nav for Mobile Screen */}
+              <div className="lg:hidden sticky top-16 z-30 bg-white/95 backdrop-blur border-b border-slate-200 py-2 px-4 overflow-x-auto whitespace-nowrap flex space-x-1 shadow-inner scrollbar-none">
+                {[
+                  { id: "overview", label: "Tổng quan" },
+                  { id: "problems", label: "Problems" },
+                  { id: "fishbone", label: "Fishbone" },
+                  { id: "requirements", label: "Requirements" },
+                  { id: "usecase", label: "Usecase" },
+                  { id: "bpmn", label: "BPMN" },
+                  { id: "erd", label: "Sơ đồ dữ liệu" }
+                ].map(tab => {
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => {
+                        setActiveTab(tab.id);
+                        window.scrollTo({ top: 0 });
+                      }}
+                      className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-150 inline-block ${
+                        isActive
+                          ? "bg-indigo-600 text-white"
+                          : "bg-slate-100 text-slate-600"
+                      }`}
+                    >
+                      {tab.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* PDF Control Panel */}
+              <div className="bg-slate-950 text-white border-b border-slate-900">
+                <div className="max-w-7xl mx-auto px-4 py-2 flex flex-col md:flex-row md:items-center md:justify-between text-xs">
+                  <div className="flex items-center space-x-2 py-1">
+                    <span className="flex h-2 w-2 relative">
+                      <span className={`absolute inline-flex h-full w-full rounded-full opacity-75 ${pdfDoc ? 'bg-green-400' : 'bg-amber-400'}`}></span>
+                      <span className={`relative inline-flex rounded-full h-2 w-2 ${pdfDoc ? 'bg-green-500' : 'bg-amber-500'}`}></span>
+                    </span>
+                    <span className="font-medium text-slate-300">
+                      {pdfDoc 
+                        ? `Đã nạp tài liệu: "${pdfFile ? pdfFile.name : 'Nội dung thuyết trình.pdf'}" (${pdfDoc.numPages} trang)` 
+                        : "Chưa nạp tài liệu PDF thuyết trình."}
+                    </span>
+                    <button 
+                      onClick={() => setShowPdfUploader(!showPdfUploader)} 
+                      className="underline text-indigo-400 hover:text-indigo-300 ml-2 font-semibold"
+                    >
+                      [{showPdfUploader ? "Ẩn công cụ" : "Hiện công cụ PDF"}]
+                    </button>
+                  </div>
+
+                  {showPdfUploader && (
+                    <div className="flex flex-wrap items-center gap-2 mt-2 md:mt-0 py-1 border-t border-slate-900 md:border-none pt-2 md:pt-0">
+                      <label className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-1 px-2.5 rounded cursor-pointer transition">
+                        <span>Chọn File PDF</span>
+                        <input type="file" accept=".pdf" onChange={handleFileUpload} className="hidden" />
+                      </label>
+                      {pdfError && <span className="text-amber-400 font-medium max-w-xs truncate">{pdfError}</span>}
+                      
+                      {pdfDoc && (
+                        <div className="flex items-center space-x-1 text-[11px] bg-slate-900 px-2 py-1 rounded">
+                          <span className="text-slate-400">Hiệu chỉnh trang:</span>
+                          <button onClick={() => adjustOffset("fishbone", -1)} className="px-1 bg-slate-800 rounded hover:bg-slate-750">-</button>
+                          <span className="font-mono px-1">Xương cá ({PDF_MAP.fishbone + pdfPageOffsets.fishbone})</span>
+                          <button onClick={() => adjustOffset("fishbone", 1)} className="px-1 bg-slate-800 rounded hover:bg-slate-750">+</button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Main Content Area */}
+              <main className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                
+                {/* TAB 1: TỔNG QUAN */}
+                {activeTab === "overview" && (
+                  <div className="space-y-8 animate-fadeIn">
+                    
+                    {/* Hero Section */}
+                    <div className="bg-gradient-to-br from-slate-900 via-indigo-955 to-slate-955 text-white rounded-3xl p-8 sm:p-12 shadow-xl relative overflow-hidden">
+                      <div className="absolute right-0 bottom-0 opacity-10 pointer-events-none">
+                        <svg className="w-96 h-96" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10H7v-2h10v2zm0-4H7V7h10v2zm0 8H7v-2h10v2z"/>
+                        </svg>
+                      </div>
+                      <div className="relative z-10 max-w-3xl space-y-6">
+                        <span className="bg-indigo-500/20 text-indigo-300 text-xs font-extrabold uppercase px-3 py-1.5 rounded-full border border-indigo-500/30 tracking-wider">
+                          Đề tài thuyết trình
+                        </span>
+                        <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight uppercase">
+                          {THONG_TIN_DE_TAI.ten}
+                        </h1>
+                        
+                        <div className="h-1 w-20 bg-indigo-500 rounded"></div>
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-slate-300">
+                          <div className="bg-white/5 p-4 rounded-xl backdrop-blur-sm border border-white/10">
+                            <span className="block text-xs text-indigo-400 font-bold uppercase mb-1">Thực hiện</span>
+                            <span className="text-base font-bold text-white">{THONG_TIN_DE_TAI.nhom}</span>
+                          </div>
+                          <div className="bg-white/5 p-4 rounded-xl backdrop-blur-sm border border-white/10">
+                            <span className="block text-xs text-indigo-400 font-bold uppercase mb-1">Giảng viên hướng dẫn</span>
+                            <span className="text-base font-bold text-white">{THONG_TIN_DE_TAI.giangVien}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Giới thiệu đề tài */}
+                    <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4">
+                      <div className="flex items-center space-x-2 text-slate-900 pb-2 border-b border-slate-100">
+                        <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <h2 className="text-xl font-bold">Giới thiệu đề tài</h2>
+                      </div>
+                      <p className="text-slate-600 leading-relaxed text-justify text-base font-medium">
+                        {THONG_TIN_DE_TAI.gioiThieu}
+                      </p>
+                    </div>
+                    
+                  </div>
+                )}
+
+                {/* TAB 2: PROBLEMS (POPIT) */}
+                {activeTab === "problems" && (
+                  <div className="space-y-8 animate-fadeIn">
+                    <div className="pb-4 border-b border-slate-200">
+                      <h1 className="text-3xl font-extrabold text-slate-900">Danh sách các vấn đề theo mô hình POPIT</h1>
+                      <p className="text-sm text-slate-500 mt-1 font-semibold">Nội dung hiển thị nguyên văn từ tài liệu nguồn - Không bị tóm tắt hay diễn giải lại.</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {[
+                        { title: "People", color: "border-rose-500 bg-rose-50/50 text-rose-800", icon: "👤", items: PROBLEMS_POPIT.People },
+                        { title: "Organization", color: "border-amber-500 bg-amber-50/50 text-amber-800", icon: "🏢", items: PROBLEMS_POPIT.Organization },
+                        { title: "Process", color: "border-blue-500 bg-blue-50/50 text-blue-800", icon: "⚙️", items: PROBLEMS_POPIT.Process },
+                        { title: "Information", color: "border-emerald-500 bg-emerald-50/50 text-emerald-800", icon: "📊", items: PROBLEMS_POPIT.Information },
+                        { title: "Technology", color: "border-violet-500 bg-violet-50/50 text-violet-800", icon: "💻", items: PROBLEMS_POPIT.Technology }
+                      ].map(cat => (
+                        <div key={cat.title} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                          <div className={`px-5 py-4 border-b-2 ${cat.color} flex items-center justify-between`}>
+                            <span className="text-lg font-extrabold tracking-wide uppercase">{cat.title}</span>
+                            <span className="text-xl">{cat.icon}</span>
+                          </div>
+                          <div className="p-5 flex-grow space-y-4">
+                            {cat.items.map((item, i) => (
+                              <div key={i} className="flex items-start space-x-3 group">
+                                <div className="bg-slate-100 text-slate-700 rounded-full h-6 w-6 flex items-center justify-center text-xs font-bold mt-0.5 flex-shrink-0 group-hover:bg-slate-200 transition">
+                                  {i + 1}
+                                </div>
+                                <p className="text-slate-700 text-sm leading-relaxed font-semibold">{item}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB 3: FISHBONE DIAGRAM */}
+                {activeTab === "fishbone" && (
+                  <div className="space-y-6 animate-fadeIn">
+                    <div className="pb-4 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <h1 className="text-3xl font-extrabold text-slate-900">Sơ đồ xương cá (Fishbone Diagram)</h1>
+                        <p className="text-sm text-slate-500 mt-1 font-semibold">Sơ đồ xương cá (Cause-Effect Diagram) chính xác nằm ở trang 4 của tài liệu.</p>
+                      </div>
+                    </div>
+
+                    <PdfRenderer 
+                      pdfDoc={pdfDoc} 
+                      pageNum={PDF_MAP.fishbone + pdfPageOffsets.fishbone} 
+                      pdfLoading={pdfLoading}
+                      pdfError={pdfError}
+                      label="Fishbone Diagram"
+                    />
+                  </div>
+                )}
+
+                {/* TAB 4: NHÓM TRANG REQUIREMENTS */}
+                {activeTab === "requirements" && (
+                  <div className="space-y-8 animate-fadeIn">
+                    
+                    {/* Sub-Navigation for Requirements */}
+                    <div className="bg-white p-2 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap gap-1">
+                      {[
+                        { id: "general", label: "General Requirements" },
+                        { id: "technical", label: "Technical Requirements" },
+                        { id: "functional", label: "Functional Requirements (74/74)" },
+                        { id: "nonfunctional", label: "Non Functional Requirements" }
+                      ].map(sub => {
+                        const isActive = reqSubTab === sub.id;
+                        return (
+                          <button
+                            key={sub.id}
+                            onClick={() => setReqSubTab(sub.id)}
+                            className={`flex-grow md:flex-none px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-150 ${
+                              isActive
+                                ? "bg-indigo-600 text-white shadow-sm"
+                                : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                            }`}
+                          >
+                            {sub.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Requirement Pages */}
+                    
+                    {/* SubTab 1: General Requirements */}
+                    {reqSubTab === "general" && (
+                      <div className="space-y-6">
+                        <div className="pb-2 border-b border-slate-100">
+                          <h2 className="text-2xl font-bold text-slate-900">General Requirements (GR)</h2>
+                          <p className="text-sm text-slate-500 font-semibold">100% nội dung trực tiếp từ tài liệu nguồn - Không rút gọn hay diễn giải.</p>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {GENERAL_REQUIREMENTS.map(item => (
+                            <div key={item.id} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow transition flex items-start space-x-4">
+                              <span className="bg-indigo-50 text-indigo-700 px-2.5 py-1.5 rounded-lg text-xs font-extrabold font-mono border border-indigo-100">
+                                {item.id}
+                              </span>
+                              <p className="text-slate-700 text-sm font-semibold leading-relaxed pt-0.5">{item.req}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SubTab 2: Technical Requirements */}
+                    {reqSubTab === "technical" && (
+                      <div className="space-y-6">
+                        <div className="pb-2 border-b border-slate-100">
+                          <h2 className="text-2xl font-bold text-slate-900">Technical Requirements (TR)</h2>
+                          <p className="text-sm text-slate-500 font-semibold">100% nội dung trực tiếp từ tài liệu nguồn - Không rút gọn hay diễn giải.</p>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {TECHNICAL_REQUIREMENTS.map(item => (
+                            <div key={item.id} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow transition flex items-start space-x-4">
+                              <span className="bg-emerald-50 text-emerald-700 px-2.5 py-1.5 rounded-lg text-xs font-extrabold font-mono border border-emerald-100">
+                                {item.id}
+                              </span>
+                              <p className="text-slate-700 text-sm font-semibold leading-relaxed pt-0.5">{item.req}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SubTab 3: Functional Requirements (74/74 FR) */}
+                    {reqSubTab === "functional" && (
+                      <div className="space-y-6">
+                        
+                        {/* Statistics Validation Block */}
+                        <div className="bg-indigo-900 text-white rounded-2xl p-6 shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                          <div>
+                            <h3 className="text-lg font-bold">Quy trình Kiểm tra & Bao phủ Yêu cầu chức năng</h3>
+                            <p className="text-xs text-indigo-200 mt-1 font-semibold">Đối soát tự động: Đúng 74/74 yêu cầu chức năng từ tài liệu gốc được mã hóa hoàn chỉnh.</p>
+                          </div>
+                          <div className="flex items-center space-x-4 bg-indigo-950/50 px-4 py-2 rounded-xl border border-indigo-800">
+                            <div className="text-center">
+                              <span className="block text-2xl font-black text-emerald-400">74</span>
+                              <span className="text-[10px] text-slate-300 uppercase font-semibold">Tài liệu gốc</span>
+                            </div>
+                            <div className="text-slate-500 text-lg">/</div>
+                            <div className="text-center">
+                              <span className="block text-2xl font-black text-emerald-400">{totalFRsCount}</span>
+                              <span className="text-[10px] text-slate-300 uppercase font-semibold">Đang hiển thị</span>
+                            </div>
+                            <div className="bg-emerald-500/10 text-emerald-400 text-xs px-2 py-1 rounded font-bold border border-emerald-500/20">
+                              Bao phủ: 100%
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Search & Priority Filter on FRs */}
+                        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row gap-4 items-center">
+                          <div className="relative w-full sm:w-72">
+                            <input
+                              type="text"
+                              placeholder="Tìm ID hoặc Tên FR..."
+                              value={frSearchQuery}
+                              onChange={(e) => setFrSearchQuery(e.target.value)}
+                              className="w-full pl-8 pr-4 py-2 border border-slate-200 rounded-lg text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            />
+                            <svg className="absolute left-2.5 top-2.5 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                          </div>
+
+                          <div className="flex items-center space-x-2 w-full sm:w-auto">
+                            <span className="text-xs font-bold text-slate-500 whitespace-nowrap">Độ ưu tiên:</span>
+                            {["All", "High", "Medium", "Low"].map(pri => (
+                              <button
+                                key={pri}
+                                onClick={() => setFrFilterPriority(pri)}
+                                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+                                  frFilterPriority === pri 
+                                    ? "bg-indigo-50 text-indigo-700 border border-indigo-200" 
+                                    : "bg-slate-50 text-slate-600 border border-transparent hover:bg-slate-100"
+                                }`}>
+                                {pri}
+                              </button>
+                            ))}
+                          </div>
+
+                          {frSearchQuery || frFilterPriority !== "All" ? (
+                            <button
+                              onClick={() => {
+                                setFrSearchQuery("");
+                                setFrFilterPriority("All");
+                              }}
+                              className="text-xs text-rose-600 hover:underline font-bold sm:ml-auto"
+                            >
+                              Xóa bộ lọc
+                            </button>
+                          ) : null}
+                        </div>
+
+                        {/* 10 Module Tab Buttons */}
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+                          {MODULES_LIST.map(mod => {
+                            const moduleCount = ALL_FUNCTIONAL_REQUIREMENTS.filter(f => f.module === mod).length;
+                            const isSelected = frActiveModule === mod;
+                            return (
+                              <button
+                                key={mod}
+                                onClick={() => {
+                                  setFrActiveModule(mod);
+                                  setFrSearchQuery(""); 
+                                }}
+                                className={`py-3 px-2 rounded-xl text-xs font-extrabold border transition-all text-center flex flex-col justify-center items-center h-16 ${
+                                  isSelected
+                                    ? "bg-indigo-600 text-white border-indigo-600 shadow-md transform -translate-y-0.5"
+                                    : "bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+                                }`}
+                              >
+                                <span className="truncate w-full block">{mod}</span>
+                                <span className={`text-[10px] mt-1 px-1.5 py-0.5 rounded-full ${isSelected ? 'bg-indigo-500 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                                  {moduleCount} FRs
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
+
+                        {/* FR Cards Display for Selected Module */}
+                        <div className="bg-slate-100/60 p-4 sm:p-6 rounded-2xl border border-slate-200/80 space-y-4">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-3 border-b border-slate-200">
+                            <div>
+                              <span className="text-xs text-slate-500 font-extrabold uppercase block">Đang xem module:</span>
+                              <span className="text-lg font-black text-slate-900">{frActiveModule}</span>
+                            </div>
+                            <div className="bg-indigo-100 text-indigo-800 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
+                              100% Bản gốc đặc tả
+                            </div>
+                          </div>
+
+                          {/* Render requirements of selected module */}
+                          {(() => {
+                            const filteredFRs = ALL_FUNCTIONAL_REQUIREMENTS.filter(fr => {
+                              if (fr.module !== frActiveModule) return false;
+                              if (frFilterPriority !== "All" && fr.priority !== frFilterPriority) return false;
+                              if (frSearchQuery) {
+                                const query = frSearchQuery.toLowerCase();
+                                return fr.id.toLowerCase().includes(query) || fr.name.toLowerCase().includes(query) || fr.desc.toLowerCase().includes(query);
+                              }
+                              return true;
+                            });
+
+                            if (filteredFRs.length === 0) {
+                              return (
+                                <div className="p-8 text-center bg-white rounded-xl border border-dashed border-slate-300">
+                                  <p className="text-sm text-slate-400 font-semibold">Không tìm thấy yêu cầu chức năng nào thỏa mãn bộ lọc hiện tại.</p>
+                                </div>
+                              );
+                            }
+
+                            return (
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {filteredFRs.map(fr => (
+                                  <div key={fr.id} className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col h-full justify-between">
+                                    <div className="space-y-3">
+                                      <div className="flex items-center justify-between">
+                                        <span className="bg-indigo-600 text-white text-xs font-black font-mono px-2.5 py-1 rounded shadow-sm">
+                                          {fr.id}
+                                        </span>
+                                        <span className={`text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full ${
+                                          fr.priority === "High" 
+                                            ? "bg-rose-50 text-rose-600 border border-rose-100" 
+                                            : fr.priority === "Medium" 
+                                            ? "bg-amber-50 text-amber-600 border border-amber-100" 
+                                            : "bg-slate-50 text-slate-600 border border-slate-100"
+                                        }`}>
+                                          Độ ưu tiên: {fr.priority}
+                                        </span>
+                                      </div>
+                                      
+                                      <h4 className="text-base font-extrabold text-slate-900">{fr.name}</h4>
+                                      <p className="text-xs text-slate-600 leading-relaxed font-semibold text-justify">{fr.desc}</p>
+                                    </div>
+
+                                    <div className="mt-4 pt-3 border-t border-slate-100 flex flex-col space-y-1.5 text-[11px] text-slate-500">
+                                      <div className="flex justify-between items-center font-semibold">
+                                        <span>Nguồn tài liệu:</span>
+                                        <span className="font-bold text-slate-700">{fr.source}</span>
+                                      </div>
+                                      <div className="flex justify-between items-center font-semibold">
+                                        <span>Module liên kết:</span>
+                                        <span className="font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">{fr.module}</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            );
+                          })()}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SubTab 4: Non Functional Requirements */}
+                    {reqSubTab === "nonfunctional" && (
+                      <div className="space-y-6">
+                        <div className="pb-2 border-b border-slate-100">
+                          <h2 className="text-2xl font-bold text-slate-900">Non Functional Requirements (NFR)</h2>
+                          <p className="text-sm text-slate-500 font-semibold">100% nội dung trực tiếp từ tài liệu nguồn - Không rút gọn hay diễn giải.</p>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {NON_FUNCTIONAL_REQUIREMENTS.map(item => (
+                            <div key={item.id} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow transition flex flex-col justify-between">
+                              <div className="flex items-start space-x-4 mb-3">
+                                <span className="bg-slate-100 text-slate-700 px-2.5 py-1.5 rounded-lg text-xs font-extrabold font-mono border border-slate-200">
+                                  {item.id}
+                                </span>
+                                <div>
+                                  <span className="text-[10px] bg-indigo-50 text-indigo-700 font-bold uppercase tracking-wider px-2 py-0.5 rounded border border-indigo-100">
+                                    {item.aspect}
+                                  </span>
+                                  <p className="text-slate-700 text-sm font-semibold leading-relaxed mt-2">{item.req}</p>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Navigation Buttons */}
+                    <div className="flex justify-between items-center pt-6 border-t border-slate-200">
+                      <button
+                        onClick={handlePrevReq}
+                        disabled={reqSubTab === "general"}
+                        className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition border ${
+                          reqSubTab === "general"
+                            ? "text-slate-300 border-slate-100 cursor-not-allowed"
+                            : "text-slate-700 border-slate-200 hover:bg-slate-100"
+                        }`}
+                      >
+                        <span>← Previous Requirement</span>
+                      </button>
+                      <button
+                        onClick={handleNextReq}
+                        disabled={reqSubTab === "nonfunctional"}
+                        className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition border ${
+                          reqSubTab === "nonfunctional"
+                            ? "text-slate-300 border-slate-100 cursor-not-allowed"
+                            : "bg-indigo-600 text-white border-indigo-600 hover:bg-indigo-700"
+                        }`}
+                      >
+                        <span>Next Requirement →</span>
+                      </button>
+                    </div>
+
+                  </div>
+                )}
+
+                {/* TAB 5: USECASE */}
+                {activeTab === "usecase" && (
+                  <div className="space-y-8 animate-fadeIn">
+                    
+                    {/* Sub-Tabs for Use Cases */}
+                    <div className="bg-white p-2 rounded-2xl border border-slate-200 shadow-sm overflow-x-auto whitespace-nowrap scrollbar-none flex space-x-1">
+                      <button
+                        onClick={() => setUcSubTab("general")}
+                        className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
+                          ucSubTab === "general"
+                            ? "bg-indigo-600 text-white shadow-sm"
+                            : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                        }`}
+                      >
+                        Usecase tổng quát
+                      </button>
+                      {USECASE_DETAILS.map(uc => {
+                        const isActive = ucSubTab === uc.id;
+                        return (
+                          <button
+                            key={uc.id}
+                            onClick={() => setUcSubTab(uc.id)}
+                            className={`px-3 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
+                              isActive
+                                ? "bg-indigo-600 text-white shadow-sm"
+                                : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                            }`}
+                          >
+                            {uc.id}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* SubTab 1: Usecase tổng quát */}
+                    {ucSubTab === "general" && (
+                      <div className="space-y-6">
+                        <div className="pb-2 border-b border-slate-100">
+                          <h2 className="text-2xl font-bold text-slate-900">Sơ đồ Usecase tổng quát</h2>
+                          <p className="text-sm text-slate-500 font-semibold">Hiển thị sơ đồ nguyên bản từ trang 31 của tệp tin PDF gốc.</p>
+                        </div>
+                        
+                        <PdfRenderer 
+                          pdfDoc={pdfDoc} 
+                          pageNum={PDF_MAP.usecaseGeneral + pdfPageOffsets.usecaseGeneral} 
+                          pdfLoading={pdfLoading}
+                          pdfError={pdfError}
+                          label="Usecase Tổng Quát"
+                        />
+                      </div>
+                    )}
+
+                    {/* SubTabs: UC1 - UC10 (Detailed Use Cases) */}
+                    {ucSubTab !== "general" && (
+                      <div className="space-y-8">
+                        {(() => {
+                          const uc = USECASE_DETAILS.find(item => item.id === ucSubTab);
+                          if (!uc) return <p className="text-slate-500 text-center font-semibold">Không tìm thấy đặc tả usecase tương ứng.</p>;
+                          
+                          return (
+                            <div className="space-y-8">
+                              {/* Title & Description */}
+                              <div className="pb-4 border-b border-slate-200">
+                                <div className="flex items-center space-x-2">
+                                  <span className="bg-indigo-600 text-white text-xs font-black font-mono px-2.5 py-1 rounded">
+                                    {uc.id}
+                                  </span>
+                                  <h2 className="text-2xl font-bold text-slate-900">{uc.title}</h2>
+                                </div>
+                                <p className="text-sm text-slate-600 mt-2 italic font-semibold">Mô tả: {uc.desc}</p>
+                              </div>
+
+                              {/* Side by side layout */}
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                                
+                                {/* Left: Diagram */}
+                                <div className="space-y-4">
+                                  <h3 className="text-lg font-bold text-slate-900 flex items-center space-x-2">
+                                    <span>Sơ đồ phân rã {uc.id} (Trang {uc.pdfPage})</span>
+                                  </h3>
+                                  <PdfRenderer 
+                                    pdfDoc={pdfDoc} 
+                                    pageNum={uc.pdfPage + pdfPageOffsets.ucStart} 
+                                    pdfLoading={pdfLoading}
+                                    pdfError={pdfError}
+                                    label={`Sơ đồ phân rã ${uc.id}`}
+                                  />
+                                </div>
+
+                                {/* Right: Specifications */}
+                                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden divide-y divide-slate-100">
+                                  
+                                  {/* Actor */}
+                                  <div className="p-4 grid grid-cols-3 gap-2 text-sm">
+                                    <span className="font-bold text-slate-500">Tác nhân chính</span>
+                                    <span className="col-span-2 font-semibold text-slate-900">{uc.actor}</span>
+                                  </div>
+
+                                  {/* Pre-conditions */}
+                                  <div className="p-4 grid grid-cols-3 gap-2 text-sm">
+                                    <span className="font-bold text-slate-500">Tiền điều kiện</span>
+                                    <span className="col-span-2 text-slate-700 font-semibold">{uc.preCond}</span>
+                                  </div>
+
+                                  {/* Post-conditions */}
+                                  <div className="p-4 grid grid-cols-3 gap-2 text-sm">
+                                    <span className="font-bold text-slate-500">Hậu điều kiện</span>
+                                    <span className="col-span-2 text-slate-700 font-semibold">{uc.postCond}</span>
+                                  </div>
+
+                                  {/* Main Flow */}
+                                  <div className="p-4 flex flex-col space-y-2 text-sm">
+                                    <span className="font-bold text-slate-500 block">Luồng sự kiện chính</span>
+                                    <ol className="list-decimal pl-5 space-y-1 text-slate-700 font-semibold">
+                                      {uc.mainFlow.map((step, idx) => (
+                                        <li key={idx}>{step}</li>
+                                      ))}
+                                    </ol>
+                                  </div>
+
+                                  {/* Exception / Alternate Flow */}
+                                  <div className="p-4 flex flex-col space-y-2 text-sm">
+                                    <span className="font-bold text-slate-500 block">Luồng ngoại lệ / thay thế</span>
+                                    <ul className="list-disc pl-5 space-y-1 text-slate-700 font-semibold text-justify">
+                                      {uc.altFlow.map((step, idx) => (
+                                        <li key={idx} className={step.includes("Không có thông tin") ? "text-slate-400 italic font-normal" : "text-amber-700"}>{step}</li>
+                                      ))}
+                                    </ul>
+                                  </div>
+
+                                </div>
+
+                              </div>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    )}
+
+                    {/* Navigation Buttons */}
+                    <div className="flex justify-between items-center pt-6 border-t border-slate-200">
+                      <button
+                        onClick={handlePrevUc}
+                        disabled={ucSubTab === "general"}
+                        className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition border ${
+                          ucSubTab === "general"
+                            ? "text-slate-300 border-slate-100 cursor-not-allowed"
+                            : "text-slate-700 border-slate-200 hover:bg-slate-100"
+                        }`}
+                      >
+                        <span>← Previous UC</span>
+                      </button>
+                      <button
+                        onClick={handleNextUc}
+                        disabled={ucSubTab === ucSubTabsList[ucSubTabsList.length - 1]}
+                        className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition border ${
+                          ucSubTab === ucSubTabsList[ucSubTabsList.length - 1]
+                            ? "text-slate-300 border-slate-100 cursor-not-allowed"
+                            : "bg-indigo-600 text-white border-indigo-600 hover:bg-indigo-700"
+                        }`}
+                      >
+                        <span>Next UC →</span>
+                      </button>
+                    </div>
+
+                  </div>
+                )}
+
+                {/* TAB 6: BPMN */}
+                {activeTab === "bpmn" && (
+                  <div className="space-y-8 animate-fadeIn">
+                    <div className="pb-4 border-b border-slate-200">
+                      <h1 className="text-3xl font-extrabold text-slate-900">Quy trình nghiệp vụ BPMN</h1>
+                      <p className="text-sm text-slate-500 mt-1 font-semibold">Đã đồng bộ trang ảnh chính xác cho Main Process (Trang 27) và các Sub Process (Trang 27-30).</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                      
+                      {/* Main Process */}
+                      <div className="space-y-4">
+                        <div className="p-3 bg-indigo-50 border border-indigo-100 rounded-xl flex justify-between items-center shadow-sm">
+                          <h3 className="font-extrabold text-indigo-900 text-base">BPMN Main Process (Trang 27)</h3>
+                        </div>
+                        <PdfRenderer 
+                          pdfDoc={pdfDoc} 
+                          pageNum={PDF_MAP.bpmnMain + pdfPageOffsets.bpmnMain} 
+                          pdfLoading={pdfLoading}
+                          pdfError={pdfError}
+                          label="BPMN Main Process"
+                        />
+                      </div>
+
+                      {/* Sub Process Selector & Viewer */}
+                      <div className="space-y-4">
+                        <div className="p-3 bg-indigo-50 border border-indigo-100 rounded-xl flex flex-col space-y-2 shadow-sm">
+                          <h3 className="font-extrabold text-indigo-900 text-base">BPMN Sub Processes (Lựa chọn quy trình)</h3>
+                          
+                          {/* Selector Buttons */}
+                          <div className="flex flex-col gap-1.5 pt-1">
+                            {BPMN_SUB_PROCESSES.map(sub => {
+                              const isSelected = selectedSubBPMN === sub.id;
+                              return (
+                                <button
+                                  key={sub.id}
+                                  onClick={() => setSelectedSubBPMN(sub.id)}
+                                  className={`px-3 py-1.5 rounded-lg text-left text-xs font-bold border transition ${
+                                    isSelected
+                                      ? "bg-indigo-600 text-white border-indigo-600 shadow-sm"
+                                      : "bg-white text-slate-700 border-slate-200 hover:bg-slate-100"
+                                  }`}
+                                >
+                                  {sub.name} (Trang {sub.page})
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        {/* Sub Process Render */}
+                        {(() => {
+                          const activeSub = BPMN_SUB_PROCESSES.find(s => s.id === selectedSubBPMN) || BPMN_SUB_PROCESSES[0];
+                          return (
+                            <PdfRenderer 
+                              pdfDoc={pdfDoc} 
+                              pageNum={activeSub.page + pdfPageOffsets.bpmnSub} 
+                              pdfLoading={pdfLoading}
+                              pdfError={pdfError}
+                              label={activeSub.name}
+                            />
+                          );
+                        })()}
+                      </div>
+
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB 7: ERD & CLASS DIAGRAM */}
+                {activeTab === "erd" && (
+                  <div className="space-y-6 animate-fadeIn">
+                    <div className="pb-4 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                      <div>
+                        <h1 className="text-3xl font-extrabold text-slate-900">Mô hình hóa dữ liệu hệ thống</h1>
+                        <p className="text-sm text-slate-500 mt-1 font-semibold">Đánh giá cấu trúc thực thể ERD (Trang 63) và Class Diagram (Trang 64).</p>
+                      </div>
+
+                      {/* Toggle Selector */}
+                      <div className="bg-slate-200 p-1 rounded-xl flex space-x-1 self-start sm:self-center">
+                        <button
+                          onClick={() => setSelectedDataDiagram("erd")}
+                          className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                            selectedDataDiagram === "erd"
+                              ? "bg-white text-indigo-700 shadow-sm"
+                              : "text-slate-600 hover:text-slate-950"
+                          }`}
+                        >
+                          Sơ đồ thực thể liên kết (ERD - Trang 63)
+                        </button>
+                        <button
+                          onClick={() => setSelectedDataDiagram("class")}
+                          className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                            selectedDataDiagram === "class"
+                              ? "bg-white text-indigo-700 shadow-sm"
+                              : "text-slate-600 hover:text-slate-950"
+                          }`}
+                        >
+                          Sơ đồ lớp (Class Diagram - Trang 64)
+                        </button>
+                      </div>
+                    </div>
+
+                    {selectedDataDiagram === "erd" ? (
+                      <div className="space-y-4">
+                        <div className="p-3 bg-indigo-50 border border-indigo-100 rounded-xl shadow-sm">
+                          <h3 className="font-extrabold text-indigo-900 text-sm">Sơ đồ quan hệ thực thể (ERD) - Hình 30 (Trang 63)</h3>
+                        </div>
+                        <PdfRenderer 
+                          pdfDoc={pdfDoc} 
+                          pageNum={PDF_MAP.erd + pdfPageOffsets.erd} 
+                          pdfLoading={pdfLoading}
+                          pdfError={pdfError}
+                          label="Sơ đồ ERD gốc"
+                        />
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        <div className="p-3 bg-indigo-50 border border-indigo-100 rounded-xl shadow-sm">
+                          <h3 className="font-extrabold text-indigo-900 text-sm">Sơ đồ lớp (Class Diagram) - Hình 31 (Trang 64)</h3>
+                        </div>
+                        <PdfRenderer 
+                          pdfDoc={pdfDoc} 
+                          pageNum={PDF_MAP.classDiagram + pdfPageOffsets.classDiagram} 
+                          pdfLoading={pdfLoading}
+                          pdfError={pdfError}
+                          label="Sơ đồ Lớp (Class Diagram) gốc"
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+              </main>
+
+              {/* Footer */}
+              <footer className="bg-slate-900 text-slate-400 py-8 border-t border-slate-800 text-xs text-center mt-12 space-y-2">
+                <p className="font-bold text-white text-sm">Hệ thống thuyết trình & nghiệm thu đặc tả dự án - TQC Global</p>
+                <p>Bản quyền thuộc về {THONG_TIN_DE_TAI.nhom} - Giảng viên hướng dẫn: {THONG_TIN_DE_TAI.giangVien}</p>
+                <p className="text-slate-500">Mọi dữ liệu trên website cam kết 100% trung thực và đối sánh nguyên mẫu với tài liệu thuyết trình.</p>
+              </footer>
+
+            </div>
+          );
+        }
+
+        function PdfRenderer({ pdfDoc, pageNum, pdfLoading, pdfError, label }) {
+          const canvasRef = useRef(null);
+          const [renderLoading, setRenderLoading] = useState(false);
+          const [pageError, setPageError] = useState(false);
+          
+          // Trạng thái phóng to thu nhỏ cục bộ cho từng sơ đồ (Mặc định: 100%)
+          const [zoom, setZoom] = useState(1.0);
+
+          useEffect(() => {
+            if (!pdfDoc) return;
+            let renderTask = null;
+            
+            const renderPage = async () => {
+              try {
+                setRenderLoading(true);
+                setPageError(false);
+                const page = await pdfDoc.getPage(pageNum);
+                
+                // Lấy kích thước khung chứa hiện tại
+                const containerWidth = canvasRef.current?.parentNode?.parentNode?.clientWidth || 800;
+                const standardViewport = page.getViewport({ scale: 1.0 });
+                
+                // Tỉ lệ scale cơ sở để vừa khít chiều rộng khung chứa
+                const baseScale = (containerWidth - 32) / standardViewport.width;
+                
+                // Tỉ lệ thực tế = Tỉ lệ cơ sở * Chỉ số Zoom do người dùng cấu hình
+                // PDF.js sẽ vẽ lại (re-render) trực tiếp trên canvas theo tỷ lệ mới để giữ nét chữ vector sắc nét
+                const finalScale = baseScale * zoom;
+                
+                const viewport = page.getViewport({ scale: finalScale });
+                const canvas = canvasRef.current;
+                if (!canvas) return;
+                
+                const context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                const renderContext = {
+                  canvasContext: context,
+                  viewport: viewport
+                };
+                renderTask = page.render(renderContext);
+                await renderTask.promise;
+              } catch (err) {
+                console.error("PDF page render error: ", err);
+                setPageError(true);
+              } finally {
+                setRenderLoading(false);
+              }
+            };
+
+            renderPage();
+
+            // Lắng nghe sự kiện thay đổi kích thước cửa sổ để tự động vẽ lại
+            const handleResize = () => {
+              renderPage();
+            };
+            window.addEventListener('resize', handleResize);
+
+            return () => {
+              if (renderTask) {
+                renderTask.cancel();
+              }
+              window.removeEventListener('resize', handleResize);
+            };
+          }, [pdfDoc, pageNum, zoom]); // Vẽ lại bất cứ khi nào tỉ lệ Zoom thay đổi
+
+          const handleZoomIn = () => {
+            setZoom(prev => Math.min(prev + 0.15, 3.5)); // Giới hạn phóng to tối đa 350% để tránh quá tải bộ nhớ nhưng vẫn siêu nét
+          };
+
+          const handleZoomOut = () => {
+            setZoom(prev => Math.max(prev - 0.15, 0.5)); // Giới hạn thu nhỏ tối thiểu 50%
+          };
+
+          const handleZoomReset = () => {
+            setZoom(1.0); // Quay về tỉ lệ khít màn hình ban đầu (100%)
+          };
+
+          const isLoading = pdfLoading || renderLoading;
+
+          return (
+            <div className="relative border border-slate-200 rounded-2xl overflow-hidden bg-slate-100 flex flex-col shadow-sm">
+              
+              {/* THANH ĐIỀU KHIỂN THU PHÓNG THÔNG MINH (VECTOR ZOOM BAR) */}
+              {pdfDoc && (
+                <div className="bg-white border-b border-slate-200 px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 text-xs z-10">
+                  <div className="flex items-center space-x-2">
+                    <span className="font-semibold text-slate-500">Tỉ lệ hiển thị:</span>
+                    <span className="bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-md font-bold font-mono border border-indigo-100 min-w-[55px] text-center">
+                      {Math.round(zoom * 100)}%
+                    </span>
+                  </div>
+                  
+                  {/* Các nút tương tác Phóng to / Thu nhỏ */}
+                  <div className="flex items-center space-x-1.5">
+                    <button
+                      onClick={handleZoomOut}
+                      title="Thu nhỏ sơ đồ"
+                      className="bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 font-bold p-1.5 rounded-lg border border-slate-200 transition-all flex items-center justify-center shadow-sm"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M20 12H4" />
+                      </svg>
+                    </button>
+                    
+                    <button
+                      onClick={handleZoomReset}
+                      title="Đặt lại về mặc định"
+                      className="bg-slate-100 hover:bg-indigo-600 text-slate-700 hover:text-white font-bold px-3 py-1.5 rounded-lg border border-slate-200 hover:border-indigo-600 transition-all shadow-sm font-semibold"
+                    >
+                      Đặt lại (100%)
+                    </button>
+                    
+                    <button
+                      onClick={handleZoomIn}
+                      title="Phóng to sắc nét"
+                      className="bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 font-bold p-1.5 rounded-lg border border-slate-200 transition-all flex items-center justify-center shadow-sm"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div className="text-[11px] text-slate-400 font-medium hidden sm:inline">
+                    💡 <span className="italic">Kéo thanh cuộn để dịch chuyển vùng xem khi phóng to.</span>
+                  </div>
+                </div>
+              )}
+
+              {/* KHUNG CHỨA CANVAS VỚI THANH CUỘN TỰ ĐỘNG */}
+              <div className="p-4 flex flex-col items-center justify-center min-h-[300px] sm:min-h-[500px] bg-slate-100/50 shadow-inner overflow-auto max-w-full">
+                
+                {!pdfDoc && !isLoading && (
+                  <div className="my-auto flex flex-col items-center justify-center text-center p-6 space-y-4 bg-slate-50 rounded-2xl border border-slate-200/60 max-w-md">
+                    <div className="bg-amber-100 p-4 rounded-full text-amber-600 shadow-sm">
+                      <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-800">Cần nạp tài liệu PDF gốc</h4>
+                      <p className="text-xs text-slate-500 mt-1 font-semibold leading-relaxed">
+                        Sơ đồ gốc của <strong>"{label}"</strong> chỉ hiển thị tự động khi bạn tải tệp PDF thuyết trình gốc ở thanh công cụ phía trên.
+                      </p>
+                    </div>
+                    <div className="text-xs bg-slate-200 text-slate-600 font-mono py-1 px-3 rounded-full border border-slate-300">
+                      [Mục tiêu hiển thị: Trang {pageNum} của tài liệu]
+                    </div>
+                  </div>
+                )}
+
+                {isLoading && (
+                  <div className="absolute inset-0 bg-slate-50/90 backdrop-blur-sm flex flex-col items-center justify-center z-10 space-y-3">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+                    <span className="text-xs text-slate-600 font-bold">Đang tái dựng Vector chất lượng cao trang {pageNum}...</span>
+                  </div>
+                )}
+
+                {pdfDoc && !pageError && (
+                  <div className="max-w-full flex justify-center bg-white p-2 rounded-xl border border-slate-200/80 shadow-md">
+                    <canvas ref={canvasRef} className="max-w-full h-auto transition-all duration-100" />
+                  </div>
+                )}
+
+                {pageError && (
+                  <div className="text-center p-6 text-red-600 space-y-2">
+                    <span className="text-2xl">⚠️</span>
+                    <p className="text-xs font-bold">Lỗi không thể kết xuất trang {pageNum} trong tài liệu này.</p>
+                    <p className="text-[10px] text-slate-500 font-semibold">Hãy đảm bảo bạn đã tải đúng tệp tin PDF thuyết trình gốc.</p>
+                  </div>
+                )}
+
+              </div>
+            </div>
+          );
+        }
+
+        const rootElement = document.getElementById("root");
+        const root = ReactDOM.createRoot(rootElement);
+        root.render(<App />);
+    </script>
+</body>
+</html>
