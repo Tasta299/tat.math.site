@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài Học Tương Tác: Phương Trình Bậc Nhất Hai Ẩn</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- KaTeX for Math Expressions -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .page-content {
+            display: none;
+        }
+        .page-content.active {
+            display: block;
+            animation: fadeIn 0.25s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+
+    <!-- Header & Navigation Bar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-black text-xl shadow-md ring-2 ring-indigo-400/30">
+                    <i class="fa-solid fa-calculator text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-base md:text-lg text-slate-900 leading-tight">Bài 1: Khái Niệm Phương Trình Và Hệ Phương Trình Bậc Nhất Hai Ẩn</h1>
+                    <p class="text-xs text-indigo-600 font-medium">Tài liệu học tập tương tác - Toán 9 (Chương I)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4 Navigation Tabs -->
+        <nav class="bg-slate-100/90 backdrop-blur-md border-t border-slate-200 overflow-x-auto">
+            <div class="max-w-7xl mx-auto px-3 flex space-x-2 py-2 text-sm font-medium">
+                <button onclick="switchPage(1)" id="tab-btn-1" class="tab-btn flex-1 min-w-[160px] px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 bg-indigo-600 text-white font-semibold shadow-md">
+                    <span class="w-6 h-6 rounded-lg bg-white/20 text-xs flex items-center justify-center font-bold">1</span>
+                    <span>Warm-up</span>
+                    <span class="text-[11px] opacity-80">(Mở đầu)</span>
+                </button>
+                <button onclick="switchPage(2)" id="tab-btn-2" class="tab-btn flex-1 min-w-[160px] px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-slate-200">
+                    <span class="w-6 h-6 rounded-lg bg-slate-200 text-xs flex items-center justify-center font-bold">2</span>
+                    <span>Kiến Thức Mới</span>
+                    <span class="text-[11px] opacity-80">(Song song)</span>
+                </button>
+                <button onclick="switchPage(3)" id="tab-btn-3" class="tab-btn flex-1 min-w-[160px] px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-slate-200">
+                    <span class="w-6 h-6 rounded-lg bg-slate-200 text-xs flex items-center justify-center font-bold">3</span>
+                    <span>Luyện Tập</span>
+                    <span class="text-[11px] opacity-80">(10 Bài tập)</span>
+                </button>
+                <button onclick="switchPage(4)" id="tab-btn-4" class="tab-btn flex-1 min-w-[160px] px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-slate-200">
+                    <span class="w-6 h-6 rounded-lg bg-slate-200 text-xs flex items-center justify-center font-bold">4</span>
+                    <span>Tổng Kết & BTVN</span>
+                    <span class="text-[11px] opacity-80">(Củng cố)</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-6 pb-12">
+
+        <!-- ==========================================
+             PAGE 1: WARM-UP (KHỞI ĐỘNG VÀ DẪN NHẬP)
+             ========================================== -->
+        <section id="page-1" class="page-content active space-y-6">
+            <!-- Goal Banner -->
+            <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-5 shadow-sm">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="px-3 py-1 bg-indigo-100 text-indigo-700 text-xs font-bold rounded-full border border-indigo-200">Mục Tiêu Mở Đầu</span>
+                    <h2 class="text-xl font-bold text-indigo-950">Khởi Động: Phương Trình 2 Ẩn & Hệ 2 Ẩn Là Gi?</h2>
+                </div>
+                <p class="text-sm text-slate-700 leading-relaxed">
+                    Chào mừng bạn đến với <strong>Bài 1 (Toán 9)</strong>. Trang khởi động này giúp bạn hiểu trực diện <strong>Phương trình 2 ẩn là gì</strong> và <strong>Hệ phương trình 2 ẩn là gì</strong> ngay qua một bài toán mua sắm thực tế vô cùng đơn giản!
+                </p>
+            </div>
+
+            <!-- Intuitive Real-life Scenario Card -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 space-y-5 shadow-sm">
+                <h3 class="text-lg font-bold text-amber-800 flex items-center gap-2 border-b border-slate-200 pb-3">
+                    <i class="fa-solid fa-store text-amber-600"></i> Tình Huống Thực Tế: Đi Mua Vở Và Bút
+                </h3>
+
+                <p class="text-sm text-slate-700 leading-relaxed">
+                    Giả sử bạn Nam vào nhà sách mua <strong class="text-indigo-600">$x$ quyển vở</strong> (giá 10k/quyển) và <strong class="text-emerald-600">$y$ cây bút</strong> (giá 5k/cây).
+                </p>
+
+                <!-- Step 1 & Step 2 Comparison -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    
+                    <!-- Step 1: PT 2 an -->
+                    <div class="bg-indigo-50/70 border-2 border-indigo-200 p-4 rounded-xl space-y-3">
+                        <div class="flex items-center gap-2">
+                            <span class="px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-bold text-xs">BƯỚC 1</span>
+                            <h4 class="font-bold text-indigo-950 text-sm">Phương Trình 2 Ẩn Là Gì?</h4>
+                        </div>
+                        <p class="text-xs text-slate-700 leading-relaxed">
+                            Nếu biết Nam mang theo <strong>50k</strong> và tiêu hết sạch tiền:
+                        </p>
+                        <div class="p-3 bg-white rounded-lg border border-indigo-200 text-center font-mono font-bold text-indigo-900 text-sm shadow-sm">
+                            10x + 5y = 50
+                        </div>
+                        <p class="text-xs text-slate-700 leading-relaxed">
+                            $\rightarrow$ Đây là một <strong class="text-indigo-700">Phương Trình 2 Ẩn</strong> (chứa 2 đại lượng chưa biết là $x$ và $y$).<br>
+                            <span class="text-amber-800 font-medium">Nhận xét:</span> Chỉ với 1 mối liên hệ này, ta có <strong>nhiều khả năng</strong> xảy ra (ví dụ: mua 3 vở + 4 bút, hoặc 4 vở + 2 bút,...).
+                        </p>
+                    </div>
+
+                    <!-- Step 2: He PT 2 an -->
+                    <div class="bg-emerald-50/70 border-2 border-emerald-200 p-4 rounded-xl space-y-3">
+                        <div class="flex items-center gap-2">
+                            <span class="px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-bold text-xs">BƯỚC 2</span>
+                            <h4 class="font-bold text-emerald-950 text-sm">Hệ Phương Trình 2 Ẩn Là Gì?</h4>
+                        </div>
+                        <p class="text-xs text-slate-700 leading-relaxed">
+                            Để biết <em>chính xác</em> số vở và bút, ta cần thêm điều kiện thứ hai: Nam mua <strong>tổng cộng 7 món</strong> ($\rightarrow x + y = 7$). Ghép cả 2 điều kiện lại:
+                        </p>
+                        <div class="p-3 bg-white rounded-lg border border-emerald-200 text-center font-mono font-bold text-emerald-900 text-sm shadow-sm">
+                            $\begin{cases} 10x + 5y = 50 \\ x + y = 7 \end{cases}$
+                        </div>
+                        <p class="text-xs text-slate-700 leading-relaxed">
+                            $\rightarrow$ Đây là một <strong class="text-emerald-700">Hệ Phương Trình 2 Ẩn</strong>.<br>
+                            <span class="text-emerald-800 font-medium">Nhận xét:</span> Khi đi chung thành "Hệ", ta tìm được <strong>duy nhất 1 cặp nghiệm chính xác</strong> là $x = 3$ (vở) và $y = 4$ (bút) thỏa mãn đồng thời cả hai điều kiện!
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Conceptual Core Summary Box -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-sm">
+                <h3 class="text-base font-bold text-slate-900 flex items-center gap-2 border-b border-slate-200 pb-3">
+                    <i class="fa-solid fa-key text-indigo-600"></i> Tóm Tắt Nhanh Bản Chất
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                    <!-- Concept 1 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-1.5">
+                        <span class="px-2 py-0.5 bg-indigo-100 text-indigo-800 font-bold rounded uppercase text-[11px]">1. Phương Trình 2 Ẩn</span>
+                        <p class="text-slate-700 leading-relaxed pt-1">
+                            Là biểu thức đẳng thức chứa <strong>2 ẩn số</strong> chưa biết (thường là $x, y$). Một phương trình 2 ẩn đơn lẻ thường có <strong>vô số nghiệm</strong>.
+                        </p>
+                    </div>
+
+                    <!-- Concept 2 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-1.5">
+                        <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 font-bold rounded uppercase text-[11px]">2. Hệ Phương Trình 2 Ẩn</span>
+                        <p class="text-slate-700 leading-relaxed pt-1">
+                            Là nhóm gồm <strong>2 hay nhiều phương trình</strong> chứa chung 2 ẩn $x, y$. Giải hệ là tìm cặp $(x; y)$ thỏa mãn <strong>đồng thời</strong> tất cả phương trình trong hệ.
+                        </p>
+                    </div>
+
+                    <!-- Concept 3 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-1.5">
+                        <span class="px-2 py-0.5 bg-amber-100 text-amber-800 font-bold rounded uppercase text-[11px]">3. "Bậc Nhất" Nghĩa Là Gi?</span>
+                        <p class="text-slate-700 leading-relaxed pt-1">
+                            Nghĩa là số mũ lớn nhất của các ẩn $x$ và $y$ chỉ bằng <strong>1</strong> (không chứa bình phương $x^2$, $y^2$ hay chứa căn).
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             PAGE 2: KIẾN THỨC MỚI (GRID CHIA ĐÔI SONG SONG)
+             ========================================== -->
+        <section id="page-2" class="page-content space-y-6">
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-semibold rounded-full border border-emerald-200">Trọng Tâm Lý Thuyết</span>
+                    <h2 class="text-xl font-bold text-slate-900">So Sánh Song Song: Phương Trình & Hệ Phương Trình Bậc Nhất 2 Ẩn</h2>
+                </div>
+                <p class="text-xs text-slate-600">
+                    Bố cục chia đôi giúp bạn đối chiếu rõ ràng định nghĩa, dạng tổng quát, phương pháp giải và các ví dụ minh họa chi tiết.
+                </p>
+            </div>
+
+            <!-- Grid 2 Columns Side-by-Side -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                <!-- LEFT COLUMN: PHƯƠNG TRÌNH BẬC NHẤT 2 ẨN -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 space-y-5 shadow-sm">
+                    <div class="border-b border-slate-200 pb-3 flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-sm">A</span>
+                        <h3 class="text-lg font-bold text-indigo-900">PHƯƠNG TRÌNH BẬC NHẤT 2 ẨN</h3>
+                    </div>
+
+                    <!-- 1. Định nghĩa -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                        <h4 class="font-bold text-xs uppercase text-amber-800">1. Định Nghĩa</h4>
+                        <p class="text-xs text-slate-700 leading-relaxed">
+                            Là phương trình dạng đẳng thức có chứa 2 ẩn số $x, y$, trong đó cả $x$ và $y$ đều ở bậc 1 (mũ 1).
+                        </p>
+                    </div>
+
+                    <!-- 2. Dạng tổng quát -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                        <h4 class="font-bold text-xs uppercase text-amber-800">2. Dạng Tổng Quát</h4>
+                        <div class="text-center py-2 bg-slate-100 rounded-lg border border-indigo-200 text-base font-bold text-indigo-900 font-mono">
+                            ax + by = c
+                        </div>
+                        <p class="text-[11px] text-slate-500">
+                            ($a, b, c$ là các số cho trước; $a$ và $b$ không đồng thời bằng 0).
+                        </p>
+                    </div>
+
+                    <!-- 3. Phương pháp giải -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                        <h4 class="font-bold text-xs uppercase text-amber-800">3. Cách Làm / Phương Pháp Giải</h4>
+                        <p class="text-xs text-slate-700 leading-relaxed">
+                            • Phương trình bậc nhất 2 ẩn luôn có <strong>vô số nghiệm</strong>.<br>
+                            • <strong>Cách biểu diễn nghiệm:</strong> Rút một ẩn theo ẩn còn lại (thường rút $y$ theo $x$: $y = \frac{c - ax}{b}$ khi $b \neq 0$). Viết tập nghiệm dạng cặp số $(x; \frac{c - ax}{b})$ với $x \in \mathbb{R}$.
+                        </p>
+                    </div>
+
+                    <!-- 4. Ví dụ minh họa -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4">
+                        <h4 class="font-bold text-xs uppercase text-amber-800"><i class="fa-solid fa-list-ol me-1"></i> Các Ví Dụ Minh Họa Chi Tiết</h4>
+
+                        <!-- Example 1 -->
+                        <div class="p-3 bg-white rounded-lg border border-slate-200 text-xs space-y-1 shadow-sm">
+                            <span class="font-bold text-indigo-700">Ví dụ 1 (Cơ bản - Rút y dễ):</span> $2x + y = 5$
+                            <div class="text-slate-700 pt-1 leading-relaxed">
+                                <strong>Hướng dẫn:</strong> Rút $y$ theo $x \Rightarrow y = 5 - 2x$.<br>
+                                <strong>Kết luận:</strong> Phương trình có vô số nghiệm tổng quát dạng $(x; 5 - 2x)$ với $x \in \mathbb{R}$. Nếu $x = 1 \Rightarrow y = 3$, cặp $(1; 3)$ là một nghiệm.
+                            </div>
+                        </div>
+
+                        <!-- Example 2 -->
+                        <div class="p-3 bg-white rounded-lg border border-slate-200 text-xs space-y-1 shadow-sm">
+                            <span class="font-bold text-indigo-700">Ví dụ 2 (Có hệ số ở y):</span> $3x - 2y = 6$
+                            <div class="text-slate-700 pt-1 leading-relaxed">
+                                <strong>Hướng dẫn:</strong> Chuyển vế: $-2y = 6 - 3x \Rightarrow y = \frac{3x - 6}{2} = 1.5x - 3$.<br>
+                                <strong>Kết luận:</strong> Nghiệm tổng quát là $(x; \frac{3x - 6}{2})$ với $x \in \mathbb{R}$.
+                            </div>
+                        </div>
+
+                        <!-- Example 3 -->
+                        <div class="p-3 bg-white rounded-lg border border-slate-200 text-xs space-y-1 shadow-sm">
+                            <span class="font-bold text-indigo-700">Ví dụ 3 (Hệ số a = 0):</span> $0x + 3y = 9$
+                            <div class="text-slate-700 pt-1 leading-relaxed">
+                                <strong>Hướng dẫn:</strong> Phương trình tương đương $3y = 9 \Rightarrow y = 3$.<br>
+                                <strong>Kết luận:</strong> Ẩn $x$ nhận giá trị tùy ý ($x \in \mathbb{R}$), $y$ luôn bằng $3$. Nghiệm tổng quát là $(x; 3)$.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN: HỆ PHƯƠNG TRÌNH BẬC NHẤT 2 ẨN -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 space-y-5 shadow-sm">
+                    <div class="border-b border-slate-200 pb-3 flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-bold text-sm">B</span>
+                        <h3 class="text-lg font-bold text-emerald-900">HỆ PHƯƠNG TRÌNH BẬC NHẤT 2 ẨN</h3>
+                    </div>
+
+                    <!-- 1. Định nghĩa -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                        <h4 class="font-bold text-xs uppercase text-amber-800">1. Định Nghĩa</h4>
+                        <p class="text-xs text-slate-700 leading-relaxed">
+                            Là một tập hợp gồm hai hay nhiều phương trình bậc nhất 2 ẩn ghép lại, yêu cầu cặp ẩn $(x; y)$ phải thỏa mãn đồng thời tất cả các phương trình đó.
+                        </p>
+                    </div>
+
+                    <!-- 2. Dạng tổng quát -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                        <h4 class="font-bold text-xs uppercase text-amber-800">2. Dạng Tổng Quát</h4>
+                        <div class="text-center py-2 bg-slate-100 rounded-lg border border-emerald-200 text-sm font-bold text-emerald-900 font-mono">
+                            $\begin{cases} a_1 x + b_1 y = c_1 \\ a_2 x + b_2 y = c_2 \end{cases}$
+                        </div>
+                    </div>
+
+                    <!-- 3. Phương pháp giải -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                        <h4 class="font-bold text-xs uppercase text-amber-800">3. Ba Phương Pháp Giải Trọng Tâm</h4>
+                        <div class="space-y-2 text-xs text-slate-700">
+                            <div class="p-2 bg-white rounded border-l-4 border-indigo-500 shadow-sm">
+                                <strong class="text-indigo-900">• Phương pháp Thế:</strong> Từ một phương trình, rút 1 ẩn (ví dụ $x$) theo ẩn kia $\rightarrow$ thế vào phương trình còn lại để đưa về phương trình 1 ẩn đơn giản.
+                            </div>
+                            <div class="p-2 bg-white rounded border-l-4 border-emerald-500 shadow-sm">
+                                <strong class="text-emerald-900">• Phương pháp Cộng Đại Số:</strong> Nhân hệ số hai vế sao cho hệ số của một ẩn bằng nhau (hoặc đối nhau) $\rightarrow$ cộng hoặc trừ 2 phương trình để triệt tiêu ẩn đó.
+                            </div>
+                            <div class="p-2 bg-white rounded border-l-4 border-cyan-500 shadow-sm">
+                                <strong class="text-cyan-900">• Phương pháp Đặt Ẩn Phụ:</strong> Phát hiện các cụm biểu thức giống nhau (ví dụ $\frac{1}{x}, \frac{1}{y-1}$) $\rightarrow$ đặt làm ẩn phụ $u, v$ để chuyển về hệ bậc nhất cơ bản.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. Ví dụ minh họa -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4">
+                        <h4 class="font-bold text-xs uppercase text-amber-800"><i class="fa-solid fa-list-ol me-1"></i> Các Ví Dụ Giải Chi Tiết Cho 3 Phương Pháp</h4>
+
+                        <!-- Ex 1: PP Thế -->
+                        <div class="p-3 bg-white rounded-lg border border-slate-200 text-xs space-y-1 shadow-sm">
+                            <span class="font-bold text-indigo-700">Ví dụ 1 (Phương pháp Thế):</span> Giải hệ $\begin{cases} x - y = 1 \quad (1) \\ 2x + y = 8 \quad (2) \end{cases}$
+                            <div class="text-slate-700 pt-1 leading-relaxed">
+                                • Từ (1) rút $x = y + 1$.<br>
+                                • Thế vào (2): $2(y + 1) + y = 8 \Leftrightarrow 2y + 2 + y = 8 \Leftrightarrow 3y = 6 \Rightarrow y = 2$.<br>
+                                • Suy ra $x = 2 + 1 = 3$. Vậy nghiệm của hệ là $(3; 2)$.
+                            </div>
+                        </div>
+
+                        <!-- Ex 2: PP Cộng đại số -->
+                        <div class="p-3 bg-white rounded-lg border border-slate-200 text-xs space-y-1 shadow-sm">
+                            <span class="font-bold text-emerald-700">Ví dụ 2 (Phương pháp Cộng đại số - Trừ vế):</span> Giải hệ $\begin{cases} 2x + 3y = 12 \quad (1) \\ 2x - y = 4 \quad (2) \end{cases}$
+                            <div class="text-slate-700 pt-1 leading-relaxed">
+                                • Hệ số của $x$ ở hai phương trình đều bằng $2$. Trừ vế với vế PT(1) cho PT(2):<br>
+                                $(2x + 3y) - (2x - y) = 12 - 4 \Leftrightarrow 4y = 8 \Rightarrow y = 2$.<br>
+                                • Thay $y = 2$ vào (2): $2x - 2 = 4 \Rightarrow 2x = 6 \Rightarrow x = 3$. Vậy nghiệm là $(3; 2)$.
+                            </div>
+                        </div>
+
+                        <!-- Ex 3: PP Nhân hệ số cộng đại số -->
+                        <div class="p-3 bg-white rounded-lg border border-slate-200 text-xs space-y-1 shadow-sm">
+                            <span class="font-bold text-emerald-700">Ví dụ 3 (Cộng đại số - Nhân cân bằng hệ số):</span> Giải hệ $\begin{cases} 3x + 2y = 13 \quad (1) \\ 2x + 5y = 16 \quad (2) \end{cases}$
+                            <div class="text-slate-700 pt-1 leading-relaxed">
+                                • Nhân PT(1) với $2$ và PT(2) với $3$: $\begin{cases} 6x + 4y = 26 \\ 6x + 15y = 48 \end{cases}$<br>
+                                • Trừ vế với vế: $11y = 22 \Rightarrow y = 2$. Thay vào (1): $3x + 4 = 13 \Rightarrow 3x = 9 \Rightarrow x = 3$.<br>
+                                • Nghiệm của hệ là $(3; 2)$.
+                            </div>
+                        </div>
+
+                        <!-- Ex 4: PP Đặt ẩn phụ -->
+                        <div class="p-3 bg-white rounded-lg border border-slate-200 text-xs space-y-1 shadow-sm">
+                            <span class="font-bold text-cyan-800">Ví dụ 4 (Phương pháp Đặt ẩn phụ):</span> Giải hệ $\begin{cases} \frac{2}{x} + \frac{3}{y} = 5 \\ \frac{1}{x} - \frac{1}{y} = 0 \end{cases}$ (ĐK: $x, y \neq 0$)
+                            <div class="text-slate-700 pt-1 leading-relaxed">
+                                • Đặt $u = \frac{1}{x}, v = \frac{1}{y}$. Hệ trở thành: $\begin{cases} 2u + 3v = 5 \\ u - v = 0 \end{cases}$<br>
+                                • Từ $u - v = 0 \Rightarrow u = v$. Thế vào trên: $2u + 3u = 5 \Rightarrow 5u = 5 \Rightarrow u = 1 \Rightarrow v = 1$.<br>
+                                • Suy ra $\frac{1}{x} = 1 \Rightarrow x = 1$ và $\frac{1}{y} = 1 \Rightarrow y = 1$ (Thỏa mãn ĐK). Vậy nghiệm là $(1; 1)$.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==========================================
+             PAGE 3: LUYỆN TẬP (10 BÀI TẬP CÓ LỜI GIẢI CHI TIẾT)
+             ========================================== -->
+        <section id="page-3" class="page-content space-y-6">
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="px-3 py-1 bg-amber-100 text-amber-800 text-xs font-semibold rounded-full border border-amber-200">Thực Hành Rèn Luyện</span>
+                    <h2 class="text-xl font-bold text-slate-900">3. Hệ Thống 10 Bài Tập Luyện Tập & Tự Học</h2>
+                </div>
+                <p class="text-xs text-slate-600">
+                    Bao gồm 5 bài về Phương trình bậc nhất 2 ẩn và 5 bài về Hệ phương trình bậc nhất 2 ẩn (áp dụng đủ cả 3 phương pháp Thế, Cộng đại số, Đặt ẩn phụ) kèm lời giải chi tiết.
+                </p>
+            </div>
+
+            <!-- PART I: 5 EXERCISES FOR SINGLE EQUATION -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 space-y-5 shadow-sm">
+                <h3 class="text-base font-bold text-indigo-900 flex items-center gap-2 border-b border-slate-200 pb-3">
+                    <i class="fa-solid fa-square-check text-indigo-600"></i> PHẦN 1: 5 BÀI TẬP VỀ PHƯƠNG TRÌNH BẬC NHẤT 2 ẨN
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Exercise 1 -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2 text-xs">
+                        <span class="font-bold text-amber-800 text-sm">Bài 1: Nhận diện & Kiểm tra nghiệm</span>
+                        <p class="text-slate-700">Cho phương trình $3x - 2y = 7$. Trong các cặp số $(3; 1)$, $(1; -2)$, $(0; 2)$, cặp số nào là nghiệm?</p>
+                        <div class="p-3 bg-white rounded border border-emerald-300 text-slate-700 space-y-1 shadow-sm">
+                            <strong class="block text-emerald-800 font-bold">Lời giải chi tiết:</strong>
+                            • Thử $(3; 1)$: $3(3) - 2(1) = 9 - 2 = 7$ (Đúng) $\Rightarrow$ <strong class="text-emerald-700">Là nghiệm</strong>.<br>
+                            • Thử $(1; -2)$: $3(1) - 2(-2) = 3 + 4 = 7$ (Đúng) $\Rightarrow$ <strong class="text-emerald-700">Là nghiệm</strong>.<br>
+                            • Thử $(0; 2)$: $3(0) - 2(2) = -4 \neq 7 \Rightarrow$ Không phải nghiệm.
+                        </div>
+                    </div>
+
+                    <!-- Exercise 2 -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2 text-xs">
+                        <span class="font-bold text-amber-800 text-sm">Bài 2: Viết nghiệm tổng quát</span>
+                        <p class="text-slate-700">Viết công thức nghiệm tổng quát của phương trình $4x - y = 3$.</p>
+                        <div class="p-3 bg-white rounded border border-emerald-300 text-slate-700 space-y-1 shadow-sm">
+                            <strong class="block text-emerald-800 font-bold">Lời giải chi tiết:</strong>
+                            • Rút $y$ theo $x$: $4x - y = 3 \Rightarrow y = 4x - 3$.<br>
+                            • Nghiệm tổng quát của phương trình là cặp số $(x; 4x - 3)$ với $x \in \mathbb{R}$ tùy ý.
+                        </div>
+                    </div>
+
+                    <!-- Exercise 3 -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2 text-xs">
+                        <span class="font-bold text-amber-800 text-sm">Bài 3: Phương trình thiếu ẩn x</span>
+                        <p class="text-slate-700">Tìm nghiệm tổng quát của phương trình $0x + 2y = 6$.</p>
+                        <div class="p-3 bg-white rounded border border-emerald-300 text-slate-700 space-y-1 shadow-sm">
+                            <strong class="block text-emerald-800 font-bold">Lời giải chi tiết:</strong>
+                            • Biến đổi $2y = 6 \Rightarrow y = 3$.<br>
+                            • Vì hệ số của $x$ bằng $0$ nên $x$ nhận giá trị tùy ý. Nghiệm tổng quát là $(x; 3)$ với $x \in \mathbb{R}$.
+                        </div>
+                    </div>
+
+                    <!-- Exercise 4 -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2 text-xs">
+                        <span class="font-bold text-amber-800 text-sm">Bài 4: Bài toán tìm tham số m</span>
+                        <p class="text-slate-700">Tìm $m$ để phương trình $mx + 3y = 7$ nhận cặp số $(1; 2)$ làm nghiệm.</p>
+                        <div class="p-3 bg-white rounded border border-emerald-300 text-slate-700 space-y-1 shadow-sm">
+                            <strong class="block text-emerald-800 font-bold">Lời giải chi tiết:</strong>
+                            • Thay $x = 1, y = 2$ vào phương trình: $m(1) + 3(2) = 7 \Leftrightarrow m + 6 = 7 \Rightarrow m = 1$.<br>
+                            • Vậy $m = 1$ là giá trị cần tìm.
+                        </div>
+                    </div>
+
+                    <!-- Exercise 5 -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2 text-xs md:col-span-2">
+                        <span class="font-bold text-amber-800 text-sm">Bài 5: Lập phương trình từ tình huống thực tế</span>
+                        <p class="text-slate-700">Một cửa hàng bán vé xem phim gồm vé người lớn ($x$ nghìn đồng) và vé trẻ em ($y$ nghìn đồng). Một gia đình mua 2 vé người lớn và 3 vé trẻ em hết tổng cộng 210 nghìn đồng. Hãy viết phương trình bậc nhất 2 ẩn biểu diễn mối liên hệ trên.</p>
+                        <div class="p-3 bg-white rounded border border-emerald-300 text-slate-700 space-y-1 shadow-sm">
+                            <strong class="block text-emerald-800 font-bold">Lời giải chi tiết:</strong>
+                            • Số tiền mua 2 vé người lớn là $2x$ (nghìn đồng). Số tiền mua 3 vé trẻ em là $3y$ (nghìn đồng).<br>
+                            • Tổng số tiền hết 210 nghìn đồng nên ta có phương trình: <span class="font-bold text-indigo-700">$2x + 3y = 210$</span>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PART II: 5 EXERCISES FOR SYSTEM OF EQUATIONS -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 space-y-5 shadow-sm">
+                <h3 class="text-base font-bold text-emerald-900 flex items-center gap-2 border-b border-slate-200 pb-3">
+                    <i class="fa-solid fa-cubes text-emerald-600"></i> PHẦN 2: 5 BÀI TẬP VỀ HỆ PHƯƠNG TRÌNH BẬC NHẤT 2 ẨN (ĐỦ 3 PHƯƠNG PHÁP)
+                </h3>
+
+                <div class="space-y-4 text-xs">
+                    <!-- Sys Ex 1: PP Thế -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-indigo-900 text-sm">Bài 1 (Giải bằng Phương pháp Thế):</span>
+                            <span class="px-2.5 py-0.5 bg-indigo-100 text-indigo-800 rounded-full border border-indigo-200 font-semibold">Cơ bản</span>
+                        </div>
+                        <p class="text-slate-800 font-mono">Giải hệ phương trình: $\begin{cases} x + 2y = 5 \quad (1) \\ 3x - y = 1 \quad (2) \end{cases}$</p>
+                        <div class="p-3 bg-white rounded border border-slate-200 text-slate-700 space-y-1 leading-relaxed shadow-sm">
+                            <strong class="text-emerald-800">Lời giải chi tiết:</strong><br>
+                            • Từ (1), rút $x = 5 - 2y$.<br>
+                            • Thế vào (2): $3(5 - 2y) - y = 1 \Leftrightarrow 15 - 6y - y = 1 \Leftrightarrow -7y = -14 \Rightarrow y = 2$.<br>
+                            • Thay $y = 2$ vào công thức rút $x$: $x = 5 - 2(2) = 1$.<br>
+                            • Kết luận: Hệ có nghiệm duy nhất $(x; y) = (1; 2)$.
+                        </div>
+                    </div>
+
+                    <!-- Sys Ex 2: PP Cộng đại số -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-emerald-900 text-sm">Bài 2 (Giải bằng Phương pháp Cộng đại số):</span>
+                            <span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 rounded-full border border-emerald-200 font-semibold">Cộng triệt tiêu</span>
+                        </div>
+                        <p class="text-slate-800 font-mono">Giải hệ phương trình: $\begin{cases} 2x + 3y = 7 \quad (1) \\ 4x - 3y = 5 \quad (2) \end{cases}$</p>
+                        <div class="p-3 bg-white rounded border border-slate-200 text-slate-700 space-y-1 leading-relaxed shadow-sm">
+                            <strong class="text-emerald-800">Lời giải chi tiết:</strong><br>
+                            • Hệ số của $y$ ở hai phương trình đối nhau ($3$ và $-3$). Cộng vế với vế PT(1) và PT(2):<br>
+                            $(2x + 3y) + (4x - 3y) = 7 + 5 \Leftrightarrow 6x = 12 \Rightarrow x = 2$.<br>
+                            • Thay $x = 2$ vào PT(1): $2(2) + 3y = 7 \Leftrightarrow 4 + 3y = 7 \Leftrightarrow 3y = 3 \Rightarrow y = 1$.<br>
+                            • Kết luận: Hệ có nghiệm duy nhất $(x; y) = (2; 1)$.
+                        </div>
+                    </div>
+
+                    <!-- Sys Ex 3: PP Cân bằng hệ số cộng đại số -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-emerald-900 text-sm">Bài 3 (Giải bằng Nhân cân bằng & Cộng đại số):</span>
+                            <span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 rounded-full border border-emerald-200 font-semibold">Nâng cao nhẹ</span>
+                        </div>
+                        <p class="text-slate-800 font-mono">Giải hệ phương trình: $\begin{cases} 3x + 4y = 11 \quad (1) \\ 2x - 3y = -4 \quad (2) \end{cases}$</p>
+                        <div class="p-3 bg-white rounded border border-slate-200 text-slate-700 space-y-1 leading-relaxed shadow-sm">
+                            <strong class="text-emerald-800">Lời giải chi tiết:</strong><br>
+                            • Nhân PT(1) với $3$ và PT(2) với $4$ để triệt tiêu $y$: $\begin{cases} 9x + 12y = 33 \\ 8x - 12y = -16 \end{cases}$<br>
+                            • Cộng vế với vế: $17x = 17 \Rightarrow x = 1$.<br>
+                            • Thay $x = 1$ vào PT(1): $3(1) + 4y = 11 \Leftrightarrow 4y = 8 \Rightarrow y = 2$.<br>
+                            • Kết luận: Hệ có nghiệm duy nhất $(x; y) = (1; 2)$.
+                        </div>
+                    </div>
+
+                    <!-- Sys Ex 4: PP Đặt ẩn phụ -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-cyan-900 text-sm">Bài 4 (Giải bằng Phương pháp Đặt ẩn phụ):</span>
+                            <span class="px-2.5 py-0.5 bg-cyan-100 text-cyan-800 rounded-full border border-cyan-200 font-semibold">Biểu thức chứa mẫu</span>
+                        </div>
+                        <p class="text-slate-800 font-mono">Giải hệ phương trình: $\begin{cases} \frac{1}{x-1} + \frac{2}{y+1} = 4 \\ \frac{3}{x-1} - \frac{1}{y+1} = 5 \end{cases}$ (Điều kiện: $x \neq 1, y \neq -1$)</p>
+                        <div class="p-3 bg-white rounded border border-slate-200 text-slate-700 space-y-1 leading-relaxed shadow-sm">
+                            <strong class="text-emerald-800">Lời giải chi tiết:</strong><br>
+                            • Đặt $u = \frac{1}{x-1}$ và $v = \frac{1}{y+1}$. Hệ trở thành: $\begin{cases} u + 2v = 4 \quad (1) \\ 3u - v = 5 \quad (2) \end{cases}$<br>
+                            • Từ (2) rút $v = 3u - 5$. Thế vào (1): $u + 2(3u - 5) = 4 \Leftrightarrow 7u - 10 = 4 \Leftrightarrow 7u = 14 \Rightarrow u = 2 \Rightarrow v = 1$.<br>
+                            • Trả về ẩn $x, y$: $\frac{1}{x-1} = 2 \Rightarrow x - 1 = 0.5 \Rightarrow x = 1.5$ và $\frac{1}{y+1} = 1 \Rightarrow y + 1 = 1 \Rightarrow y = 0$ (Thỏa mãn ĐK).<br>
+                            • Kết luận: Hệ có nghiệm duy nhất $(x; y) = (1.5; 0)$.
+                        </div>
+                    </div>
+
+                    <!-- Sys Ex 5: Toán thực tế lập hệ PT -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-amber-900 text-sm">Bài 5 (Bài toán thực tế lập hệ phương trình):</span>
+                            <span class="px-2.5 py-0.5 bg-amber-100 text-amber-800 rounded-full border border-amber-200 font-semibold">Thực tế</span>
+                        </div>
+                        <p class="text-slate-800">Tìm hai số tự nhiên biết rằng tổng của chúng bằng $25$ và hiệu của số lớn trừ số nhỏ bằng $7$.</p>
+                        <div class="p-3 bg-white rounded border border-slate-200 text-slate-700 space-y-1 leading-relaxed shadow-sm">
+                            <strong class="text-emerald-800">Lời giải chi tiết:</strong><br>
+                            • Gọi số lớn là $x$, số nhỏ là $y$ ($x, y \in \mathbb{N}^*, x > y$).<br>
+                            • Theo bài ra ta có hệ phương trình: $\begin{cases} x + y = 25 \\ x - y = 7 \end{cases}$<br>
+                            • Cộng vế với vế: $2x = 32 \Rightarrow x = 16$. Thay vào phương trình đầu: $16 + y = 25 \Rightarrow y = 9$ (Thỏa mãn).<br>
+                            • Vậy hai số tự nhiên cần tìm là $16$ và $9$.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             PAGE 4: TỔNG KẾT & CỦNG CỐ
+             ========================================== -->
+        <section id="page-4" class="page-content space-y-6">
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="px-3 py-1 bg-purple-100 text-purple-800 text-xs font-semibold rounded-full border border-purple-200">Tổng Kết Học Tập</span>
+                    <h2 class="text-xl font-bold text-slate-900">4. Tóm Tắt Hệ Thống Kiến Thức & Kiểm Tra Nhanh</h2>
+                </div>
+                <p class="text-xs text-slate-600">Ôn lại định nghĩa, các dạng toán và phương pháp làm bài trọng tâm của bài học.</p>
+            </div>
+
+            <!-- Summary Card -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-sm">
+                <h3 class="text-base font-bold text-purple-900 flex items-center gap-2 border-b border-slate-200 pb-3">
+                    <i class="fa-solid fa-list-check text-purple-600"></i> TÓM TẮT ĐỊNH NGHĨA & PHƯƠNG PHÁP LÀM BÀI
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                        <strong class="text-indigo-900 text-sm block font-bold">1. Phương Trình Bậc Nhất 2 Ẩn ($ax + by = c$)</strong>
+                        <p class="text-slate-700 leading-relaxed">
+                            • <strong>Định nghĩa:</strong> Khẳng định bằng nhau của 2 biểu thức chứa 2 ẩn bậc 1.<br>
+                            • <strong>Đặc điểm:</strong> Luôn có vô số nghiệm.<br>
+                            • <strong>Cách làm:</strong> Rút $y$ theo $x$ ($y = \frac{c-ax}{b}$) hoặc $x$ theo $y$ để biểu diễn tập nghiệm tổng quát.
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                        <strong class="text-emerald-900 text-sm block font-bold">2. Hệ Phương Trình Bậc Nhất 2 Ẩn ($\begin{cases}a_1 x+b_1 y=c_1 \\ a_2 x+b_2 y=c_2\end{cases}$)</strong>
+                        <p class="text-slate-700 leading-relaxed">
+                            • <strong>Định nghĩa:</strong> Nhóm gồm từ 2 phương trình liên kết nhau, tìm cặp $(x; y)$ thỏa mãn đồng thời.<br>
+                            • <strong>3 Phương pháp làm bài:</strong><br>
+                            1. <em>Phương pháp Thế:</em> Rút 1 ẩn thế vào PT còn lại.<br>
+                            2. <em>Phương pháp Cộng đại số:</em> Nhân hệ số để triệt tiêu 1 ẩn.<br>
+                            3. <em>Phương pháp Đặt ẩn phụ:</em> Đặt cụm chung $u, v$ đưa về hệ đơn giản.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Quiz -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 space-y-5 shadow-sm">
+                <h3 class="text-base font-bold text-amber-900 flex items-center gap-2 border-b border-slate-200 pb-3">
+                    <i class="fa-solid fa-bolt text-amber-600"></i> TRẮC NGHIỆM PHẢN XẠ NHANH
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                    <!-- Q1 -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2">
+                        <p class="font-semibold text-slate-800">Câu 1: Phương trình nào không phải là phương trình bậc nhất hai ẩn?</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="checkClassQuiz(1, 'A')" id="cq1-A" class="p-2 rounded bg-white border border-slate-200 text-left hover:bg-slate-100 text-slate-800 transition-all">A. $3x - y = 2$</button>
+                            <button onclick="checkClassQuiz(1, 'B')" id="cq1-B" class="p-2 rounded bg-white border border-slate-200 text-left hover:bg-slate-100 text-slate-800 transition-all">B. $0x + 2y = -4$</button>
+                            <button onclick="checkClassQuiz(1, 'C')" id="cq1-C" class="p-2 rounded bg-white border border-slate-200 text-left hover:bg-slate-100 text-slate-800 transition-all">C. $x^2 + y = 3$</button>
+                            <button onclick="checkClassQuiz(1, 'D')" id="cq1-D" class="p-2 rounded bg-white border border-slate-200 text-left hover:bg-slate-100 text-slate-800 transition-all">D. $\frac{1}{2}x - 5y = 0$</button>
+                        </div>
+                        <div id="cq1-fb" class="hidden font-medium pt-1"></div>
+                    </div>
+
+                    <!-- Q2 -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2">
+                        <p class="font-semibold text-slate-800">Câu 2: Cặp số $(2; 1)$ là nghiệm của hệ phương trình nào?</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="checkClassQuiz(2, 'A')" id="cq2-A" class="p-2 rounded bg-white border border-slate-200 text-left hover:bg-slate-100 text-slate-800 transition-all">A. $\begin{cases}x+y=3 \\ x-y=0\end{cases}$</button>
+                            <button onclick="checkClassQuiz(2, 'B')" id="cq2-B" class="p-2 rounded bg-white border border-slate-200 text-left hover:bg-slate-100 text-slate-800 transition-all">B. $\begin{cases}x+y=3 \\ x-y=1\end{cases}$</button>
+                            <button onclick="checkClassQuiz(2, 'C')" id="cq2-C" class="p-2 rounded bg-white border border-slate-200 text-left hover:bg-slate-100 text-slate-800 transition-all">C. $\begin{cases}2x+y=4 \\ x-y=2\end{cases}$</button>
+                            <button onclick="checkClassQuiz(2, 'D')" id="cq2-D" class="p-2 rounded bg-white border border-slate-200 text-left hover:bg-slate-100 text-slate-800 transition-all">D. $\begin{cases}x+2y=5 \\ x-y=3\end{cases}$</button>
+                        </div>
+                        <div id="cq2-fb" class="hidden font-medium pt-1"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ==========================================
+         JAVASCRIPT LOGIC
+         ========================================== -->
+    <script>
+        let currentPage = 1;
+
+        // KaTeX Safe Rendering Wrapper
+        function renderMath() {
+            if (typeof renderMathInElement === 'function') {
+                try {
+                    renderMathInElement(document.body, {
+                        delimiters: [
+                            {left: '$$', right: '$$', display: true},
+                            {left: '$', right: '$', display: false}
+                        ],
+                        throwOnError: false,
+                        ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code"]
+                    });
+                } catch(e) {
+                    console.error("KaTeX error: ", e);
+                }
+            }
+        }
+
+        // Page Switcher
+        function switchPage(pageNum) {
+            currentPage = pageNum;
+            document.querySelectorAll('.page-content').forEach(el => el.classList.remove('active'));
+            const target = document.getElementById('page-' + pageNum);
+            if (target) target.classList.add('active');
+
+            // Tab Buttons Styling for Light Theme
+            document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
+                const num = idx + 1;
+                const badge = btn.querySelector('span');
+                if (num === pageNum) {
+                    btn.className = "tab-btn flex-1 min-w-[160px] px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 bg-indigo-600 text-white font-semibold shadow-md";
+                    if (badge) badge.className = "w-6 h-6 rounded-lg bg-white/20 text-xs flex items-center justify-center font-bold";
+                } else {
+                    btn.className = "tab-btn flex-1 min-w-[160px] px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-slate-200";
+                    if (badge) badge.className = "w-6 h-6 rounded-lg bg-slate-200 text-xs flex items-center justify-center font-bold";
+                }
+            });
+
+            window.scrollTo({top: 0, behavior: 'smooth'});
+
+            setTimeout(() => {
+                renderMath();
+            }, 50);
+        }
+
+        // Page 4 Class Quiz
+        function checkClassQuiz(qNum, choice) {
+            const fb = document.getElementById('cq' + qNum + '-fb');
+            if (!fb) return;
+            fb.classList.remove('hidden');
+
+            const answers = { 1: 'C', 2: 'B' };
+            const explanations = {
+                1: "Chính xác! Vì chứa $x^2$ (bậc 2 của x).",
+                2: "Chính xác! Thử $x = 2, y = 1 \Rightarrow 2+1=3$ và $2-1=1$."
+            };
+
+            const isCorrect = choice === answers[qNum];
+            
+            // Reset styles for Light Theme
+            ['A', 'B', 'C', 'D'].forEach(opt => {
+                const btn = document.getElementById('cq' + qNum + '-' + opt);
+                if (btn) btn.className = "p-2 rounded bg-white border border-slate-200 text-left hover:bg-slate-100 text-slate-800 transition-all";
+            });
+
+            const selBtn = document.getElementById('cq' + qNum + '-' + choice);
+            if (isCorrect) {
+                if (selBtn) selBtn.className = "p-2 rounded bg-emerald-100 border border-emerald-500 text-emerald-800 font-bold shadow-sm";
+                fb.className = "text-xs font-medium text-emerald-700 pt-1";
+                fb.innerHTML = '<i class="fa-solid fa-check me-1"></i> ' + explanations[qNum];
+            } else {
+                if (selBtn) selBtn.className = "p-2 rounded bg-rose-100 border border-rose-500 text-rose-800 font-bold shadow-sm";
+                fb.className = "text-xs font-medium text-rose-700 pt-1";
+                fb.innerHTML = '<i class="fa-solid fa-xmark me-1"></i> Chưa đúng. Đáp án đúng là ' + answers[qNum];
+            }
+            renderMath();
+        }
+
+        // Initialize on load
+        window.onload = function() {
+            renderMath();
+        };
+    </script>
+</body>
+</html>
