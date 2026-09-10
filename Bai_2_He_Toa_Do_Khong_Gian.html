@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 2: Hệ tọa độ trong không gian (Oxyz) - Sư phạm tương tác</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; line-height: 1.6; background-color: #f0fdf4; color: #1f2937; }
+        .section-card { background: white; border-radius: 16px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); padding: 2.5rem; margin-bottom: 2.5rem; border-top: 6px solid #10b981; transition: all 0.3s ease; }
+        .section-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .step-title { font-weight: 700; color: #047857; margin-bottom: 0.75rem; display: flex; items-center; font-size: 1.125rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .step-box { background: #f8fafc; border-left: 4px solid #3b82f6; padding: 1rem 1.5rem; border-radius: 0 8px 8px 0; margin-bottom: 1.5rem; }
+        .btn-interactive { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 0.75rem 1.5rem; border-radius: 9999px; font-weight: 600; cursor: pointer; transition: transform 0.2s, shadow 0.2s; border: none; outline: none; box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.5); }
+        .btn-interactive:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4); }
+        .answer-box { display: none; background: #ecfdf5; border: 2px dashed #10b981; padding: 1rem; border-radius: 8px; margin-top: 1rem; color: #065f46; font-weight: 600; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .mjx-chtml { margin: 0.5em 0; }
+    </style>
+    <script>
+        function toggleAnswer(id) {
+            var el = document.getElementById(id);
+            if (el.style.display === "none" || el.style.display === "") {
+                el.style.display = "block";
+            } else {
+                el.style.display = "none";
+            }
+        }
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }
+        };
+    </script>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-5xl mx-auto">
+        <header class="text-center mb-12">
+            <div class="inline-block bg-green-100 text-green-800 px-4 py-1 rounded-full font-bold mb-4 uppercase tracking-widest text-sm">Chương trình Toán 12</div>
+            <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">BÀI 2: HỆ TỌA ĐỘ TRONG <span class="text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-blue-600">KHÔNG GIAN Oxyz</span></h1>
+            <p class="text-xl text-gray-600 font-medium">Bí kíp "số hóa" hình học không gian - Thao tác với tọa độ cực mượt!</p>
+        </header>
+
+        <!-- Mục 1: Các phép toán vectơ -->
+        <section class="section-card border-blue-500">
+            <h2 class="text-3xl font-bold text-blue-800 mb-6 flex items-center border-b pb-4">
+                <span class="bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center mr-4 text-xl shadow-lg">1</span>
+                Các phép toán vectơ: Cộng, Trừ, Nhân với một số
+            </h2>
+
+            <div class="step-box border-blue-400">
+                <div class="step-title text-blue-700">🎨 1. Đặt vấn đề trực quan</div>
+                <p>Hãy tưởng tượng một chiếc <strong>Flycam (Drone)</strong> đang bay trong không trung. Lực quạt đẩy nó tiến lên phía trước là vectơ $\vec{a}$, nhưng cùng lúc đó một cơn gió tạt ngang tạo ra lực đẩy theo vectơ $\vec{b}$. Vậy hướng bay thực tế của Flycam chính là vectơ tổng $\vec{a} + \vec{b}$! Nếu ta có tọa độ cụ thể của gió và lực máy, làm sao tính được chính xác tọa độ của hướng bay mới? Tương tự mặt phẳng Oxy, trong không gian Oxyz ta chỉ cần gắn thêm trục cao độ (z).</p>
+            </div>
+
+            <div class="step-box border-purple-400">
+                <div class="step-title text-purple-700">📐 2. Công thức toán học chuẩn</div>
+                <p>Cho hai vectơ $\vec{a} = (a_1; a_2; a_3)$, $\vec{b} = (b_1; b_2; b_3)$ và một số thực $k$. Ta có:</p>
+                <div class="overflow-x-auto">
+                    $$ \vec{a} + \vec{b} = (a_1 + b_1; a_2 + b_2; a_3 + b_3) $$
+                    $$ \vec{a} - \vec{b} = (a_1 - b_1; a_2 - b_2; a_3 - b_3) $$
+                    $$ k\vec{a} = (ka_1; ka_2; ka_3) $$
+                </div>
+            </div>
+
+            <div class="step-box border-red-400">
+                <div class="step-title text-red-700">💡 3. Mẹo nhớ thần tốc & Bẫy kinh điển</div>
+                <ul class="list-disc ml-5 space-y-2">
+                    <li><strong>Mẹo nhớ:</strong> <span class="bg-yellow-200 px-2 py-1 rounded">"Hoành theo hoành, Tung theo tung, Cao theo cao"</span>. Phép toán giống hệt hệ Oxy, chỉ cần kẹp thêm đứa em út "cao độ".</li>
+                    <li><strong>Bẫy kinh điển 💣:</strong> Khi nhân vectơ với một số âm, học sinh rất hay quên đổi dấu ở tọa độ thứ hai hoặc thứ ba (VD: $-2(1; -3; 4)$ lại ghi thành $(-2; -3; 4)$ thay vì $(-2; 6; -8)$). Nhớ phải <em>"phân phối công bằng cho cả 3 anh em"</em>!</li>
+                </ul>
+            </div>
+
+            <div class="step-box border-green-400">
+                <div class="step-title text-green-700">📝 4. Ví dụ minh họa phân loại</div>
+                <p><strong>Ví dụ 1 (Nhận biết):</strong> Cho $\vec{u} = (1; -2; 3)$ và $\vec{v} = (0; 4; -1)$. Tính tọa độ của $\vec{w} = \vec{u} + \vec{v}$.</p>
+                <p><em>Giải:</em> $\vec{w} = (1+0; -2+4; 3+(-1)) = (1; 2; 2)$. Rất êm ái!</p>
+                <p class="mt-3"><strong>Ví dụ 2 (Vận dụng):</strong> Một vật chịu tác dụng của hai lực $\vec{F_1} = (2; 0; -5)\text{ N}$ và lực kéo $\vec{F_2}$. Biết lực tổng hợp $\vec{F} = \vec{F_1} + \vec{F_2} = (5; 3; -1)\text{ N}$. Tìm tọa độ lực $\vec{F_2}$.</p>
+                <p><em>Giải:</em> Ta có $\vec{F_2} = \vec{F} - \vec{F_1} = (5-2; 3-0; -1-(-5)) = (3; 3; 4)$.</p>
+            </div>
+
+            <div class="step-box border-orange-400 bg-orange-50">
+                <div class="step-title text-orange-700">⚡ 5. Hoạt động tương tác tại lớp</div>
+                <p class="mb-4"><strong>Flash Quiz!</strong> Nhẩm cực nhanh trong 5 giây: Cho $\vec{a} = (2; 1; -1)$, $\vec{b} = (1; 0; 3)$. Tính tọa độ vectơ $\vec{x} = 2\vec{a} - \vec{b}$?</p>
+                <button class="btn-interactive" onclick="toggleAnswer('ans1')">👁️ Xem đáp án</button>
+                <div id="ans1" class="answer-box">
+                    $\vec{x} = 2(2; 1; -1) - (1; 0; 3) = (4; 2; -2) - (1; 0; 3) = (3; 2; -5)$. Bạn có ra đúng không? Tuyệt vời! 🎉
+                </div>
+            </div>
+        </section>
+
+        <!-- Mục 2: Hai vectơ bằng nhau & cùng phương -->
+        <section class="section-card border-purple-500">
+            <h2 class="text-3xl font-bold text-purple-800 mb-6 flex items-center border-b pb-4">
+                <span class="bg-purple-600 text-white rounded-full w-12 h-12 flex items-center justify-center mr-4 text-xl shadow-lg">2</span>
+                Hai vectơ bằng nhau và cùng phương
+            </h2>
+
+            <div class="step-box border-blue-400">
+                <div class="step-title text-blue-700">🎨 1. Đặt vấn đề trực quan</div>
+                <p>Trưởng ban ánh sáng sân khấu đang set up 2 đèn Laser. Nếu 2 tia sáng song song với nhau, chúng mang hướng của hai <strong>vectơ cùng phương</strong>. Nếu chúng chiếu song song, có độ dài bằng hệt nhau và cùng một chiều tiến tới, chúng là <strong>hai vectơ bằng nhau</strong>. Làm sao để máy tính nhận diện được điều này qua các con số?</p>
+            </div>
+
+            <div class="step-box border-purple-400">
+                <div class="step-title text-purple-700">📐 2. Công thức toán học chuẩn</div>
+                <p>Cho $\vec{a} = (a_1; a_2; a_3)$ và $\vec{b} = (b_1; b_2; b_3)$:</p>
+                <p class="mt-2"><strong>Hai vectơ bằng nhau:</strong></p>
+                $$ \vec{a} = \vec{b} \iff \begin{cases} a_1 = b_1 \\ a_2 = b_2 \\ a_3 = b_3 \end{cases} $$
+                <p class="mt-2"><strong>Hai vectơ cùng phương:</strong> $\vec{a}$ và $\vec{b}$ (với $\vec{b} \neq \vec{0}$) cùng phương khi tồn tại số $k$ sao cho $\vec{a} = k\vec{b}$. Nếu $b_1, b_2, b_3 \neq 0$, điều kiện tương đương là:</p>
+                $$ \frac{a_1}{b_1} = \frac{a_2}{b_2} = \frac{a_3}{b_3} $$
+            </div>
+
+            <div class="step-box border-red-400">
+                <div class="step-title text-red-700">💡 3. Mẹo nhớ thần tốc & Bẫy kinh điển</div>
+                <ul class="list-disc ml-5 space-y-2">
+                    <li><strong>Mẹo nhớ:</strong> <span class="bg-yellow-200 px-2 py-1 rounded">"Bằng nhau là photocopy 100%. Cùng phương là ảnh phóng to/thu nhỏ (tỉ lệ)"</span>.</li>
+                    <li><strong>Bẫy kinh điển 💣:</strong> Lập tỉ số $\frac{a_1}{b_1} = \frac{a_2}{b_2} = \frac{a_3}{b_3}$ vô tội vạ mà không kiểm tra xem mẫu số có bằng 0 hay không! Nếu tọa độ có số 0, hãy quay về định nghĩa gốc $\vec{a} = k\vec{b}$ để giải hệ phương trình an toàn nhé!</li>
+                </ul>
+            </div>
+
+            <div class="step-box border-green-400">
+                <div class="step-title text-green-700">📝 4. Ví dụ minh họa phân loại</div>
+                <p><strong>Ví dụ 1 (Nhận biết):</strong> Xét sự cùng phương của hai vectơ $\vec{u} = (2; -4; 6)$ và $\vec{v} = (-1; 2; -3)$.</p>
+                <p><em>Giải:</em> Ta thấy $\frac{2}{-1} = \frac{-4}{2} = \frac{6}{-3} = -2$. Vậy $\vec{u}$ và $\vec{v}$ cùng phương (thậm chí là ngược hướng vì tỉ số âm).</p>
+                <p class="mt-3"><strong>Ví dụ 2 (Vận dụng):</strong> Tìm $m, n$ để $\vec{a} = (m; 3; 4)$ cùng phương với $\vec{b} = (2; -1; n)$.</p>
+                <p><em>Giải:</em> Yêu cầu bài toán $\Rightarrow \frac{m}{2} = \frac{3}{-1} = \frac{4}{n}$. Từ đó suy ra $m = 2 \times (-3) = -6$ và $n = \frac{4}{-3} = -\frac{4}{3}$.</p>
+            </div>
+
+            <div class="step-box border-orange-400 bg-orange-50">
+                <div class="step-title text-orange-700">⚡ 5. Hoạt động tương tác tại lớp</div>
+                <p class="mb-4"><strong>Cặp đôi thần tốc (2 phút):</strong> Hai bạn cùng bàn phân định đúng sai: "Hai vectơ $\vec{a} = (0; 2; 4)$ và $\vec{b} = (0; -1; -2)$ có cùng phương không?"</p>
+                <button class="btn-interactive" onclick="toggleAnswer('ans2')">👁️ Lời giải từ Giáo viên</button>
+                <div id="ans2" class="answer-box">
+                    <strong>ĐÚNG!</strong> Chúng cùng phương. Vì ta dễ dàng thấy $\vec{a} = -2\vec{b}$. Đừng bối rối khi thấy hoành độ bằng 0 mà vội kết luận không cùng phương nhé! (Không được chia cho 0, nhưng dùng định nghĩa nhân $k$ thì hoàn toàn hợp lệ).
+                </div>
+            </div>
+        </section>
+
+        <!-- Mục 3: Tọa độ điểm đặc biệt -->
+        <section class="section-card border-green-500">
+            <h2 class="text-3xl font-bold text-green-800 mb-6 flex items-center border-b pb-4">
+                <span class="bg-green-600 text-white rounded-full w-12 h-12 flex items-center justify-center mr-4 text-xl shadow-lg">3</span>
+                Tọa độ các điểm đặc biệt
+            </h2>
+
+            <div class="step-box border-blue-400">
+                <div class="step-title text-blue-700">🎨 1. Đặt vấn đề trực quan</div>
+                <p>Kỹ sư xây dựng muốn tìm chính xác điểm nối dây cáp ở giữa hai mố cầu lơ lửng trong không gian (Trung điểm), hay xác định <strong>trọng tâm</strong> của một tấm vệ tinh hình tam giác để gắn trục xoay cho cân bằng. Toán học sẽ cung cấp ngay tọa độ chính xác đến từng milimet bằng các phép cộng trừ đơn giản!</p>
+            </div>
+
+            <div class="step-box border-purple-400">
+                <div class="step-title text-purple-700">📐 2. Công thức toán học chuẩn</div>
+                <p>Cho $A(x_A; y_A; z_A)$, $B(x_B; y_B; z_B)$ và $C(x_C; y_C; z_C)$:</p>
+                <ul class="list-disc ml-5 space-y-3 mt-3">
+                    <li><strong>Tọa độ vectơ $\vec{AB}$:</strong> $$ \vec{AB} = (x_B - x_A; y_B - y_A; z_B - z_A) $$</li>
+                    <li><strong>Tọa độ trung điểm $M$ của $AB$:</strong> $$ M \left( \frac{x_A + x_B}{2}; \frac{y_A + y_B}{2}; \frac{z_A + z_B}{2} \right) $$</li>
+                    <li><strong>Tọa độ trọng tâm $G$ của $\Delta ABC$:</strong> $$ G \left( \frac{x_A + x_B + x_C}{3}; \frac{y_A + y_B + y_C}{3}; \frac{z_A + z_B + z_C}{3} \right) $$</li>
+                </ul>
+            </div>
+
+            <div class="step-box border-red-400">
+                <div class="step-title text-red-700">💡 3. Mẹo nhớ thần tốc & Bẫy kinh điển</div>
+                <ul class="list-disc ml-5 space-y-2">
+                    <li><strong>Mẹo nhớ:</strong> <span class="bg-yellow-200 px-2 py-1 rounded">"Vectơ: Ngọn trừ Gốc. Điểm: Cộng lại chia đều"</span>. (Trung điểm chia 2, Trọng tâm tam giác chia 3).</li>
+                    <li><strong>Bẫy kinh điển 💣:</strong> Tính nhầm tọa độ điểm thành tọa độ vectơ! Ví dụ tìm trung điểm lại đi lấy tọa độ B trừ tọa độ A. Hãy nhớ: Điểm là sự "Hòa hợp" (Dấu cộng), Vectơ là sự "Định hướng" (Dấu trừ).</li>
+                </ul>
+            </div>
+
+            <div class="step-box border-green-400">
+                <div class="step-title text-green-700">📝 4. Ví dụ minh họa phân loại</div>
+                <p><strong>Ví dụ 1 (Thông hiểu):</strong> Cho $A(1; 0; -2)$ và $B(3; 4; 0)$. Tìm tọa độ $\vec{AB}$ và trung điểm $I$ của đoạn thẳng $AB$.</p>
+                <p><em>Giải:</em> $\vec{AB} = (3-1; 4-0; 0-(-2)) = (2; 4; 2)$. <br> Trung điểm $I \left( \frac{1+3}{2}; \frac{0+4}{2}; \frac{-2+0}{2} \right) \Rightarrow I(2; 2; -1)$.</p>
+                <p class="mt-3"><strong>Ví dụ 2 (Vận dụng):</strong> Cho hình bình hành $ABCD$ với $A(1; 2; -1), B(2; -1; 3), C(-3; 5; 1)$. Tìm tọa độ đỉnh $D$.</p>
+                <p><em>Giải:</em> Để $ABCD$ là hình bình hành, ta cần $\vec{AD} = \vec{BC}$. <br> Gọi $D(x; y; z)$. Ta có $\vec{AD} = (x-1; y-2; z+1)$ và $\vec{BC} = (-3-2; 5-(-1); 1-3) = (-5; 6; -2)$. <br> Suy ra: $x-1 = -5 \Rightarrow x = -4$; $y-2 = 6 \Rightarrow y = 8$; $z+1 = -2 \Rightarrow z = -3$. Vậy $D(-4; 8; -3)$.</p>
+            </div>
+
+            <div class="step-box border-orange-400 bg-orange-50">
+                <div class="step-title text-orange-700">⚡ 5. Hoạt động tương tác tại lớp</div>
+                <p class="mb-4"><strong>Game: 5 giây đếm ngược!</strong> Cho ba điểm thuộc 3 trục tọa độ: $A(3; 0; 0), B(0; 6; 0), C(0; 0; -9)$. Trọng tâm $G$ của tam giác $ABC$ là điểm nào?</p>
+                <button class="btn-interactive" onclick="toggleAnswer('ans3')">👁️ Mở hộp bí mật</button>
+                <div id="ans3" class="answer-box">
+                    Tọa độ điểm $G$ là: $x_G = 3/3 = 1$; $y_G = 6/3 = 2$; $z_G = -9/3 = -3$. <br>Kết quả: $G(1; 2; -3)$. Rất nhàn rỗi phải không nào? 🚀
+                </div>
+            </div>
+        </section>
+
+        <!-- Mục 4: Tích vô hướng -->
+        <section class="section-card border-red-500">
+            <h2 class="text-3xl font-bold text-red-800 mb-6 flex items-center border-b pb-4">
+                <span class="bg-red-600 text-white rounded-full w-12 h-12 flex items-center justify-center mr-4 text-xl shadow-lg">4</span>
+                Tích vô hướng của hai vectơ
+            </h2>
+
+            <div class="step-box border-blue-400">
+                <div class="step-title text-blue-700">🎨 1. Đặt vấn đề trực quan</div>
+                <p>Trong Vật lý, khi bạn dùng một lực $\vec{F}$ kéo một vật trượt đi một đoạn đường $\vec{s}$ trong không gian 3D, phần "công" sinh ra (Work) chính là một <strong>con số</strong> năng lượng, không phải là một mũi tên (vectơ). Phép toán "ép" 2 mũi tên lại với nhau để đẻ ra 1 con số duy nhất đó chính là <strong>Tích Vô Hướng</strong>.</p>
+            </div>
+
+            <div class="step-box border-purple-400">
+                <div class="step-title text-purple-700">📐 2. Công thức toán học chuẩn</div>
+                <p>Cho $\vec{a} = (a_1; a_2; a_3)$ và $\vec{b} = (b_1; b_2; b_3)$. Tích vô hướng của hai vectơ $\vec{a}$ và $\vec{b}$ được định nghĩa là:</p>
+                <div class="text-center my-4">
+                    <span class="text-2xl font-bold bg-gray-100 px-4 py-2 rounded-lg border-2 border-red-200">
+                        $$ \vec{a} \cdot \vec{b} = a_1b_1 + a_2b_2 + a_3b_3 $$
+                    </span>
+                </div>
+            </div>
+
+            <div class="step-box border-red-400">
+                <div class="step-title text-red-700">💡 3. Mẹo nhớ thần tốc & Bẫy kinh điển</div>
+                <ul class="list-disc ml-5 space-y-2">
+                    <li><strong>Mẹo nhớ:</strong> <span class="bg-yellow-200 px-2 py-1 rounded">"Hoành nhân hoành, CỘNG tung nhân tung, CỘNG cao nhân cao"</span>. Nhân cùng loài rồi gom hết lại làm một.</li>
+                    <li><strong>Bẫy kinh điển 💣:</strong> Học sinh quá quen tay với phép cộng/trừ nên viết kết quả tích vô hướng ra một... vectơ! (VD: viết thành $(a_1b_1; a_2b_2; a_3b_3)$). Hãy khắc cốt ghi tâm: Chữ <strong>VÔ HƯỚNG</strong> nghĩa là kết quả cuối cùng phải là <strong>MỘT CON SỐ (Vô hướng = Không có hướng)</strong>!</li>
+                </ul>
+            </div>
+
+            <div class="step-box border-green-400">
+                <div class="step-title text-green-700">📝 4. Ví dụ minh họa phân loại</div>
+                <p><strong>Ví dụ 1 (Thông hiểu):</strong> Tính $\vec{u} \cdot \vec{v}$ biết $\vec{u} = (2; -1; 3)$ và $\vec{v} = (1; 4; -2)$.</p>
+                <p><em>Giải:</em> $\vec{u} \cdot \vec{v} = 2 \times 1 + (-1) \times 4 + 3 \times (-2) = 2 - 4 - 6 = -8$.</p>
+                <p class="mt-3"><strong>Ví dụ 2 (Vận dụng Vật lý):</strong> Một chiếc xe đang đứng yên ở tọa độ gốc, chịu tác dụng của một lực kéo $\vec{F} = (5; 2; 10)$ làm nó di chuyển một đoạn đúng bằng vectơ $\vec{MN} = (4; 5; -1)$. Tính công $A$ do lực kéo sinh ra.</p>
+                <p><em>Giải:</em> Công $A = \vec{F} \cdot \vec{MN} = 5 \times 4 + 2 \times 5 + 10 \times (-1) = 20 + 10 - 10 = 20$ (Joule).</p>
+            </div>
+
+            <div class="step-box border-orange-400 bg-orange-50">
+                <div class="step-title text-orange-700">⚡ 5. Hoạt động tương tác tại lớp</div>
+                <p class="mb-4"><strong>Thử thách nhẩm nhanh:</strong> $\vec{i} = (1; 0; 0)$ và $\vec{j} = (0; 1; 0)$. Tích $\vec{i} \cdot \vec{j}$ bằng bao nhiêu?</p>
+                <button class="btn-interactive" onclick="toggleAnswer('ans4')">👁️ Hiện đáp án</button>
+                <div id="ans4" class="answer-box">
+                    Bằng $1 \times 0 + 0 \times 1 + 0 \times 0 = 0$. (Hai vectơ cơ sở trên 2 trục vuông góc với nhau thì tích vô hướng luôn bằng 0!).
+                </div>
+            </div>
+        </section>
+
+        <!-- Mục 5: Ứng dụng tích vô hướng -->
+        <section class="section-card border-yellow-500">
+            <h2 class="text-3xl font-bold text-yellow-800 mb-6 flex items-center border-b pb-4">
+                <span class="bg-yellow-500 text-white rounded-full w-12 h-12 flex items-center justify-center mr-4 text-xl shadow-lg">5</span>
+                Các ứng dụng của Tích vô hướng
+            </h2>
+
+            <div class="step-box border-blue-400">
+                <div class="step-title text-blue-700">🎨 1. Đặt vấn đề trực quan</div>
+                <p>Khi thiết kế một tựa game 3D (như Minecraft), engine game liên tục phải tính toán: Quái vật cách nhân vật chính <strong>bao xa</strong>? Góc nhìn (camera) đang mở một <strong>góc bao nhiêu độ</strong>? Mặt phẳng tường này có <strong>vuông góc</strong> với mặt đất không? Những siêu năng lực đó đều từ Tích vô hướng mà ra!</p>
+            </div>
+
+            <div class="step-box border-purple-400">
+                <div class="step-title text-purple-700">📐 2. Công thức toán học chuẩn</div>
+                <ul class="list-disc ml-5 space-y-4">
+                    <li><strong>Độ dài vectơ:</strong> $$ |\vec{a}| = \sqrt{a_1^2 + a_2^2 + a_3^2} $$</li>
+                    <li><strong>Khoảng cách giữa hai điểm A, B:</strong> $$ AB = |\vec{AB}| = \sqrt{(x_B - x_A)^2 + (y_B - y_A)^2 + (z_B - z_A)^2} $$</li>
+                    <li><strong>Góc giữa hai vectơ:</strong> $$ \cos(\vec{a}, \vec{b}) = \frac{\vec{a} \cdot \vec{b}}{|\vec{a}| \cdot |\vec{b}|} = \frac{a_1b_1 + a_2b_2 + a_3b_3}{\sqrt{a_1^2 + a_2^2 + a_3^2} \cdot \sqrt{b_1^2 + b_2^2 + b_3^2}} $$</li>
+                    <li><strong>Điều kiện vuông góc:</strong> $$ \vec{a} \perp \vec{b} \iff \vec{a} \cdot \vec{b} = 0 \iff a_1b_1 + a_2b_2 + a_3b_3 = 0 $$</li>
+                </ul>
+            </div>
+
+            <div class="step-box border-red-400">
+                <div class="step-title text-red-700">💡 3. Mẹo nhớ thần tốc & Bẫy kinh điển</div>
+                <ul class="list-disc ml-5 space-y-2">
+                    <li><strong>Mẹo nhớ:</strong> <span class="bg-yellow-200 px-2 py-1 rounded">"Góc là Vô hướng chia Tích độ dài. Vuông góc thì Tích vô hướng triệt tiêu về Zero"</span>.</li>
+                    <li><strong>Bẫy kinh điển 💣:</strong> Quên trùm "Căn bậc hai" khi tính độ dài vectơ. Hoặc khi tính góc, tính ra $\cos = 0.5$ xong vội kết luận góc bằng $0.5^\circ$ mà quên bấm Shift-Cos (arccos) để suy ra góc $60^\circ$. Đừng "cầm đèn chạy trước ô tô" nhé!</li>
+                </ul>
+            </div>
+
+            <div class="step-box border-green-400">
+                <div class="step-title text-green-700">📝 4. Ví dụ minh họa phân loại</div>
+                <p><strong>Ví dụ 1 (Nhận biết):</strong> Xét độ dài $\vec{u} = (2; 2; 1)$ và góc giữa nó với $\vec{v} = (0; 3; 4)$.</p>
+                <p><em>Giải:</em><br> 
+                Độ dài $|\vec{u}| = \sqrt{2^2 + 2^2 + 1^2} = \sqrt{9} = 3$. <br>
+                Độ dài $|\vec{v}| = \sqrt{0^2 + 3^2 + 4^2} = \sqrt{25} = 5$. <br>
+                $\cos(\vec{u}, \vec{v}) = \frac{2\times 0 + 2\times 3 + 1\times 4}{3 \times 5} = \frac{10}{15} = \frac{2}{3}$.</p>
+                <p class="mt-3"><strong>Ví dụ 2 (Vận dụng):</strong> Cho $A(1; 0; 0), B(0; 2; 0), C(0; 0; 3)$. Chứng minh $\Delta ABC$ có góc A nhọn hay tù?</p>
+                <p><em>Giải:</em> Xét góc A chính là góc tạo bởi $\vec{AB}$ và $\vec{AC}$. <br>
+                $\vec{AB} = (-1; 2; 0)$ và $\vec{AC} = (-1; 0; 3)$. <br>
+                Tích vô hướng $\vec{AB} \cdot \vec{AC} = (-1)(-1) + 2 \times 0 + 0 \times 3 = 1$. <br>
+                Vì tích vô hướng mang dấu dương $(>0)$, suy ra $\cos A > 0 \Rightarrow$ Góc A là góc <strong>nhọn</strong>.</p>
+            </div>
+
+            <div class="step-box border-orange-400 bg-orange-50">
+                <div class="step-title text-orange-700">⚡ 5. Hoạt động tương tác tại lớp</div>
+                <p class="mb-4"><strong>Sứ mệnh giải cứu (Thảo luận cặp):</strong> Tìm một giá trị $m$ để vectơ $\vec{u} = (m; -2; 1)$ vuông góc với $\vec{v} = (3; 1; -4)$ để hoàn thiện cầu nối?</p>
+                <button class="btn-interactive" onclick="toggleAnswer('ans5')">👁️ Xem cách giải cứu</button>
+                <div id="ans5" class="answer-box">
+                    Để vuông góc, $\vec{u} \cdot \vec{v} = 0 \iff 3m - 2(1) + 1(-4) = 0 \iff 3m - 6 = 0 \iff m = 2$. <br>Với $m = 2$, cầu nối đã vững chắc! 🌉
+                </div>
+            </div>
+        </section>
+        
+        <footer class="text-center text-gray-500 text-sm mt-8 pb-8 border-t pt-4">
+            Thiết kế bài giảng Toán Học Tương Tác © 2026. Chúc các em học tập hiệu quả!
+        </footer>
+    </div>
+</body>
+</html>
